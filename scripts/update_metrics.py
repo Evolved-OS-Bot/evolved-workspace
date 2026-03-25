@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""
+update_metrics.py
+Reads the current week's KPI data from the Google Sheet
+and rewrites context/current-data.md.
+
+Usage:
+    python scripts/update_metrics.py            # Update current-data.md
+    python scripts/update_metrics.py --dry-run  # Print without writing
+"""
+
+import sys
+import os
+from datetime import datetime
+from pathlib import Path
+
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent / ".env")
+
+sys.path.insert(0, str(Path(__file__).parent))
+from sheets_client import read_sheet, find_current_week_col
+
+DRY_RUN     = "--dry-run" in sys.argv
+OUTPUT_PATH = Path(__file__).parent.parent / "context" / "current-data.md"
+SHEET_NAME  = os.environ.get("GOOGLE_KPI_SHEET_NAME", "KPI's The Evolved")
+
+# Row index map — 0-based (sheet row number minus 1)
+ROWS = {
+    # Members
+    "active_sgpt":          16,   # Row 17
+    "active_pt":            24,   # Row 25
+    # Ad spend
+    "meta_ad_spend":        25,   # Row 26
+    "google_ad_spend":      26,   # Row 27
+    "total_ad_spend":       27,   # Row 28
+    # Subscribes
+    "subscribes_organic":   32,   # Row 33
+    "subscribes_paid":      33,   # Row 34
+    "subscribes_total":     34,   # Row 35
+    # Leads
+    "leads_organic":        37,   # Row 38
+    "leads_meta":           38,   # Row 39
+    "leads_google":         39,   # Row 40
+    "leads_paid_total":     40,   # Row 41
+    "leads_total":          41,   # Row 42
+    # Studio bookings
+    "bookings_total":       51,   # Row 52
+    "bookings_via_ads":     52,   # Row 53
+    "bookings_no_ads":      53,   # Row 54
+    "bookings_attended":    59,   # Row 60
+    "show_rate_ads":        60,   # Row 61
+    "show_rate_no_ads":     61,   # Row 62
+    "show_rate_total":      62,   # Row 63
+    # SGPT sales
+    "sgpt_meta":            63,   # Row 64
+    "sgpt_google":          64,   # Row 65
+    "sgpt_organic":         65,   # Row 66
+    "sgpt_total":           69,   # Row 70
+    # PT sales
+    "pt_meta":              70,   # Row 71
+    "pt_google":            71,   # Row 72
+    "pt_organic":           72,   # Row 73
+    "pt_total":             76,   # Row 77
+    # Sales totals
+    "sales_via_ads":        77,   # Row 78
+    "sales_no_ads":         78,   # Row 79
+    "sales_total":          79,   # Row 80
+    "conversion_rate_total":82,   # Row 83
+    # New Cash Collected
+    "ncc_organic":          83,   # Row 84
+    "ncc_meta":             84,   # Row 85
+    "ncc_google":           85,   # Row 86
+    "ncc_total":            87,   # Row 88
+    "ncc_ads_total":        88,   # Row 89
+    # Cancels / net
+    "sgpt_cancels":         89,   # Row 90
+    "pt_cancels":           90,   # Row 91
+    "sgpt_net":             93,   # Row 94
+    "pt_net":               94,   # Row 95
+    # Suspensions
+    "suspensions_active":   97,   # Row 98
+    # Revenue
+    "cash_collected":       105,  # Row 106
+    # PT sessions
+    "pt_sessions":          113,  # Row 114
+}
+
+
+def get_cell(rows, row_idx, col_idx):
+    try:
+        return rows[row_idx][col_idx]
+    except (IndexError, TypeError):
+        return None
+
+
+def fmt(val, prefix="", suffix="", pct=False):
+    s = str(val).strip() if val is not None else ""
+    if not s or s.startswith("#") or s == "—":
+        return "—"
+    if pct:
+        try:
+            return f"{float(val)*100:.1f}%"
+        except (ValueError, TypeError):
+            pass
+    return f"{prefix}{val}{suffix}"
+
+
+def fmt_currency(val):
+    if val is None or str(val).strip() == "":
+        return "—"
+    try:
+        n = float(str(val).replace("$", "").replace(",", ""))
+        return f"${n:,.2f}"
+    except (ValueError, TypeError):
+        return str(val)
+
+
+def main():
+    print(f"Reading sheet: {SHEET_NAME}")
+    rows = read_sheet(SHEET_NAME, "A1:BF115")
+
+    col_idx, week_date = find_current_week_col(rows)
+    if col_idx is None:
+        print("ERROR: Could not find current week column in sheet header row.")
+        sys.exit(1)
+
+    print(f"Current week: {week_date} (col index {col_idx})")
+
+    def g(key):
+        return get_cell(rows, ROWS[key], col_idx)
+
+    # Derived metrics
+    active_sgpt = g("active_sgpt")
+    active_pt   = g("active_pt")
+    try:
+        total_clients = int(str(active_sgpt)) + int(str(active_pt))
+    except (ValueError, TypeError):
+        total_clients = None
+
+    cash = g("cash_collected")
+    try:
+        cash_num    = float(str(cash).replace("$", "").replace(",", ""))
+        annual_est  = f"${cash_num * 52:,.0f}"
+        cash_fmt    = f"${cash_num:,.2f}"
+    except (ValueError, TypeError):
+        cash_num, annual_est, cash_fmt = None, "—", "—"
+
+    blended = "—"
+    if cash_num and total_clients:
+        blended = f"${cash_num / total_clients:.2f}"
+
+    now      = datetime.now().strftime("%Y-%m-%d %H:%M")
+    week_str = week_date.strftime("%d %b %Y") if week_date else "unknown"
+
+    content = f"""\
+# Current Data
+
+> Auto-generated by `update_metrics.py` — last updated {now} (week of {week_str})
+> Run `update-metrics` to refresh.
+
+---
+
+## How This Connects
+
+- **business-info.md** provides organisational context
+- **personal-info.md** defines what you're responsible for
+- **strategy.md** outlines what you're optimising toward
+- **This file** gives Claude the numbers behind the narrative
+
+---
+
+## Members
+
+| Metric | Value |
+|---|---|
+| Active SGPT Members | {fmt(active_sgpt)} |
+| Active PT Clients | {fmt(active_pt)} |
+| Total Clients | {fmt(total_clients)} |
+| Active Suspensions | {fmt(g("suspensions_active"))} |
+
+---
+
+## Revenue (Week of {week_str})
+
+| Metric | Value |
+|---|---|
+| Cash Collected | {cash_fmt} |
+| Estimated Annual Revenue | {annual_est} |
+| Blended Weekly Revenue Per Client | {blended} |
+| Total New Cash Collected | {fmt_currency(g("ncc_total"))} |
+| NCC via Ads | {fmt_currency(g("ncc_ads_total"))} |
+| NCC — Organic | {fmt_currency(g("ncc_organic"))} |
+| NCC — Meta Ads | {fmt_currency(g("ncc_meta"))} |
+| NCC — Google Ads | {fmt_currency(g("ncc_google"))} |
+
+---
+
+## Ad Spend
+
+| Metric | Value |
+|---|---|
+| Meta Ad Spend | {fmt_currency(g("meta_ad_spend"))} |
+| Google Ad Spend | {fmt_currency(g("google_ad_spend"))} |
+| Total Ad Spend | {fmt_currency(g("total_ad_spend"))} |
+
+---
+
+## Leads & Bookings Funnel
+
+| Metric | Value |
+|---|---|
+| Organic Subscribes | {fmt(g("subscribes_organic"))} |
+| Paid Subscribes | {fmt(g("subscribes_paid"))} |
+| Total Subscribes | {fmt(g("subscribes_total"))} |
+| Organic Leads | {fmt(g("leads_organic"))} |
+| Meta Leads | {fmt(g("leads_meta"))} |
+| Google Leads | {fmt(g("leads_google"))} |
+| Total Paid Leads | {fmt(g("leads_paid_total"))} |
+| Total Leads | {fmt(g("leads_total"))} |
+| Total Studio Bookings | {fmt(g("bookings_total"))} |
+| Bookings via Ads | {fmt(g("bookings_via_ads"))} |
+| Bookings w/o Ads | {fmt(g("bookings_no_ads"))} |
+| Studio Bookings Attended | {fmt(g("bookings_attended"))} |
+| Show Rate (Ads) | {fmt(g("show_rate_ads"), pct=True)} |
+| Show Rate (No Ads) | {fmt(g("show_rate_no_ads"), pct=True)} |
+| Show Rate (Total) | {fmt(g("show_rate_total"), pct=True)} |
+| Sales Conversion Rate | {fmt(g("conversion_rate_total"), pct=True)} |
+
+---
+
+## Sales
+
+| Metric | Value |
+|---|---|
+| SGPT Sales — Meta | {fmt(g("sgpt_meta"))} |
+| SGPT Sales — Google | {fmt(g("sgpt_google"))} |
+| SGPT Sales — Organic | {fmt(g("sgpt_organic"))} |
+| SGPT Sales Total | {fmt(g("sgpt_total"))} |
+| PT Sales — Meta | {fmt(g("pt_meta"))} |
+| PT Sales — Google | {fmt(g("pt_google"))} |
+| PT Sales — Organic | {fmt(g("pt_organic"))} |
+| PT Sales Total | {fmt(g("pt_total"))} |
+| Sales via Ads | {fmt(g("sales_via_ads"))} |
+| Sales w/o Ads | {fmt(g("sales_no_ads"))} |
+| Sales Total | {fmt(g("sales_total"))} |
+
+---
+
+## Retention
+
+| Metric | Value |
+|---|---|
+| SGPT Cancels | {fmt(g("sgpt_cancels"))} |
+| PT Cancels | {fmt(g("pt_cancels"))} |
+| SGPT Net (Gained / Lost) | {fmt(g("sgpt_net"))} |
+| PT Net (Gained / Lost) | {fmt(g("pt_net"))} |
+
+---
+
+## PT Sessions
+
+| Metric | Value |
+|---|---|
+| PT Sessions (week) | {fmt(g("pt_sessions"))} |
+
+---
+
+## Data Sources
+
+- Google Sheet: KPI's The Evolved tab
+- Raw data from GHL → aggregated via COUNTIFS formulas
+- Cash Collected and Ad Spend entered manually each week
+"""
+
+    if DRY_RUN:
+        print("\n--- DRY RUN (no file written) ---\n")
+        print(content)
+    else:
+        OUTPUT_PATH.write_text(content)
+        print(f"Written to {OUTPUT_PATH}")
+
+
+if __name__ == "__main__":
+    main()

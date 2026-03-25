@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -L \"https://docs.google.com/spreadsheets/d/1aeD8c2mY9rwltmVnTl86rx_rYXpSsAq3HTamk-hEs3c/edit\" 2>&1 | python3 -c \"\nimport sys, re\ndata = sys.stdin.read\\(\\)\n\n# The bootstrap data has gridId - let's look for all numeric IDs that appear with sheet names\n# Search around each sheet name for nearby numeric IDs\ntab_names = ['KPI', 'Attendance', 'Subscribes', 'Purchases', 'Appointments', 'Sales', 'Active Members', 'Membership Cancels', 'PT Cancellations', 'SGPT Cancellations', 'Sheet30', 'Sheet34', 'Leads Tracking', 'Paid Ads']\n\n# Look for switchToSheet or similar function calls with IDs\nswitches = re.findall\\(r'switchToSheet\\\\\\(\\(\\\\d+\\)\\\\\\)', data\\)\nprint\\('switchToSheet calls:', switches[:20]\\)\n\n# Look for any data-sheet-id attributes\ndata_ids = re.findall\\(r'data-sheet-id=\\\\\"\\(\\\\d+\\)\\\\\"', data\\)\nprint\\('data-sheet-id:', data_ids[:20]\\)\n\n# Looks for any link with gid\nlinks = re.findall\\(r'gid=\\(\\\\d+\\)', data\\)\nseen = []\nfor l in links:\n    if l not in seen:\n        seen.append\\(l\\)\nprint\\('All GIDs in links:', seen[:30]\\)\n\" 2>&1 | head -50)"
+    ]
+  }
+}

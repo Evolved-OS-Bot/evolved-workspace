@@ -1,0 +1,8 @@
+scripts/.env
+discord_bot/.env
+scripts/google_credentials.json
+context/current-data.md
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
