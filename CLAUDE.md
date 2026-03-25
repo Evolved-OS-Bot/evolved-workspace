@@ -56,7 +56,14 @@ Claude should not:
 │       ├── create-plan.md  # /create-plan — create implementation plans
 │       └── implement.md   # /implement — execute plans
 ├── context/               # Background context about the user and project
-│                          # (User should populate with role, goals, strategies)
+│   └── journal/           # Daily journal entries written by Discord bot (/journal command)
+├── discord_bot/           # Discord bot — 24/7 mobile interface to workspace
+│   ├── bot.py             # Main bot — handles messages, calls Claude API
+│   ├── context_loader.py  # Builds system prompt from context/ files
+│   ├── journal.py         # Generates daily summaries, writes to context/journal/
+│   ├── requirements.txt   # Python dependencies
+│   ├── Procfile           # Railway process definition
+│   └── railway.toml       # Railway deployment config
 ├── plans/                 # Implementation plans created by /create-plan
 ├── outputs/               # Work products and deliverables
 ├── reference/             # Templates, examples, reusable patterns
@@ -69,13 +76,15 @@ Claude should not:
 
 **Key directories:**
 
-| Directory    | Purpose                                                                             |
-| ------------ | ----------------------------------------------------------------------------------- |
-| `context/`   | Who the user is, their role, current priorities, strategies. Read by `/prime`.      |
-| `plans/`     | Detailed implementation plans. Created by `/create-plan`, executed by `/implement`. |
-| `outputs/`   | Deliverables, analyses, reports, and work products.                                 |
-| `reference/` | Helpful docs, templates and patterns to assist in various workflows.                |
-| `scripts/`   | Automation scripts. `update_metrics.py` reads the KPI sheet and writes `context/current-data.md`. Run via `update-metrics` alias. |
+| Directory       | Purpose                                                                             |
+| --------------- | ----------------------------------------------------------------------------------- |
+| `context/`      | Who the user is, their role, current priorities, strategies. Read by `/prime`.      |
+| `context/journal/` | Daily journal entries from Discord bot. Picked up by `/prime` automatically.    |
+| `discord_bot/`  | Discord bot deployed on Railway. Provides 24/7 mobile access to workspace context. |
+| `plans/`        | Detailed implementation plans. Created by `/create-plan`, executed by `/implement`. |
+| `outputs/`      | Deliverables, analyses, reports, and work products.                                 |
+| `reference/`    | Helpful docs, templates and patterns to assist in various workflows.                |
+| `scripts/`      | Automation scripts. `update_metrics.py` reads the KPI sheet and writes `context/current-data.md`. Run via `update-metrics` alias. Running `update-metrics` on desktop is immediately reflected in the bot's next Discord response. |
 
 ---
 
@@ -110,6 +119,15 @@ update-metrics
 # or for a test run without writing:
 python3 scripts/update_metrics.py --dry-run
 ```
+
+### Discord bot (`#evolved-os` and `#daily-journal`)
+
+**Purpose:** Mobile interface to the workspace — chat with a fully briefed Claude from any device.
+
+- **`#evolved-os`**: Send any message → bot responds with full workspace context injected
+- **`/journal`**: Summarises the day's conversation and posts to `#daily-journal`, also writes to `context/journal/YYYY-MM-DD.md`
+- Deployed on Railway (always on). Credentials stored in Railway environment variables.
+- Running `update-metrics` on desktop immediately improves the bot's next response — no redeployment needed.
 
 ### /implement [plan-path]
 
