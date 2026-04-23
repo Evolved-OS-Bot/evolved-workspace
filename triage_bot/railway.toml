@@ -3,4 +3,4 @@ builder = "NIXPACKS"
 
 [deploy]
 startCommand = "python triage.py"
-cronSchedule = "0 22 * * *"
+cronSchedule = "0 20 * * *"
