@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
 triage_bot/triage.py
-Pulls unread GHL conversations from the last 24 hours,
-classifies each with Claude, and posts a triage report to Discord.
+Pulls unread GHL conversations, classifies each with Claude,
+and posts a triage report to Discord.
 
-Runs daily at 8am AEST via Railway cron.
+Runs daily at 6am AEST via Railway cron.
 """
 
 import os
 import json
 import requests
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from anthropic import Anthropic
 
-GHL_API_KEY     = os.environ["GHL_API_KEY"]
-GHL_LOCATION_ID = os.environ["GHL_LOCATION_ID"]
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+GHL_API_KEY         = os.environ["GHL_API_KEY"]
+GHL_LOCATION_ID     = os.environ["GHL_LOCATION_ID"]
+ANTHROPIC_API_KEY   = os.environ["ANTHROPIC_API_KEY"]
 DISCORD_WEBHOOK_URL = os.environ["DISCORD_WEBHOOK_URL"]
 
-GHL_BASE  = "https://services.leadconnectorhq.com"
+GHL_BASE    = "https://services.leadconnectorhq.com"
 GHL_HEADERS = {
     "Authorization": f"Bearer {GHL_API_KEY}",
     "Version": "2021-07-28",
@@ -39,7 +39,7 @@ CHANNEL_LABELS = {
 
 
 def fetch_unread_conversations():
-    """Pull all unread conversations regardless of age."""
+    """Pull all unread conversations."""
     params = {
         "locationId": GHL_LOCATION_ID,
         "status": "unread",
@@ -51,8 +51,7 @@ def fetch_unread_conversations():
     if not r.ok:
         print(f"GHL conversations error {r.status_code}: {r.text[:200]}")
         return []
-    data = r.json()
-    return data.get("conversations", [])
+    return r.json().get("conversations", [])
 
 
 def fetch_contact_name(contact_id):
@@ -65,7 +64,7 @@ def fetch_contact_name(contact_id):
     return name or contact.get("email", "Unknown")
 
 
-def fetch_recent_messages(conversation_id, limit=5):
+def fetch_recent_messages(conversation_id, limit=6):
     """Get the most recent messages from a conversation."""
     r = requests.get(
         f"{GHL_BASE}/conversations/{conversation_id}/messages",
@@ -80,7 +79,7 @@ def fetch_recent_messages(conversation_id, limit=5):
 def classify_conversations(convos):
     """
     Send all conversations to Claude for classification.
-    Returns a list of dicts with intent, summary, urgency per conversation.
+    Returns a list of dicts with category, action, and optional quote per conversation.
     """
     if not convos:
         return []
@@ -92,22 +91,30 @@ def classify_conversations(convos):
         convo_text += f"Channel: {c['channel']}\n"
         convo_text += f"Last message: {c['last_message']}\n"
         if c.get("recent_messages"):
-            convo_text += "Recent context:\n"
-            for msg in c["recent_messages"][-3:]:
+            convo_text += "Recent messages:\n"
+            for msg in c["recent_messages"][-4:]:
                 direction = "Member" if msg.get("direction") == "inbound" else "Staff"
-                body = msg.get("body", "")[:200]
-                convo_text += f"  {direction}: {body}\n"
+                body = msg.get("body", "")[:300]
+                if body:
+                    convo_text += f"  {direction}: {body}\n"
 
     prompt = f"""You are triaging incoming conversations for The Evolved, a women's strength training gym in Brisbane.
 
-Classify each conversation. For each, return a JSON array with one object containing:
-- "intent": one of [SA Confirmation, SA Pre-Qualification, SA Summary, PT Reschedule (policy), PT Reschedule (outside policy), Hold Request, Cancellation, Complaint, Marketing/Sales, Other]
-- "summary": one sentence — contact name, topic, what they want
+IMPORTANT DEFINITIONS — get these right:
+- SA (Strength Assessment): the initial 1-hour sales consultation for new PROSPECTS who haven't joined yet. SA Confirmations are when a prospect replies "READY" or confirms their upcoming SA appointment. These are high priority.
+- Testing / Assessment for existing members: periodic performance testing sessions (strength tests, benchmarks) for current paying members. This is NOT an SA — it's a scheduling request for an existing member.
+- PT: personal training sessions for existing paying members.
+- SGPT: small group personal training — the main membership product.
+- Hold: a member requesting to pause billing and gym access.
+
+For each conversation return a JSON array where each object has:
 - "category": one of [Important Urgent, Important Not Urgent, Not Important Urgent, Not Important Not Urgent]
-  - Important Urgent: SA Confirmations (READY replies), SA Pre-Qualification follow-ups, complaints
-  - Important Not Urgent: PT reschedules with 24hr+ notice, hold requests
-  - Not Important Urgent: PT reschedules with less than 24hr notice
-  - Not Important Not Urgent: marketing, sales, equipment demos, anything not revenue-generating
+  - Important Urgent: SA confirmations (prospect replies READY/confirms SA), unresolved complaints
+  - Important Not Urgent: scheduling requests from existing members (PT, testing, assessments), hold requests, reschedules with 24hr+ notice, any request that needs admin action but isn't time-critical today
+  - Not Important Urgent: PT reschedules under 24hrs notice
+  - Not Important Not Urgent: marketing, sales pitches, spam, equipment demos, anything not member-related
+- "action": short phrase — what admin needs to do (e.g. "Schedule testing session", "Confirm SA appointment", "Process hold request", "Reschedule PT — under 24hrs")
+- "quote": the key inbound message verbatim, truncated to 280 chars. Include when the message content helps admin understand what action to take. Set to null if the action is completely self-evident from the name alone.
 
 Return ONLY a valid JSON array, no other text, no code fences.
 
@@ -122,7 +129,6 @@ Conversations:
 
     try:
         text = message.content[0].text.strip()
-        # Strip markdown code fences if present
         if text.startswith("```"):
             text = text.split("```")[1]
             if text.startswith("json"):
@@ -133,15 +139,8 @@ Conversations:
         print(f"Classification parse error: {e}")
         raw = message.content[0].text if message.content else "(no content)"
         print(f"Raw response ({len(raw)} chars): {raw[:1000]}")
-        return [{"intent": "Unknown", "summary": "Classification failed", "category": "Not Important Not Urgent"}] * len(convos)
+        return [{"action": "Classification failed", "category": "Not Important Not Urgent", "quote": None}] * len(convos)
 
-
-CATEGORY_EMOJI = {
-    "Important Urgent": "🔴",
-    "Important Not Urgent": "🟡",
-    "Not Important Urgent": "🟠",
-    "Not Important Not Urgent": "🟢",
-}
 
 CATEGORY_ORDER = {
     "Important Urgent": 0,
@@ -150,23 +149,29 @@ CATEGORY_ORDER = {
     "Not Important Not Urgent": 3,
 }
 
+CATEGORY_HEADERS = {
+    "Important Urgent":         "🔴 **Important Urgent**",
+    "Important Not Urgent":     "🟡 **Important Not Urgent**",
+    "Not Important Urgent":     "🟠 **Not Important Urgent**",
+    "Not Important Not Urgent": "🟢 **Not Important Not Urgent**",
+}
+
 
 def format_discord_messages(convos, classifications):
-    """Format triage report as a list of Discord messages (max 2000 chars each)."""
+    """Format triage report as a list of Discord messages (max 1950 chars each)."""
     today = datetime.now().strftime("%A, %-d %B")
     total = len(convos)
 
     if total == 0:
-        return [{"content": f"**Conversation Triage — {today}**\n✅ No unread conversations."}]
+        return [{"content": f"**Triage — {today}**\n✅ No unread conversations."}]
 
-    # Count by category
     counts = {}
     for c in classifications:
         cat = c.get("category", "Not Important Not Urgent")
         counts[cat] = counts.get(cat, 0) + 1
 
     header = (
-        f"**Conversation Triage — {today}**\n"
+        f"**Triage — {today}**\n"
         f"{total} unread · "
         f"🔴 {counts.get('Important Urgent', 0)} · "
         f"🟡 {counts.get('Important Not Urgent', 0)} · "
@@ -174,32 +179,37 @@ def format_discord_messages(convos, classifications):
         f"🟢 {counts.get('Not Important Not Urgent', 0)}\n"
     )
 
-    # Sort by category priority
     paired = list(zip(convos, classifications))
     paired.sort(key=lambda x: CATEGORY_ORDER.get(x[1].get("category", "Not Important Not Urgent"), 3))
 
-    # Build entry lines
-    entries = []
+    # Build lines grouped by category
+    lines = []
+    current_cat = None
     for convo, cls in paired:
-        cat     = cls.get("category", "Not Important Not Urgent")
-        intent  = cls.get("intent", "Other")
-        summary = cls.get("summary", "")
-        name    = convo["contact_name"]
-        channel = convo["channel"]
-        emoji   = CATEGORY_EMOJI.get(cat, "🟢")
+        cat    = cls.get("category", "Not Important Not Urgent")
+        action = cls.get("action", "Review")
+        quote  = cls.get("quote")
+        name   = convo["contact_name"]
 
-        entry = f"{emoji} **{name}** · {channel} · `{intent}`\n  _{summary}_\n"
-        entries.append(entry)
+        if cat != current_cat:
+            lines.append(f"\n{CATEGORY_HEADERS.get(cat, cat)}")
+            current_cat = cat
 
-    # Split into messages under 2000 chars
+        entry = f"- **{name}**: {action}"
+        if quote:
+            q = quote[:280] + "..." if len(quote) > 280 else quote
+            entry += f'\n  > *"{q}"*'
+        lines.append(entry)
+
+    # Chunk into Discord messages under 1950 chars
     messages = []
     current = header
-    for entry in entries:
-        if len(current) + len(entry) + 1 > 1950:
+    for line in lines:
+        if len(current) + len(line) + 2 > 1950:
             messages.append({"content": current})
-            current = entry
+            current = line
         else:
-            current += "\n" + entry
+            current += "\n" + line
     if current:
         messages.append({"content": current})
 
@@ -227,20 +237,19 @@ def main():
         post_to_discord(format_discord_messages([], []))
         return
 
-    # Enrich with contact names and recent messages
     convos = []
     for c in raw_convos:
         contact_id = c.get("contactId", "")
-        name = fetch_contact_name(contact_id) if contact_id else "Unknown"
-        channel = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
-        last_message = c.get("lastMessageBody", "").strip() or "(no message body)"
-        recent = fetch_recent_messages(c.get("id", ""))
+        name       = fetch_contact_name(contact_id) if contact_id else "Unknown"
+        channel    = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
+        last_msg   = c.get("lastMessageBody", "").strip() or "(no message body)"
+        recent     = fetch_recent_messages(c.get("id", ""))
 
         convos.append({
-            "id": c.get("id"),
-            "contact_name": name,
-            "channel": channel,
-            "last_message": last_message,
+            "id":              c.get("id"),
+            "contact_name":    name,
+            "channel":         channel,
+            "last_message":    last_msg,
             "recent_messages": recent,
         })
 
