@@ -196,8 +196,9 @@ def format_discord_messages(convos, classifications):
             current_cat = cat
 
         entry = f"- **{name}**: {action}"
-        if quote:
-            q = quote[:280] + "..." if len(quote) > 280 else quote
+        display_quote = quote or convo.get("last_message")
+        if display_quote and display_quote != "(no message body)":
+            q = display_quote[:280] + "..." if len(display_quote) > 280 else display_quote
             entry += f'\n  > *"{q}"*'
         lines.append(entry)
 
