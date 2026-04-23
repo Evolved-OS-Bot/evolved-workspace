@@ -39,14 +39,10 @@ CHANNEL_LABELS = {
 
 
 def fetch_unread_conversations():
-    """Pull unread conversations updated in the last 24 hours."""
-    since = datetime.now(timezone.utc) - timedelta(hours=24)
-    since_ts = int(since.timestamp() * 1000)
-
+    """Pull all unread conversations regardless of age."""
     params = {
         "locationId": GHL_LOCATION_ID,
         "status": "unread",
-        "startAfterDate": since_ts,
         "limit": 50,
         "sort": "desc",
         "sortBy": "last_message_date",
@@ -124,10 +120,17 @@ Conversations:
     )
 
     try:
-        classifications = json.loads(message.content[0].text)
+        text = message.content[0].text.strip()
+        # Strip markdown code fences if present
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        classifications = json.loads(text.strip())
         return classifications
-    except (json.JSONDecodeError, IndexError):
-        # Fallback if Claude returns unexpected format
+    except (json.JSONDecodeError, IndexError) as e:
+        print(f"Classification parse error: {e}")
+        print(f"Raw response: {message.content[0].text[:500]}")
         return [{"intent": "Unknown", "summary": "Classification failed", "urgency": "Medium"}] * len(convos)
 
 
