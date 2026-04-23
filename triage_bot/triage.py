@@ -98,17 +98,18 @@ def classify_conversations(convos):
                 body = msg.get("body", "")[:200]
                 convo_text += f"  {direction}: {body}\n"
 
-    prompt = f"""You are triaging incoming gym member conversations for The Evolved, a women's strength training gym in Brisbane.
+    prompt = f"""You are triaging incoming conversations for The Evolved, a women's strength training gym in Brisbane.
 
-Classify each conversation below. For each, return a JSON array with one object per conversation containing:
-- "intent": one of [Enquiry, Hold Request, Booking, Complaint, Pricing, Cancellation, Returning Member, Admin, Other]
-- "summary": one sentence describing what the member wants or needs
-- "urgency": one of [High, Medium, Low]
-  - High = complaint, upset member, time-sensitive request
-  - Medium = needs a response today
-  - Low = can wait 24-48hrs
+Classify each conversation. For each, return a JSON array with one object containing:
+- "intent": one of [SA Confirmation, SA Pre-Qualification, SA Summary, PT Reschedule (policy), PT Reschedule (outside policy), Hold Request, Cancellation, Complaint, Marketing/Sales, Other]
+- "summary": one sentence — contact name, topic, what they want
+- "category": one of [Important Urgent, Important Not Urgent, Not Important Urgent, Not Important Not Urgent]
+  - Important Urgent: SA Confirmations (READY replies), SA Pre-Qualification follow-ups, complaints
+  - Important Not Urgent: PT reschedules with 24hr+ notice, hold requests
+  - Not Important Urgent: PT reschedules with less than 24hr notice
+  - Not Important Not Urgent: marketing, sales, equipment demos, anything not revenue-generating
 
-Return ONLY valid JSON array, no other text.
+Return ONLY a valid JSON array, no other text, no code fences.
 
 Conversations:
 {convo_text}"""
@@ -134,57 +135,84 @@ Conversations:
         return [{"intent": "Unknown", "summary": "Classification failed", "urgency": "Medium"}] * len(convos)
 
 
-def format_discord_message(convos, classifications):
-    """Format the triage report as a Discord message."""
+CATEGORY_EMOJI = {
+    "Important Urgent": "🔴",
+    "Important Not Urgent": "🟡",
+    "Not Important Urgent": "🟠",
+    "Not Important Not Urgent": "🟢",
+}
+
+CATEGORY_ORDER = {
+    "Important Urgent": 0,
+    "Important Not Urgent": 1,
+    "Not Important Urgent": 2,
+    "Not Important Not Urgent": 3,
+}
+
+
+def format_discord_messages(convos, classifications):
+    """Format triage report as a list of Discord messages (max 2000 chars each)."""
     today = datetime.now().strftime("%A, %-d %B")
     total = len(convos)
 
     if total == 0:
-        return {
-            "content": f"**Conversation Triage — {today}**\n✅ No unread conversations in the last 24 hours."
-        }
+        return [{"content": f"**Conversation Triage — {today}**\n✅ No unread conversations."}]
 
-    # Count by urgency
-    high   = sum(1 for c in classifications if c.get("urgency") == "High")
-    medium = sum(1 for c in classifications if c.get("urgency") == "Medium")
-    low    = sum(1 for c in classifications if c.get("urgency") == "Low")
+    # Count by category
+    counts = {}
+    for c in classifications:
+        cat = c.get("category", "Not Important Not Urgent")
+        counts[cat] = counts.get(cat, 0) + 1
 
-    lines = [
-        f"**Conversation Triage — {today}**",
-        f"{total} unread · 🔴 {high} high · 🟡 {medium} medium · 🟢 {low} low",
-        "",
-    ]
+    header = (
+        f"**Conversation Triage — {today}**\n"
+        f"{total} unread · "
+        f"🔴 {counts.get('Important Urgent', 0)} · "
+        f"🟡 {counts.get('Important Not Urgent', 0)} · "
+        f"🟠 {counts.get('Not Important Urgent', 0)} · "
+        f"🟢 {counts.get('Not Important Not Urgent', 0)}\n"
+    )
 
-    # Sort by urgency: High first
-    urgency_order = {"High": 0, "Medium": 1, "Low": 2}
+    # Sort by category priority
     paired = list(zip(convos, classifications))
-    paired.sort(key=lambda x: urgency_order.get(x[1].get("urgency", "Low"), 2))
+    paired.sort(key=lambda x: CATEGORY_ORDER.get(x[1].get("category", "Not Important Not Urgent"), 3))
 
+    # Build entry lines
+    entries = []
     for convo, cls in paired:
-        urgency = cls.get("urgency", "Medium")
+        cat     = cls.get("category", "Not Important Not Urgent")
         intent  = cls.get("intent", "Other")
         summary = cls.get("summary", "")
         name    = convo["contact_name"]
         channel = convo["channel"]
-        preview = convo["last_message"][:80] + ("…" if len(convo["last_message"]) > 80 else "")
+        emoji   = CATEGORY_EMOJI.get(cat, "🟢")
 
-        emoji = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}.get(urgency, "🟡")
+        entry = f"{emoji} **{name}** · {channel} · `{intent}`\n  _{summary}_\n"
+        entries.append(entry)
 
-        lines.append(f"{emoji} **{name}** · {channel} · `{intent}`")
-        lines.append(f"  _{summary}_")
-        lines.append(f"  > {preview}")
-        lines.append("")
+    # Split into messages under 2000 chars
+    messages = []
+    current = header
+    for entry in entries:
+        if len(current) + len(entry) + 1 > 1950:
+            messages.append({"content": current})
+            current = entry
+        else:
+            current += "\n" + entry
+    if current:
+        messages.append({"content": current})
 
-    return {"content": "\n".join(lines)}
+    return messages
 
 
-def post_to_discord(message):
-    """Post the triage report to Discord."""
-    r = requests.post(DISCORD_WEBHOOK_URL, json=message)
-    if not r.ok:
-        print(f"Discord post failed {r.status_code}: {r.text}")
-    else:
-        print("Triage report posted to Discord.")
+def post_to_discord(messages):
+    """Post one or more messages to Discord."""
+    for message in messages:
+        r = requests.post(DISCORD_WEBHOOK_URL, json=message)
+        if not r.ok:
+            print(f"Discord post failed {r.status_code}: {r.text}")
+        else:
+            print("Discord message posted.")
 
 
 def main():
@@ -195,7 +223,7 @@ def main():
     print(f"Found {len(raw_convos)} unread conversations")
 
     if not raw_convos:
-        post_to_discord(format_discord_message([], []))
+        post_to_discord(format_discord_messages([], []))
         return
 
     # Enrich with contact names and recent messages
@@ -219,8 +247,8 @@ def main():
     classifications = classify_conversations(convos)
 
     print("Posting to Discord...")
-    message = format_discord_message(convos, classifications)
-    post_to_discord(message)
+    messages = format_discord_messages(convos, classifications)
+    post_to_discord(messages)
 
     print("Done.")
 
