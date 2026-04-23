@@ -116,7 +116,7 @@ Conversations:
 
     message = anthropic.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1024,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
     )
 
@@ -131,8 +131,9 @@ Conversations:
         return classifications
     except (json.JSONDecodeError, IndexError) as e:
         print(f"Classification parse error: {e}")
-        print(f"Raw response: {message.content[0].text[:500]}")
-        return [{"intent": "Unknown", "summary": "Classification failed", "urgency": "Medium"}] * len(convos)
+        raw = message.content[0].text if message.content else "(no content)"
+        print(f"Raw response ({len(raw)} chars): {raw[:1000]}")
+        return [{"intent": "Unknown", "summary": "Classification failed", "category": "Not Important Not Urgent"}] * len(convos)
 
 
 CATEGORY_EMOJI = {
