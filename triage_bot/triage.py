@@ -57,14 +57,21 @@ def fetch_unread_conversations():
     return r.json().get("conversations", [])
 
 
-def fetch_contact_name(contact_id):
-    """Get contact full name from contact ID."""
+def fetch_contact_info(contact_id):
+    """Get contact name and SA pre-qualification status from tags."""
     r = requests.get(f"{GHL_BASE}/contacts/{contact_id}", headers=GHL_HEADERS)
     if not r.ok:
-        return "Unknown"
+        return "Unknown", False
     contact = r.json().get("contact", {})
     name = f"{contact.get('firstName', '')} {contact.get('lastName', '')}".strip()
-    return name or contact.get("email", "Unknown")
+    name = name or contact.get("email", "Unknown")
+    tags = [t.lower() for t in contact.get("tags", [])]
+    is_sa_prequel = (
+        "strength assessment booked" in tags
+        and "strength assessment cancelled" not in tags
+        and "strength assessment showed" not in tags
+    )
+    return name, is_sa_prequel
 
 
 def fetch_recent_messages(conversation_id, limit=6):
@@ -91,6 +98,7 @@ def classify_conversations(convos):
     for i, c in enumerate(convos):
         convo_text += f"\n--- Conversation {i+1} ---\n"
         convo_text += f"Contact: {c['contact_name']}\n"
+        convo_text += f"SA Pre-Qualification: {'YES' if c.get('is_sa_prequel') else 'no'}\n"
         convo_text += f"Channel: {c['channel']}\n"
         convo_text += f"Last message: {c['last_message']}\n"
         if c.get("recent_messages"):
@@ -105,6 +113,7 @@ def classify_conversations(convos):
 
 IMPORTANT DEFINITIONS — get these right:
 - SA (Strength Assessment): the initial 1-hour sales consultation for new PROSPECTS who haven't joined yet. SA Confirmations are when a prospect replies "READY" or confirms their upcoming SA appointment. These are high priority.
+- SA Pre-Qualification: if "SA Pre-Qualification: YES" is set, this contact has a booked SA that hasn't happened yet. Any message from them is part of the pre-qualification process and must be classified as Important Urgent.
 - Testing / Assessment for existing members: periodic performance testing sessions (strength tests, benchmarks) for current paying members. This is NOT an SA — it's a scheduling request for an existing member.
 - PT: personal training sessions for existing paying members.
 - SGPT: small group personal training — the main membership product.
@@ -323,15 +332,16 @@ def main():
 
     convos = []
     for c in raw_convos:
-        contact_id = c.get("contactId", "")
-        name       = fetch_contact_name(contact_id) if contact_id else "Unknown"
-        channel    = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
-        last_msg   = c.get("lastMessageBody", "").strip() or "(no message body)"
-        recent     = fetch_recent_messages(c.get("id", ""))
+        contact_id          = c.get("contactId", "")
+        name, is_sa_prequel = fetch_contact_info(contact_id) if contact_id else ("Unknown", False)
+        channel             = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
+        last_msg            = c.get("lastMessageBody", "").strip() or "(no message body)"
+        recent              = fetch_recent_messages(c.get("id", ""))
 
         convos.append({
             "id":              c.get("id"),
             "contact_name":    name,
+            "is_sa_prequel":   is_sa_prequel,
             "channel":         channel,
             "last_message":    last_msg,
             "recent_messages": recent,
