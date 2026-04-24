@@ -11,6 +11,9 @@ import os
 import json
 import requests
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
+BRISBANE_TZ = ZoneInfo("Australia/Brisbane")
 from anthropic import Anthropic
 
 GHL_API_KEY         = os.environ["GHL_API_KEY"]
@@ -176,7 +179,7 @@ CATEGORY_HEADERS = {
 
 def format_discord_messages(convos, classifications):
     """Format triage report as a list of Discord messages (max 1950 chars each)."""
-    today = datetime.now().strftime("%A, %-d %B")
+    today = datetime.now(BRISBANE_TZ).strftime("%A, %-d %B")
     total = len(convos)
 
     if total == 0:
@@ -244,7 +247,7 @@ CATEGORY_COLORS = {
 
 def format_email_html(convos, classifications):
     """Build an HTML email body matching the triage report."""
-    today = datetime.now().strftime("%A, %-d %B")
+    today = datetime.now(BRISBANE_TZ).strftime("%A, %-d %B")
     total = len(convos)
 
     if total == 0:
@@ -295,7 +298,7 @@ def format_email_html(convos, classifications):
 
 def send_email(convos, classifications):
     """Send the triage report via Resend API."""
-    today = datetime.now().strftime("%A, %-d %B")
+    today = datetime.now(BRISBANE_TZ).strftime("%A, %-d %B")
     html  = format_email_html(convos, classifications)
 
     r = requests.post(
@@ -325,7 +328,7 @@ def post_to_discord(messages):
 
 
 def main():
-    print(f"Running conversation triage — {datetime.now().isoformat()}")
+    print(f"Running conversation triage — {datetime.now(BRISBANE_TZ).isoformat()}")
 
     print("Fetching unread conversations...")
     raw_convos = fetch_unread_conversations()
