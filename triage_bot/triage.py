@@ -58,10 +58,10 @@ def fetch_unread_conversations():
 
 
 def fetch_contact_info(contact_id):
-    """Get contact name and SA pre-qualification status from tags."""
+    """Get contact name and membership status from tags."""
     r = requests.get(f"{GHL_BASE}/contacts/{contact_id}", headers=GHL_HEADERS)
     if not r.ok:
-        return "Unknown", False
+        return "Unknown", False, False, False
     contact = r.json().get("contact", {})
     name = f"{contact.get('firstName', '')} {contact.get('lastName', '')}".strip()
     name = name or contact.get("email", "Unknown")
@@ -71,7 +71,9 @@ def fetch_contact_info(contact_id):
         and "strength assessment cancelled" not in tags
         and "strength assessment showed" not in tags
     )
-    return name, is_sa_prequel
+    is_sgpt_member = "member" in tags and "old member" not in tags
+    is_pt_client   = "personal training" in tags and "old pt client" not in tags
+    return name, is_sa_prequel, is_sgpt_member, is_pt_client
 
 
 def fetch_recent_messages(conversation_id, limit=6):
@@ -99,6 +101,8 @@ def classify_conversations(convos):
         convo_text += f"\n--- Conversation {i+1} ---\n"
         convo_text += f"Contact: {c['contact_name']}\n"
         convo_text += f"SA Pre-Qualification: {'YES' if c.get('is_sa_prequel') else 'no'}\n"
+        convo_text += f"SGPT Member: {'YES' if c.get('is_sgpt_member') else 'no'}\n"
+        convo_text += f"PT Client: {'YES' if c.get('is_pt_client') else 'no'}\n"
         convo_text += f"Channel: {c['channel']}\n"
         convo_text += f"Last message: {c['last_message']}\n"
         if c.get("recent_messages"):
@@ -113,10 +117,11 @@ def classify_conversations(convos):
 
 IMPORTANT DEFINITIONS — get these right:
 - SA (Strength Assessment): the initial 1-hour sales consultation for new PROSPECTS who haven't joined yet. SA Confirmations are when a prospect replies "READY" or confirms their upcoming SA appointment. These are high priority.
-- SA Pre-Qualification: if "SA Pre-Qualification: YES" is set, this contact has a booked SA that hasn't happened yet. Any message from them is part of the pre-qualification process and must be classified as Important Urgent.
-- Testing / Assessment for existing members: periodic performance testing sessions (strength tests, benchmarks) for current paying members. This is NOT an SA — it's a scheduling request for an existing member.
-- PT: personal training sessions for existing paying members.
-- SGPT: small group personal training — the main membership product.
+- SA Pre-Qualification: if "SA Pre-Qualification: YES" is set, this contact has a booked SA that hasn't happened yet. Any message from them must be classified as Important Urgent.
+- SGPT Member: if "SGPT Member: YES", this is a current paying small group PT member.
+- PT Client: if "PT Client: YES", this is a current paying personal training client.
+- If none of the above flags are YES, treat the contact as an unknown/prospect.
+- Testing / Assessment for existing members: periodic performance testing sessions for current members (SGPT or PT). NOT an SA.
 - Hold: a member requesting to pause billing and gym access.
 
 For each conversation return a JSON array where each object has:
@@ -332,8 +337,8 @@ def main():
 
     convos = []
     for c in raw_convos:
-        contact_id          = c.get("contactId", "")
-        name, is_sa_prequel = fetch_contact_info(contact_id) if contact_id else ("Unknown", False)
+        contact_id                              = c.get("contactId", "")
+        name, is_sa_prequel, is_sgpt, is_pt     = fetch_contact_info(contact_id) if contact_id else ("Unknown", False, False, False)
         channel             = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
         last_msg            = c.get("lastMessageBody", "").strip() or "(no message body)"
         recent              = fetch_recent_messages(c.get("id", ""))
@@ -342,6 +347,8 @@ def main():
             "id":              c.get("id"),
             "contact_name":    name,
             "is_sa_prequel":   is_sa_prequel,
+            "is_sgpt_member":  is_sgpt,
+            "is_pt_client":    is_pt,
             "channel":         channel,
             "last_message":    last_msg,
             "recent_messages": recent,
