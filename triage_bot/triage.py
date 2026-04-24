@@ -10,6 +10,9 @@ Runs daily at 6am AEST via Railway cron.
 import os
 import json
 import requests
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from datetime import datetime, timezone
 from anthropic import Anthropic
 
@@ -17,6 +20,9 @@ GHL_API_KEY         = os.environ["GHL_API_KEY"]
 GHL_LOCATION_ID     = os.environ["GHL_LOCATION_ID"]
 ANTHROPIC_API_KEY   = os.environ["ANTHROPIC_API_KEY"]
 DISCORD_WEBHOOK_URL = os.environ["DISCORD_WEBHOOK_URL"]
+EMAIL_FROM          = os.environ["EMAIL_FROM"]
+EMAIL_APP_PASSWORD  = os.environ["EMAIL_APP_PASSWORD"]
+EMAIL_TO            = "admin@theevolvedgym.com.au"
 
 GHL_BASE    = "https://services.leadconnectorhq.com"
 GHL_HEADERS = {
@@ -217,6 +223,83 @@ def format_discord_messages(convos, classifications):
     return messages
 
 
+CATEGORY_COLORS = {
+    "Important Urgent":         "#e74c3c",
+    "Important Not Urgent":     "#f39c12",
+    "Not Important Urgent":     "#e67e22",
+    "Not Important Not Urgent": "#27ae60",
+}
+
+
+def format_email_html(convos, classifications):
+    """Build an HTML email body matching the triage report."""
+    today = datetime.now().strftime("%A, %-d %B")
+    total = len(convos)
+
+    if total == 0:
+        return f"<p>No unread conversations on {today}.</p>"
+
+    counts = {}
+    for c in classifications:
+        cat = c.get("category", "Not Important Not Urgent")
+        counts[cat] = counts.get(cat, 0) + 1
+
+    paired = list(zip(convos, classifications))
+    paired.sort(key=lambda x: CATEGORY_ORDER.get(x[1].get("category", "Not Important Not Urgent"), 3))
+
+    html = f"""
+<html><body style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;color:#222;">
+<h2 style="margin-bottom:4px;">Triage — {today}</h2>
+<p style="color:#666;margin-top:0;">{total} unread &nbsp;·&nbsp;
+🔴 {counts.get('Important Urgent', 0)} &nbsp;·&nbsp;
+🟡 {counts.get('Important Not Urgent', 0)} &nbsp;·&nbsp;
+🟠 {counts.get('Not Important Urgent', 0)} &nbsp;·&nbsp;
+🟢 {counts.get('Not Important Not Urgent', 0)}</p>
+<hr style="border:none;border-top:1px solid #eee;">
+"""
+
+    current_cat = None
+    for convo, cls in paired:
+        cat    = cls.get("category", "Not Important Not Urgent")
+        action = cls.get("action", "Review")
+        quote  = cls.get("quote") or convo.get("last_message")
+        name   = convo["contact_name"]
+        color  = CATEGORY_COLORS.get(cat, "#27ae60")
+
+        if cat != current_cat:
+            if current_cat is not None:
+                html += "</ul>"
+            html += f'<h3 style="color:{color};margin-bottom:6px;">{cat}</h3><ul style="padding-left:20px;margin-top:0;">'
+            current_cat = cat
+
+        html += f'<li style="margin-bottom:12px;"><strong>{name}</strong>: {action}'
+        if quote and quote != "(no message body)":
+            q = quote[:300] + "..." if len(quote) > 300 else quote
+            html += f'<br><span style="color:#555;font-style:italic;">&ldquo;{q}&rdquo;</span>'
+        html += "</li>"
+
+    html += "</ul></body></html>"
+    return html
+
+
+def send_email(convos, classifications):
+    """Send the triage report via Gmail SMTP."""
+    today = datetime.now().strftime("%A, %-d %B")
+    html  = format_email_html(convos, classifications)
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"Conversation Triage — {today}"
+    msg["From"]    = EMAIL_FROM
+    msg["To"]      = EMAIL_TO
+    msg.attach(MIMEText(html, "html"))
+
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(EMAIL_FROM, EMAIL_APP_PASSWORD)
+        server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
+    print(f"Email sent to {EMAIL_TO}.")
+
+
 def post_to_discord(messages):
     """Post one or more messages to Discord."""
     for message in messages:
@@ -260,6 +343,12 @@ def main():
     print("Posting to Discord...")
     messages = format_discord_messages(convos, classifications)
     post_to_discord(messages)
+
+    print("Sending email...")
+    try:
+        send_email(convos, classifications)
+    except Exception as e:
+        print(f"Email failed: {e}")
 
     print("Done.")
 
