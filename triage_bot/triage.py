@@ -10,9 +10,6 @@ Runs daily at 6am AEST via Railway cron.
 import os
 import json
 import requests
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from datetime import datetime, timezone
 from anthropic import Anthropic
 
@@ -20,9 +17,9 @@ GHL_API_KEY         = os.environ["GHL_API_KEY"]
 GHL_LOCATION_ID     = os.environ["GHL_LOCATION_ID"]
 ANTHROPIC_API_KEY   = os.environ["ANTHROPIC_API_KEY"]
 DISCORD_WEBHOOK_URL = os.environ["DISCORD_WEBHOOK_URL"]
-EMAIL_FROM          = os.environ["EMAIL_FROM"]
-EMAIL_APP_PASSWORD  = os.environ["EMAIL_APP_PASSWORD"]
-EMAIL_TO            = "admin@theevolvedgym.com.au"
+RESEND_API_KEY = os.environ["RESEND_API_KEY"]
+EMAIL_FROM     = "info@theevolvedgym.com.au"
+EMAIL_TO       = "admin@theevolvedgym.com.au"
 
 GHL_BASE    = "https://services.leadconnectorhq.com"
 GHL_HEADERS = {
@@ -283,21 +280,24 @@ def format_email_html(convos, classifications):
 
 
 def send_email(convos, classifications):
-    """Send the triage report via Gmail SMTP."""
+    """Send the triage report via Resend API."""
     today = datetime.now().strftime("%A, %-d %B")
     html  = format_email_html(convos, classifications)
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Conversation Triage — {today}"
-    msg["From"]    = EMAIL_FROM
-    msg["To"]      = EMAIL_TO
-    msg.attach(MIMEText(html, "html"))
-
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(EMAIL_FROM, EMAIL_APP_PASSWORD)
-        server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
-    print(f"Email sent to {EMAIL_TO}.")
+    r = requests.post(
+        "https://api.resend.com/emails",
+        headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+        json={
+            "from": EMAIL_FROM,
+            "to":   [EMAIL_TO],
+            "subject": f"Conversation Triage — {today}",
+            "html": html,
+        },
+    )
+    if r.ok:
+        print(f"Email sent to {EMAIL_TO}.")
+    else:
+        raise Exception(f"{r.status_code}: {r.text}")
 
 
 def post_to_discord(messages):
