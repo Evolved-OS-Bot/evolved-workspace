@@ -360,6 +360,11 @@ def main():
     print("Classifying with Claude...")
     classifications = classify_conversations(convos)
 
+    # Hard override: SA pre-qualifications are always Important Urgent
+    for convo, cls in zip(convos, classifications):
+        if convo.get("is_sa_prequel"):
+            cls["category"] = "Important Urgent"
+
     print("Posting to Discord...")
     messages = format_discord_messages(convos, classifications)
     post_to_discord(messages)
