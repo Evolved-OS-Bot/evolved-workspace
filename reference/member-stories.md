@@ -12,7 +12,7 @@ Golden marketing material. Every story here is verified and approved. Use as the
 | Alana | London Bound | 20s | Weight Loss | 12kg, 2 dress sizes, 5 months. Back pain → RDLs 55kg. Before + after photos confirmed. | `alana-20s-6m.png` |
 | Katrina | FIFO Worker | 20s | Weight Loss / Confidence | 20kg lost, trained on-site at the mine, wanted to shop in the same stores as her friends | — |
 | Nikki | Bride | 20s | Weight Loss / Confidence | Reached goal weight, ditched binge eating for good | `nikki-20s-18m.png` |
-| Emma | Age 21 | 20s | Recomposition | Lost 1.6kg fat, gained 1kg muscle — scale barely moved | `emma-20s-6m.png` |
+| Emma | Age 27 | 20s | Recomposition | Lost 1.6kg fat, gained 1kg muscle — scale barely moved. Squat 40kg. Shoulder injury overcome. Former PT who slipped when desk job + relocation hit. | `emma-20s-6m.png` |
 | Isabelle | Gym Newbie | 20s | Get Stronger / Confidence | Never set foot in a gym → thrived through community and consistency | `isabelle-20s-12m.png` |
 | Katherine | Teacher | 30s | Weight Loss | Lost 15kg in 6 months after years of on-again-off-again attempts | `katherine-30s-6m.png` |
 | Ruth | 2 Kids | 30s | Recomposition | Was overtraining 9hrs/week with nothing to show. Cut to 3hrs, dropped 4cm off waist | — |
@@ -95,14 +95,20 @@ Nikki's wedding prep became a quest for confidence, not just a dress size. She r
 
 ---
 
-### Emma — Age 21 — 20s — Recomposition
+### Emma — Age 27 — 20s — Recomposition
 
-**Key result:** Lost 1.6kg fat, built 1kg muscle. Scale barely moved.
-**Primary driver:** Wanting to change how her body looked and felt.
+**Key result:** Lost 1.6kg fat, built 1kg muscle — scale barely moved. Squat 40kg. Shoulder injury overcome.
+**Primary driver:** Re-establishing her foundation after a breakup + relocation + desk job undid years of progress.
 
-Emma lost just 600g on the scales — but the real story was underneath. She burned 1.6kg of fat and built 1kg of muscle, reshaping her body in ways the scale could never show. Proof that body composition matters more than weight.
+Emma spent her teenage years being bullied about her weight. It fuelled comfort eating, and for a long time she didn't believe being healthy was achievable for her — or that she deserved it. Then came the day she simply could not live that way anymore. With family support, she started small: tiny changes that compounded into a lifestyle, and eventually 12kg lost over two years. She loved what it did for her life so much that she trained as a personal trainer so she could help others change the way she had changed.
 
-**Best used for:** Recomp 20s. Anti-scale messaging. Education on body composition vs weight.
+Then life hit. A breakup, a relocation, a desk job replacing years of physically active work. Bad habits crept back. She noticed months later when she stopped and looked. She knew she'd been there before and didn't doubt she could get there again — but she knew she couldn't do it the old way. Her stint at a commercial gym had burned her out from overtraining and pressure. She needed a programme she could actually sustain.
+
+She re-affirmed what she already knew: health is a lifestyle, not a gym obsession. She doesn't have to spend her life training to get results. When her own motivation dipped, the support network carried her. She squatted 40kg. She overcame a persistent shoulder injury that had been a weakness for years. And body composition changed — 1.6kg of fat gone, 1kg of muscle built — while the scale barely moved.
+
+**Voice:** Reflective, honest, self-aware. The bullying/comfort-eating backstory is powerful. Strong "you deserve it" closer. Personal trainer background gives her credibility on the lifestyle-not-obsession message.
+
+**Best used for:** Recomp 20s. Anti-scale messaging. "I've been here before and slipped" narrative. Commercial gym burnout → sustainable alternative. Shoulder/injury rehabilitation. Desk job + lifestyle change trigger. Women who don't feel they deserve to be healthy (strong objection handler).
 
 ---
 
