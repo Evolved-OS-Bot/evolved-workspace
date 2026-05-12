@@ -15,7 +15,7 @@ Golden marketing material. Every story here is verified and approved. Use as the
 | Emma | Age 27 | 20s | Recomposition | Lost 1.6kg fat, gained 1kg muscle — scale barely moved. Squat 40kg. Shoulder injury overcome. Former PT who slipped when desk job + relocation hit. | `emma-20s-6m.png` |
 | Isabelle | Gym Newbie | 20s | Get Stronger / Confidence | Never set foot in a gym → thrived through community and consistency | `isabelle-20s-12m.png` |
 | Katherine | Teacher | 30s | Weight Loss | Lost 15kg in 6 months after years of on-again-off-again attempts | `katherine-30s-6m.png` |
-| Ruth | 2 Kids | 30s | Recomposition | Was overtraining 9hrs/week with nothing to show. Cut to 3hrs, dropped 4cm off waist | — |
+| Ruth | 2 Kids | 30s | Recomposition | 10hrs+/week, nothing to show. Cut to 3hrs, 4cm off waist. But the real story: using exercise to mask deeper problems — "Finding My Self Worth Again" | — |
 | Megan | 2 Kids | 30s | Energy / Recomposition | "Someone as healthy as me shouldn't feel this way." Big unlock: eating more, getting stronger | — |
 | Charmaine | Defence | 30s | Weight Loss / Pain Relief | Chronic back pain + broken leg, lost 10kg in 6 months. No excuses | — |
 | Kat | 2 Kids | 30s | Get Stronger / Confidence | Said she might never have joined a gym without The Evolved. Gym newbie → gym confident | `kat-30s-6m.png` |
@@ -136,12 +136,20 @@ Years of on-again-off-again training felt like failure. But each attempt made Ka
 
 ### Ruth — 2 Kids — 30s — Recomposition
 
-**Key result:** Cut training from 9hrs/week to 3hrs. Dropped 4cm off her waist.
-**Primary driver:** Wanted body composition results. Was working harder than anyone and seeing nothing. Frustrated and exhausted.
+**Key result:** Cut training from 10hrs+/week to 3hrs. Dropped 4cm off her waist. Mental health improved. Built muscle. Stopped getting run down.
+**Primary driver:** Had always exercised but realised — with help — she had been using it to escape real, deeper problems. "Finding my self worth again."
 
-After her second child, Ruth was training 9 hours a week and burning out. She wanted the results she was working so hard for — but they weren't coming. She cut to 3 hours, shifted focus to recovery and nutrition, dropped 4cm off her waist — and finally found the balance she'd been chasing.
+Ruth had always been a committed exerciser. After her second child she grew unhappy with her body and ramped training up further — eventually twice a day, 5-6 days a week, 10+ hours. She bounced from program to program, diet to diet, wondering why she wasn't getting results. "I've done the detoxes, diets, cleanses and no sugar. Everything!"
 
-**Best used for:** Recomp 30s. Overtraining correction. Postnatal. Training smarter not harder.
+The real problem wasn't the type of exercise. It was that exercise had become her way of avoiding deeper issues. When her coach put the mirror up — not telling her what to do, but showing her the truth — she slowly cut back. And in the space that freed up, the real issues started to surface. It was like ripping the Band Aid off.
+
+She had been looking for a magic pill. She found it. The secret was working on the one person who could change everything: herself. Mental health improved. More energy. More time with her kids and husband. She stopped getting sick as easily. She built muscle. She dropped 4cm off her waist.
+
+Her biggest lesson: relax. Not trying to be so perfect.
+
+**Voice:** Raw, self-aware, emotionally honest. "Finding my self worth again" is the real story — not just a recomposition. Strong on the exercise addiction insight. "I have a booty now!" energy.
+
+**Best used for:** Recomp 30s. Overtraining correction. Postnatal. Training smarter not harder. Women using exercise as a coping mechanism. "I've tried everything" → the problem wasn't the program. The pressure to be perfect. Mental health through fitness.
 
 ---
 
