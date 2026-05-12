@@ -24,7 +24,7 @@ Golden marketing material. Every story here is verified and approved. Use as the
 | Karyn | 2 Kids | 40s | Weight Loss / Health | Lost 12kg, eliminated daily back pain and chronic fatigue | `karyn-40s-12m.png` |
 | Tammy | 2 Kids | 40s | Body Comp → Health | Came for body composition. Discovered strength training eliminated her adenomyosis symptoms | — |
 | Kylie | 4 Kids | 40s | Self-care / Health | First thing she'd ever done just for herself. Bloat resolved, 5kg gone, better rhythm with her kids | — |
-| Kerrie | 3 Kids | 40s | Prenatal / Postpartum Health | Fear of another premature baby drove her in. Controlled gestational diabetes, 2 dress sizes in 12 months | — |
+| Kerrie | 3 Kids | 40s | Prenatal / Postpartum Health | Couldn't sleep — contacted coach at midnight. 20 weeks pregnant, 10-month-old, gestational diabetes, high BP history, husband away. Made it to 38 weeks. Size 10 bikini postpartum. | — |
 | Tash | Night Shift Nurse | 40s | Weight Loss (medical) | Doctor's warning: lose weight or heart condition worsens. Lost 20kg in 14 months. Personal goal: ride a roller coaster | — |
 | Jules | First Timer | 40s | Recomposition / Get Stronger | Started strength training for the first time in her 40s. Wanted body composition improvements and to get stronger | — |
 | Johanna | Consistent | 40s | Get Stronger → HYROX | Most consistent member (6 days/week, 2.5 years). Community led to Spartan race, then HYROX with her eldest daughter in under 90 minutes | `johanna-hyrox-daughter-brisbane-2026.jpg` |
@@ -235,12 +235,20 @@ Four kids and a habit of putting herself last — Kylie decided to do something 
 
 ### Kerrie — 3 Kids — 40s — Prenatal / Postpartum Health
 
-**Key result:** 2 dress sizes in 12 months. Controlled gestational diabetes. Faster postnatal recovery.
-**Primary driver:** Fear of another premature baby. Gestational diabetes was the snapping point.
+**Key result:** Made it to 38 weeks (gestational diabetes + high BP history). Size 9 jeans and size 10 bikini postpartum. Fastest recovery of her pregnancies.
+**Primary driver:** Couldn't sleep one night — 20 weeks pregnant, 10-month-old at home, gestational diabetes, husband away, running a hair salon. Contacted her coach at a ridiculous hour. "I'm just going to make this happen."
 
-Kerrie's biggest fear was another premature birth. When gestational diabetes appeared, it became the moment everything changed. She committed to her health through pregnancy — and it paid off. She regained energy faster in the postnatal period, got back on top of her body, and two dress sizes followed as a byproduct of simply taking care of herself. Her goal for Christmas: a size 10 swimsuit. She nailed it.
+Kerrie had high blood pressure in her first pregnancy and was terrified of history repeating. When gestational diabetes hit at 20 weeks with her second, she had every excuse not to act: 10-month-old at home, husband away for work, sleep-deprived, working 20 hours a week in her hair salon. "Realistically every excuse which could have prevented me from starting this journey." She started anyway.
 
-**Best used for:** Prenatal/postnatal 40s. Gestational diabetes. Fear-driven health transformation. Postpartum recovery.
+Her goal going in was simple: prevent pre-term labour, control her blood pressure and gestational diabetes. She made it to 38 weeks. Then she kept going postpartum — because she didn't want to spend the rest of her life feeling unhappy with her weight. She wanted to be the fun, energetic parent she'd always pictured herself being. She wanted to teach her kids confidence — something she'd always struggled with herself.
+
+She never had a single perfect day. Never a perfect week. She craved carbs, gave in sometimes, was sleep-deprived with a 6-month-old. But exercise boosted her energy and mental capacity enough to keep going. Regular check-ins showed progress. Eventually: size 9 jeans she hadn't worn in two years. A size 10 bikini on holidays — no T-shirt needed. Gained respect for herself.
+
+Her biggest lesson: less is more. Listen to your body. Don't be so critical of yourself. She expected chicken-and-broccoli boot camp. It was the opposite.
+
+**Voice:** Honest, warm, self-deprecating. "I'm just going to make this happen" is her defining line. Strong on imperfect compliance and the "it gets easier" arc.
+
+**Best used for:** Prenatal/postnatal 40s. Gestational diabetes. High blood pressure in pregnancy. "I have every excuse not to" objection. Postpartum confidence. Fun energetic parent identity. Teaching kids confidence. Imperfect compliance is still progress.
 
 ---
 
