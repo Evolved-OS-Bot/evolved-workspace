@@ -23,6 +23,7 @@ Golden marketing material. Every story here is verified and approved. Use as the
 | Emma | 2 Kids | 30s | Recomposition / Mindset | Discovered eating more and training smarter after years of restriction | `emma-30s-2kids.png` |
 | Karyn | 2 Kids | 40s | Weight Loss / Health | Lost 12kg, eliminated daily back pain and chronic fatigue | `karyn-40s-12m.png` |
 | Tammy | 2 Kids | 40s | Body Comp → Health | Came for body composition. Discovered strength training eliminated her adenomyosis symptoms | — |
+| Bec | New Mum | 30s | Weight Loss / Postpartum | Lost baby weight in 6 months for her wedding day. Kept going after — boudoir shoot, meal prep habits, real food she looks forward to eating | `bec-postpartum-wedding-after.jpg` |
 | Kylie | 4 Kids | 40s | Self-care / Health | First thing she'd ever done just for herself. Bloat resolved, 5kg gone, better rhythm with her kids | — |
 | Kerrie | 3 Kids | 40s | Prenatal / Postpartum Health | Couldn't sleep — contacted coach at midnight. 20 weeks pregnant, 10-month-old, gestational diabetes, high BP history, husband away. Made it to 38 weeks. Size 10 bikini postpartum. | — |
 | Tash | Night Shift Nurse | 40s | Weight Loss (medical) | Doctor's warning: lose weight or heart condition worsens. Lost 20kg in 14 months. Personal goal: ride a roller coaster | — |
@@ -227,6 +228,24 @@ Surviving on 3–4 hours sleep, battling chronic fatigue and joint pain, Karyn d
 Tammy came in stressed and wanting to change how her body looked. She didn't realise the connection between her body composition and her adenomyosis. Through consistent strength training and eating well, her inflammation reduced, her painful periods disappeared entirely, and she dropped two dress sizes. A body goal led to a life-changing health discovery.
 
 **Best used for:** Health/recomp 40s. Hormonal conditions. Inflammation. Women with adenomyosis or endometriosis. Stress.
+
+---
+
+### Bec — New Mum — 30s — Weight Loss / Postpartum
+
+- **Decade:** 30s
+- **Driver:** Weight loss / postpartum recovery
+- **Duration:** 6 months (wedding deadline), then ongoing
+- **Key results:** Lost baby weight in 6 months to fit into wedding dress; continued with boudoir photoshoot goal; built lasting meal prep habits; "transformation on my terms"
+- **Quote:** "I'm not eating like a sparrow. I'm eating real food that I look forward to eating. It's really my transformation, on my terms."
+- **YouTube:** none
+- **Photo:** `bec-postpartum-wedding-after.jpg` (wedding dress — after). `bec-postpartum-wedding-before.jpg` (before).
+- **WP post ID:** 310
+- **Slug:** `/results/postpartum-wedding-weight-loss`
+
+Self-confessed lazy mum with food — used to throw things together last minute. Found that meal prep was less work than expected and changed her whole life. Not perfect, never 100% compliant. But results came and stayed. After the wedding deadline passed she kept going, setting a boudoir photoshoot as her next goal. Family benefited: husband cooks with her, habits rippled through the household.
+
+**Best used for:** Postpartum weight loss. Wedding prep. Deadline-driven motivation → sustainable habits. "I'm not a meal prep person" objection handler. Women who don't want to eat like a sparrow. Transformation on her own terms.
 
 ---
 
