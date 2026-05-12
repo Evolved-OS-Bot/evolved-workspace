@@ -42,7 +42,7 @@ while (have_posts()) {
 <!-- ─── REAL WOMEN. REAL RESULTS. ───────────────────────────────── -->
 <section style="background:#111;padding:80px 0;">
 <div style="max-width:960px;margin:0 auto;padding:0 24px;">
-<h2 style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#1a1a1a;text-align:center;margin-bottom:12px;">Real Women. Real Results.</h2>
+<h2 style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:12px;">Real Women. Real Results.</h2>
 <p style="color:#aaa;text-align:center;margin-bottom:48px;">Here&#39;s what happens when women stop guessing and start training with structure.</p>
 </div>
 <div style="padding:0 24px;">
@@ -110,9 +110,9 @@ while (have_posts()) {
 </div>
 
 <div class="carousel-card" data-goal="lose-weight" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
-<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/helen-50s-transformation.png" alt="Helen transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/helen-60s-transformation.png" alt="Helen 60s transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
 <p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Helen, Grandma</p>
-<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Moving house, state rep hockey, full-time work, and volunteering &#8212; Helen&#39;s 12 weeks were anything but ideal. She showed up anyway, made progress every session, and lost 7kg. Life will always be busy. You can still put yourself first.</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Single mum, nana, AAFC volunteer, rep hockey player. Helen had tried everything &#8212; Jenny Craig, Weight Watchers, the treadmill. Nothing stuck. At 60, she gave herself permission to put herself first. Lost 7kg in 12 weeks without stopping her life to do it.</p>
 </div>
 
 <div class="carousel-card" data-goal="bone-density" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
