@@ -66,12 +66,28 @@ Claude should not:
 │   └── railway.toml       # Railway deployment config
 ├── plans/                 # Implementation plans created by /create-plan
 ├── outputs/               # Work products and deliverables
-├── reference/             # Templates, examples, reusable patterns
+├── reference/             # Templates, implementation guides, and reusable patterns
+│   ├── avatar-ally.md                 # Ideal client avatar — demographics, psychographics, objections, tone guide
+│   ├── brand-positioning.md           # Mission, vision, core values, differentiators, brand voice & visual identity
+│   ├── product-offerings.md           # SGPT sessions, 1:1 PT, meal plans, online coaching — descriptions & USPs
+│   ├── marketing-playbook.md          # Content pillars, Instagram framework, success story template, campaign workflow
+│   ├── homepage-copy.md               # Approved copy for all homepage sections
+│   ├── homepage-implementation.md     # WordPress/Blocksy build guide (CSS, JS, CPT setup)
+│   ├── faq-library.md                 # Full FAQ library (50+ Qs, goal-tagged, live/pending status)
+│   ├── member-stories.md              # 24 member stories with decades, drivers, and blurbs
+│   ├── infographic-sarcopenia-data.md # Data + JS for sarcopenia muscle loss chart
+│   ├── infographic-frequency-data.md # Data + JS for training frequency chart
+│   └── conversion-funnel.md           # Overarching funnel strategy — waitlist flow, CTA copy rules, landing page architecture
 └── scripts/               # Automation scripts
     ├── update_metrics.py  # Reads KPI sheet → writes context/current-data.md
     ├── sheets_client.py   # Google Sheets API auth + read helper
     ├── insert_formulas.py # Writes COUNTIFS formulas to KPI tab (run --all to backfill)
-    └── patch_booking_rows.py # Writes source-breakdown formulas to KPI tab
+    ├── patch_booking_rows.py # Writes source-breakdown formulas to KPI tab
+    ├── audit-ghl-urls.py  # Scans GHL for hardcoded domain URLs (run before DNS migration)
+    ├── redirects.conf     # 301 redirect rules for blog subdomain → root domain migration
+    ├── setup_story_custom_values.py # One-time setup: creates 6 GHL location custom values for story emails (run once, save IDs to .env)
+    ├── notify_story.py    # Sends story email to matched GHL life-stage contacts + member "story is live" notification. Run after publishing a new story page. Requires GHL custom values + workflows set up first.
+    └── post_story_social.py # Posts member story to Facebook Page + Instagram Business. Uses Meta Graph API with system user token (never expires). Run after notify_story.py.
 ```
 
 **Key directories:**
@@ -100,6 +116,22 @@ Run this at the start of every session. Claude will:
 2. Summarize understanding of the user, workspace, and goals
 3. Confirm readiness to assist
 
+### /migrate-ghl-page [path-to-ghl-html]
+
+**Purpose:** Migrate a GHL funnel page to WordPress in a single pass.
+
+Runs a structured 5-phase process: full content extraction → WordPress setup verification → complete HTML build → SSH push → visual verification checklist. Encodes all lessons learned (wpautop gotchas, card layout patterns, reviews iframe resize, overlay-link pattern).
+
+Example: `/migrate-ghl-page /tmp/ghl-page.html`
+
+### /add-member-story [member details]
+
+**Purpose:** Add a new member transformation to every surface: individual story page, /results/ hub, homepage carousel, and member-stories.md.
+
+Works through 10 phases: transcript pull (if video) → story HTML → photo upload → WP Results CPT page → archive-results.php → homepage carousel → homepage.js personalisation data → member-stories.md → cache flush → story email + social post. Includes validation checklist and quick-reference tables for goal/stage slugs.
+
+Example: `/add-member-story Sarah, 34, postpartum, weight loss, lost 15kg in 6 months, YouTube: abc123, photo: sarah-30s-6m.png`
+
 ### /create-plan [request]
 
 **Purpose:** Create a detailed implementation plan before making changes.
@@ -108,17 +140,13 @@ Use when adding new functionality, commands, scripts, or making structural chang
 
 Example: `/create-plan add a competitor analysis command`
 
-### update-metrics (shell alias)
+### /update-metrics
 
-**Purpose:** Pull live KPI data from the Google Sheet and refresh `context/current-data.md`.
+**Purpose:** Pull live KPI data from the Google Sheet and refresh `context/current-data.md`, then summarise the key numbers.
 
-Run before `/prime` when you need current numbers. Requires credentials in `scripts/.env`.
+Run before or during a session when you need current numbers. Requires credentials in `scripts/.env`.
 
-```bash
-update-metrics
-# or for a test run without writing:
-python3 scripts/update_metrics.py --dry-run
-```
+Also available as a shell alias (`update-metrics`) for use outside Claude Code sessions.
 
 ### Discord bot (`#evolved-os` and `#daily-journal`)
 
@@ -126,8 +154,9 @@ python3 scripts/update_metrics.py --dry-run
 
 - **`#evolved-os`**: Send any message → bot responds with full workspace context injected
 - **`/journal`**: Summarises the day's conversation and posts to `#daily-journal`, also writes to `context/journal/YYYY-MM-DD.md`
-- Deployed on Railway (always on). Credentials stored in Railway environment variables.
-- Running `update-metrics` on desktop immediately improves the bot's next response — no redeployment needed.
+- Deployed **locally** via macOS launchd (`~/Library/LaunchAgents/com.evolved.discord-bot.plist`) — starts at login, restarts automatically on crash.
+- Running `update-metrics` on desktop immediately improves the bot's next response.
+- To restart: `launchctl unload ~/Library/LaunchAgents/com.evolved.discord-bot.plist && launchctl load ~/Library/LaunchAgents/com.evolved.discord-bot.plist`
 
 ### /implement [plan-path]
 
@@ -159,6 +188,17 @@ If yes to any, update the relevant sections. This file must always reflect the c
 - Adding a script → document its purpose and usage
 - Changing workflow patterns → update relevant documentation
 
+**What does NOT belong in CLAUDE.md:**
+
+This file is loaded into every session. Keep it lean. Do NOT add:
+
+- Page indexes, WP IDs, or slug tables — these go in `outputs/systems/website-architecture.md`
+- Tables longer than ~5 rows that are only needed for specific tasks
+- Data that is only relevant in fewer than half of sessions
+- Anything that can be looked up on demand from `outputs/`, `reference/`, or the server
+
+When in doubt: if it's a lookup table, it belongs in a reference file with a pointer here — not inline.
+
 ---
 
 ## Session Workflow
@@ -171,9 +211,52 @@ If yes to any, update the relevant sections. This file must always reflect the c
 
 ---
 
+## Website Architecture
+
+**Domain map:**
+
+| Domain | Platform | Purpose |
+|---|---|---|
+| `theevolvedgym.com.au` | WordPress / SiteGround | Homepage, blog (`/blog/`), social proof pages (`/results/`) |
+| `go.theevolvedgym.com.au` | GHL | All funnels, booking pages, SA booking (`/strength-assessment`) |
+| `links.theevolvedgym.com.au` | GHL | Short links, QR codes — unchanged |
+| `blog.theevolvedgym.com.au` | 301 → root | All traffic redirects to `theevolvedgym.com.au/blog/` |
+
+**Social proof pages:** WordPress CPT (`results`) at `/results/[goal-keyword-life-stage]`. Hub (`/results/`) uses `archive-results.php` (filterable by goal + life stage). Individual pages use `single-results.php`. Both templates in blocksy-child theme.
+
+**Page index (WP IDs, slugs, Results CPT):** `outputs/systems/website-architecture.md`
+
+**Still to build:** Nora trainer page. ~9 remaining results pages (see `outputs/systems/social-proof-pages.md`).
+
+---
+
 ## Notes
 
 - Keep context minimal but sufficient — avoid bloat
 - Plans live in `plans/` with dated filenames for history
 - Outputs are organized by type/purpose in `outputs/`
 - Reference materials go in `reference/` for reuse
+
+---
+
+## SiteGround SSH Deploy (Homepage)
+
+**WordPress location:** `/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html`
+**Homepage post ID:** 165
+**SSH alias:** `evolved-prod` (configured in `~/.ssh/config` — host, port, user, and key are stored there)
+
+**Important:** `scripts/.env` cannot be `source`d directly — `GOOGLE_KPI_SHEET_NAME=KPI's The Evolved` contains an unmatched single quote that breaks shell parsing.
+
+**Deploy pattern:**
+```bash
+# 1. SCP the file
+scp /tmp/homepage-v5.html \
+  evolved-prod:/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html
+
+# 2. Write to DB + flush caches
+ssh evolved-prod "
+  cd '/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html'
+  wp eval 'global \$wpdb; \$wpdb->update(\$wpdb->posts, [\"post_content\" => file_get_contents(\"/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html\")], [\"ID\" => 165]);'
+  wp cache flush && wp transient delete --all && wp sg purge
+"
+```
