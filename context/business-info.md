@@ -59,5 +59,19 @@ The Evolved is positioned as:
 
 Coaching quality, evidence-based practice, and retention are foundational.
 
-This file defines what the business *is*.  
+This file defines what the business *is*.
 Revenue mechanics, targets, and operational metrics live elsewhere.
+
+---
+
+## Billing Policy
+
+**All members are billed at least one week in advance.**
+
+This has direct consequences for hold and cancellation automation:
+
+- A member's billing cycle will fire up to 7 days **before** their hold start date
+- The Stripe pause must be triggered on **HS: Pre-Hold-Start Date** (Hold Start Date − 7 days), not on the Hold Start Date itself
+- **HS: Pre-Hold-Start Date** is the date payments pause — not the date the hold physically begins
+- **HS: Pre-Return Date** (Hold End Date − 7 days) is the date payments resume — this is when Stripe unpauses billing
+- Any communication referencing when payments pause or resume must use `{{contact.hs_preholdstart_date}}` and `{{contact.hs_prereturn_date}}` respectively — never `{{contact.hf_hold_start_date}}` or `{{contact.hf_hold_end_date}}` for billing dates

@@ -1,0 +1,287 @@
+# Plan: SA Pre-Qualification AI Agent
+**Created:** 2026-04-02
+**Status:** Scoped — Not Started
+**Depends on:** `2026-04-02-strength-assessment-workflow-rebuild.md` (integration points already built in)
+
+---
+
+## Objective
+
+Build a Claude-powered conversational SMS agent that replaces the manual admin pre-qualification conversation between the Goals SMS reply and the 24hr READY prompt. The agent runs the full 4-stage pre-qual script, captures structured data into GHL custom values, and generates a trainer brief before each session — with zero admin involvement.
+
+---
+
+## Problem Being Solved
+
+The current manual pre-qual process is high quality but:
+- Requires admin to be available and responsive during business hours
+- Consistency depends on the individual running the conversation
+- Trainer briefs are produced manually and inconsistently
+- No structured data is captured — knowledge lives in chat history
+
+The AI agent delivers the same quality conversation 24/7, captures everything structured, and auto-generates the trainer brief.
+
+---
+
+## How It Works
+
+```
+1. Contact replies to SMS Goals in GHL
+2. GHL workflow fires webhook → POST to agent service
+   Payload: contact_id, contact_name, contact_phone, goals_reply, appointment_datetime
+3. Agent service calls Claude API
+   - System prompt: pre-qual script + persona + data extraction rules
+   - Message: contact's goals reply
+4. Claude generates response → agent sends SMS via GHL Conversations API
+5. Contact replies again → GHL inbound message webhook fires → agent receives
+6. Conversation continues turn-by-turn until agent determines pre-qual complete
+7. Claude extracts structured data → agent writes SA: custom values to GHL
+8. Agent adds tag: pre-qual complete → GHL workflow resumes
+9. Night before session → agent generates trainer brief → sends as internal GHL notification
+```
+
+---
+
+## Architecture
+
+### Service
+- **Language:** Python
+- **Framework:** Flask (lightweight webhook receiver)
+- **Deployment:** Railway (same platform as Discord bot)
+- **Process:** Single always-on web service
+
+### State Management
+- Conversation history stored per contact in SQLite (local, persistent across restarts)
+- Key: GHL contact ID
+- Stores: message history (role/content), pre-qual stage, extracted fields so far
+- Cleanup: archive conversations older than 90 days
+
+### Inbound SMS Routing
+GHL fires a webhook on every inbound message from a contact. The agent needs to:
+1. Receive the webhook
+2. Check if this contact has an active pre-qual conversation in progress
+3. If yes → continue the conversation
+4. If no → ignore (message handled by GHL normally)
+
+This means the agent only intercepts messages for contacts in an active pre-qual session.
+
+### Conversation Termination
+Claude is instructed to respond with a structured JSON block when all required fields are gathered:
+
+```json
+{
+  "conversation_complete": true,
+  "extracted": {
+    "primary_goal": "...",
+    "weight_loss_target": "...",
+    "commitment_score": 8,
+    "medical_conditions": "...",
+    "medications": "...",
+    "injuries": "...",
+    "movements_to_avoid": "...",
+    "training_history": "structured",
+    "pt_experience": true,
+    "group_experience": false,
+    "last_trained": "6 months ago",
+    "support_preference": "1:1",
+    "obstacles": "...",
+    "readiness": "high"
+  },
+  "final_sms": "Great — we have everything we need. Your trainer will be fully prepared for your assessment. See you soon!"
+}
+```
+
+The service parses this, writes values to GHL, sends the final SMS, and adds the `pre-qual complete` tag.
+
+---
+
+## Claude System Prompt (draft)
+
+```
+You are a pre-qualification assistant for The Evolved, an all-female personal training gym in Australia. You are conducting a friendly SMS pre-qualification conversation with a woman who has just booked a Strength Assessment.
+
+Your goal is to run through the 4-stage pre-qualification script below, gathering all required information before their session. You are warm, professional, and direct — not robotic. You reference what they say back to them. You never interrogate — you guide.
+
+PERSONA:
+- You are from The Evolved team
+- Warm, knowledgeable, confident
+- Australian English — no emojis, clean text only
+- Short SMS-appropriate messages (1-3 sentences max per message)
+
+STAGE 1 — ACKNOWLEDGE & ANCHOR
+Read their goals reply. Acknowledge specifically what they said. Highlight what the Strength Assessment will reveal for their specific situation. If their reply is vague, ask one clarifying question before moving on.
+
+STAGE 2 — CONTEXT GATHERING (work through in order, skip if already answered)
+A. GOALS
+- Which of your goals is most important to you right now?
+- Are you wanting to lose more than 5kg or less than 5kg? (if weight loss mentioned)
+- Is the strength goal coming from a specific feeling or situation?
+- On a scale of 1-10, how committed are you to changing this right now?
+
+B. MEDICAL (only if medical condition disclosed)
+- Are you on any medication for [condition] that affects your blood pressure, heart rate or physical activity?
+- Are symptoms currently flared up or under control?
+
+C. INJURY (only if injury disclosed)
+- Are there any movements you've been told to avoid?
+- How long have you had this injury? When did it first occur?
+
+D. EXERCISE HISTORY
+- Are you currently training or have you strength trained before?
+- Was that structured (with a coach/program) or self-guided?
+- Any 1:1 PT or group training experience?
+- When did you last train consistently?
+
+E. SUPPORT PREFERENCE
+- Do you think you need 1:1 support, a group environment, or a bit of both?
+
+F. OBSTACLES & READINESS
+- If you were offered a spot after your assessment, would you be in a position to get started — or is there anything coming up that might get in the way?
+
+STAGE 3 — PRE-FRAME
+Once data is gathered, send this (adapt naturally to the conversation):
+"Just so you know what to expect — the Strength Assessment isn't a gym tour or a free trial. It's a structured evaluation where we measure your current strength, mobility and movement quality. We'll show you exactly where you're strong and where you need attention. If we believe we can help you, we'll map out your next step from there."
+
+STAGE 4 — COMPLETE
+When all required fields are gathered, respond with a JSON block (not visible to the contact) plus a final SMS message:
+{ "conversation_complete": true, "extracted": { ... }, "final_sms": "..." }
+
+Required fields before completing: primary_goal, commitment_score, training_history, support_preference, obstacles.
+Optional (capture if disclosed): medical_conditions, medications, injuries, movements_to_avoid, weight_loss_target.
+```
+
+---
+
+## GHL Custom Values to Create
+
+All in a new folder: **`2.2 SA Pre-Qual`**
+
+| Field Name | Type | Notes |
+|---|---|---|
+| SA: Primary Goal | TEXT | Free text from conversation |
+| SA: Weight Loss Target | RADIO | >5kg / <5kg / Not applicable |
+| SA: Commitment Score | NUMERICAL | 1–10 |
+| SA: Medical Conditions | TEXT | Free text |
+| SA: Medications | TEXT | Free text |
+| SA: Injuries | TEXT | Free text |
+| SA: Movements to Avoid | TEXT | Free text |
+| SA: Training History | RADIO | Structured / Self-guided / None |
+| SA: PT Experience | RADIO | Yes / No |
+| SA: Group Experience | RADIO | Yes / No |
+| SA: Last Trained | TEXT | Free text |
+| SA: Support Preference | RADIO | 1:1 / Group / Hybrid |
+| SA: Obstacles | TEXT | Free text |
+| SA: Readiness | RADIO | High / Medium / Low |
+| SA: Pre-Qual Conversation | LARGE_TEXT | Full conversation transcript |
+
+**Tags (must exist in GHL):**
+- `pre-qual complete`
+- `pre-qual skipped`
+
+---
+
+## Trainer Brief Format
+
+Auto-generated by Claude from captured custom values, sent as GHL internal notification to assigned coach before session:
+
+```
+SA TRAINER BRIEF — [Contact Name] — [Appointment Date/Time]
+
+GOAL: [SA: Primary Goal]
+Weight loss target: [SA: Weight Loss Target]
+Commitment: [SA: Commitment Score]/10
+
+TRAINING HISTORY: [SA: Training History]
+PT experience: [SA: PT Experience] | Group: [SA: Group Experience]
+Last trained: [SA: Last Trained]
+
+HEALTH:
+Medical: [SA: Medical Conditions]
+Medications: [SA: Medications]
+Injuries: [SA: Injuries]
+Avoid: [SA: Movements to Avoid]
+
+SUPPORT PREFERENCE: [SA: Support Preference]
+OBSTACLES: [SA: Obstacles]
+READINESS: [SA: Readiness]
+```
+
+---
+
+## GHL Webhook Setup
+
+Two webhooks needed in GHL:
+
+**Webhook 1 — Pre-Qual Start (fires from workflow)**
+- Trigger: After SMS Goals reply received
+- Action: Custom Webhook in GHL workflow
+- Endpoint: `https://[agent-service]/prequalification/start`
+- Payload: `{ contact_id, contact_name, contact_phone, goals_reply, appointment_datetime }`
+
+**Webhook 2 — Inbound Message (fires on every inbound SMS)**
+- Trigger: GHL Settings → Integrations → Webhooks → `InboundMessage`
+- Endpoint: `https://[agent-service]/prequalification/inbound`
+- Payload: GHL standard inbound message schema
+- Agent checks: is this contact in an active pre-qual session? If no → ignore.
+
+---
+
+## Build Order
+
+| Step | Task | Status |
+|---|---|---|
+| 1 | Create GHL custom field folder `2.2 SA Pre-Qual` and all SA: fields | ⬜ To Do |
+| 2 | Create `pre-qual complete` and `pre-qual skipped` tags in GHL | ⬜ To Do |
+| 3 | Set up Railway service — Flask app skeleton, health check endpoint | ⬜ To Do |
+| 4 | Build SQLite conversation state store | ⬜ To Do |
+| 5 | Build `/prequalification/start` endpoint — receives webhook, starts Claude conversation, sends first SMS | ⬜ To Do |
+| 6 | Build `/prequalification/inbound` endpoint — receives reply, continues Claude conversation | ⬜ To Do |
+| 7 | Build conversation completion handler — parse JSON, write GHL custom values, add tag | ⬜ To Do |
+| 8 | Build trainer brief generator — reads custom values, generates brief, sends internal notification | ⬜ To Do |
+| 9 | Add webhook 1 to GHL workflow (after Goals SMS reply) | ⬜ To Do |
+| 10 | Add webhook 2 in GHL Settings (inbound message listener) | ⬜ To Do |
+| 11 | Test end-to-end with a real contact (Peter as test subject) | ⬜ To Do |
+| 12 | Monitor first 10 live conversations — tune system prompt as needed | ⬜ To Do |
+
+---
+
+## Dependencies
+
+- GHL API Private Integration Token (PIT) — already in `scripts/.env`
+- Claude API key — needed, get from Anthropic console
+- Railway account — already used for Discord bot
+- GHL `2. Strength Assessment` workflow with webhook step + `pre-qual complete` tag wait (see rebuild plan)
+
+---
+
+## Unsure Escalation — Architectural Requirement
+
+When the agent encounters a situation not covered by the SOP, it must:
+
+1. Pause — hold the prospect's conversation without replying
+2. Notify Peter via Discord (dedicated escalation channel or DM) with context + suggested options
+3. Wait for Peter's Discord reply
+4. Draft a new Coaching Note from Peter's guidance
+5. Confirm the draft rule with Peter via Discord before saving
+6. Write the confirmed rule to `outputs/systems/sa-prequalification-sop.md` (Coaching Notes section)
+7. Send the approved reply to the prospect via GHL
+
+**Implementation requirements:**
+- Agent needs a Discord webhook or bot integration to post escalation messages
+- Agent needs write access to `sa-prequalification-sop.md` (local file or GitHub API)
+- Peter's Discord reply triggers the agent to resume — requires a listener (local Discord bot `on_message` handler in `#prequal-escalations` channel, or similar)
+- Holding message sent to prospect if delay exceeds ~5 minutes during business hours
+
+**This makes the SOP self-improving:** every novel conversation that triggers an escalation adds a new rule. The system gets better with every edge case.
+
+---
+
+## Notes
+
+- The inbound webhook fires on ALL inbound messages — the agent must only respond to contacts with an active pre-qual session. All others are ignored.
+- SQLite is sufficient for current volume. If contacts > 1000/month sustained, consider Postgres.
+- Claude model to use: `claude-sonnet-4-6` — best balance of quality and cost for conversational use.
+- Token costs at current volume (estimated 30 conversations/month, ~20 messages each): minimal — <$5/month.
+- The pre-qual SOP lives at `outputs/systems/sa-prequalification-sop.md` — this is the system prompt source. Updates to the SOP are reflected immediately without redeployment.
+- Conversation transcripts stored in `SA: Pre-Qual Conversation` custom field for audit and coach review.
+- **Website profile data (SA: Website Goal / Decade / Experience) is context, not a substitute for conversation.** Even if these fields are pre-populated from the homepage URL params, the bot must still ask about and clarify goals through the conversation. The website selection is low-friction and self-reported — the bot conversation is where intent is confirmed, nuanced, and made actionable. `SA: Primary Goal` (from conversation) is the authoritative field; `SA: Website Goal` is a useful signal for the coach to compare stated vs. explored intent.

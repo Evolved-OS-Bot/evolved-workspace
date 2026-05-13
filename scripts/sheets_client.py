@@ -16,28 +16,34 @@ load_dotenv(Path(__file__).parent / ".env")
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
 
+SCRIPTS_DIR = Path(__file__).parent
+
+
 def get_sheets_service():
     creds_file = os.environ["GOOGLE_SHEETS_CREDENTIALS_FILE"]
+    creds_path = Path(creds_file) if Path(creds_file).is_absolute() else SCRIPTS_DIR / creds_file
     creds = service_account.Credentials.from_service_account_file(
-        creds_file, scopes=SCOPES
+        str(creds_path), scopes=SCOPES
     )
     return build("sheets", "v4", credentials=creds)
 
 
-def read_sheet(sheet_name, cell_range):
+def read_sheet(sheet_name, cell_range, formatted=False):
     """
     Reads a range from the spreadsheet.
     Returns list of rows (each row is a list of cell values).
+    Pass formatted=True to get display strings instead of raw values.
     """
     service = get_sheets_service()
     spreadsheet_id = os.environ["GOOGLE_SPREADSHEET_ID"]
+    render_option = "FORMATTED_VALUE" if formatted else "UNFORMATTED_VALUE"
     result = (
         service.spreadsheets()
         .values()
         .get(
             spreadsheetId=spreadsheet_id,
             range=f"'{sheet_name}'!{cell_range}",
-            valueRenderOption="UNFORMATTED_VALUE",
+            valueRenderOption=render_option,
         )
         .execute()
     )
@@ -54,6 +60,52 @@ def serial_to_date(val):
     except (ValueError, TypeError):
         pass
     return None
+
+
+def read_ytd_revenue():
+    """Read the YTD cash total from cell C106 of the KPI sheet."""
+    rows = read_sheet("KPI's The Evolved", "C106:C106")
+    try:
+        val = rows[0][0]
+        return float(str(val).replace("$", "").replace(",", ""))
+    except (IndexError, ValueError, TypeError):
+        return None
+
+
+def read_appointments_this_week():
+    """
+    Read this week's appointments from the Appointments tab.
+    Returns a list of dicts sorted by appointment datetime.
+    Week runs Monday to Sunday.
+    """
+    today  = date.today()
+    monday = today - timedelta(days=today.weekday())
+    sunday = monday + timedelta(days=6)
+
+    rows = read_sheet("Appointments", "A2:K500", formatted=True)
+    appointments = []
+    for row in rows:
+        if len(row) < 8:
+            continue
+        apt_date_str = str(row[7]).strip()
+        if not apt_date_str:
+            continue
+        try:
+            apt_dt = datetime.strptime(apt_date_str, "%A, %B %d, %Y %H:%M")
+            if monday <= apt_dt.date() <= sunday:
+                appointments.append({
+                    "first_name":   str(row[1]).strip() if len(row) > 1 else "",
+                    "last_name":    str(row[2]).strip() if len(row) > 2 else "",
+                    "source":       str(row[6]).strip() if len(row) > 6 else "",
+                    "datetime":     apt_dt,
+                    "sales_person": str(row[8]).strip() if len(row) > 8 else "",
+                    "pre_qual":     str(row[9]).strip() if len(row) > 9 else "",
+                    "showed":       str(row[10]).strip() if len(row) > 10 else "",
+                })
+        except (ValueError, IndexError):
+            continue
+
+    return sorted(appointments, key=lambda x: x["datetime"])
 
 
 def find_current_week_col(rows):

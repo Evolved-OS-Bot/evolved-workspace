@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
+*.log
+discord_bot/sent_reports.json
+scripts/update-metrics.log

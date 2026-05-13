@@ -126,12 +126,12 @@ FORMULAS = {
     80: "=COUNTIFS(Sales!$A:$A,\">=\"&F$1-7,Sales!$A:$A,\"<\"&F$1)",
 
     # ── Cancels ───────────────────────────────────────────────────────────
-    89: "=COUNTIFS('SGPT Cancellations'!$A:$A,\">=\"&F$1-7,'SGPT Cancellations'!$A:$A,\"<\"&F$1)",
-    90: "=COUNTIFS('PT Cancellations'!$A:$A,\">=\"&F$1-7,'PT Cancellations'!$A:$A,\"<\"&F$1)",
+    90: "=COUNTIFS('SGPT Cancellations'!$A:$A,\">=\"&F$1-7,'SGPT Cancellations'!$A:$A,\"<\"&F$1)",
+    91: "=COUNTIFS('PT Cancellations'!$A:$A,\">=\"&F$1-7,'PT Cancellations'!$A:$A,\"<\"&F$1)",
 
     # ── Gained / Lost ─────────────────────────────────────────────────────
-    93: "=F70-F89",
-    94: "=F77-F90",
+    94: "=F70-F90",
+    95: "=F77-F91",
 }
 
 
@@ -203,7 +203,7 @@ def get_all_weekly_cols(service):
 
 
 # Rows protected in the sheet — skip to avoid 400 errors
-PROTECTED_ROWS = {17, 25, 35, 41, 42, 52, 55, 60, 61, 62, 63, 70, 77, 78, 79, 80, 89, 93, 94}
+PROTECTED_ROWS = {17, 25, 35, 41, 42, 52, 55, 60, 61, 62, 63, 70, 77, 78, 79, 80, 94, 95}
 
 
 def build_requests_for_col(sheet_id, col_idx):
@@ -226,7 +226,8 @@ def build_requests_for_col(sheet_id, col_idx):
              .replace("F70",  f"{col_letter}70")
              .replace("F77",  f"{col_letter}77")
              .replace("F89",  f"{col_letter}89")
-             .replace("F90",  f"{col_letter}90"))
+             .replace("F90",  f"{col_letter}90")
+             .replace("F91",  f"{col_letter}91"))
         requests.append({
             "updateCells": {
                 "range": {

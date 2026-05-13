@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
 stripe_handler/app.py
-Flask webhook handler — receives POST from GHL on Pre-Hold-Start Date.
+Flask webhook handler for GHL → Stripe automation.
 
-What it does:
-  1. Validates payload (email, hold_start_date, hold_end_date required)
-  2. Looks up Stripe customer by email
-  3. Gets active subscription
-  4. Calculates and applies overlap credit if billing period extends past hold start date
-  5. Pauses subscription with behavior=void, resumes on Pre-Return Date (hold_end_date - 7 days)
-  6. Logs everything
+Endpoints:
+  POST /stripe/pause-hold    — fires on Pre-Hold-Start Date (Hold Start Date - 7 days)
+  POST /stripe/cancel        — fires on cancellation form submission (Membership or PT)
 
-Billing policy: all members pay 1 week in advance. This webhook fires on
-Pre-Hold-Start Date (Hold Start Date - 7 days) to intercept the advance payment.
-Billing resumes on Pre-Return Date (Hold End Date - 7 days) so the payment
-covering the return week fires on time.
+Hold logic:
+  Pauses subscription with behavior=void, applies overlap credit for any pre-paid
+  days during the hold, resumes billing on Pre-Return Date (Hold End Date - 7 days).
+
+Cancellation logic:
+  Receives notice_end_date from GHL (CS: Notice End Date field). Finds the last
+  scheduled payment within that notice period, then sets cancel_at to the end of
+  that billing period (last_payment_date + interval). Access ends when that period closes.
 """
 
 import os
@@ -158,6 +158,89 @@ def pause_hold():
     )
 
     return jsonify({"status": "ok"}), 200
+
+
+@app.route("/stripe/cancel", methods=["POST"])
+def cancel_membership():
+    data = request.get_json(silent=True) or {}
+
+    # 1. Validate payload
+    email = data.get("email", "").strip()
+    notice_end_str = data.get("notice_end_date", "").strip()
+    contact_name = data.get("contact_name", "Unknown")
+    cancellation_type = data.get("cancellation_type", "")
+
+    if not email or not notice_end_str:
+        log.warning(f"Missing required fields — payload: {data}")
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        notice_end_date = parse_date(notice_end_str)
+    except ValueError as e:
+        log.warning(f"Date parse error: {e} — payload: {data}")
+        return jsonify({"error": str(e)}), 400
+
+    # 2. Look up Stripe customer by email
+    customers = stripe.Customer.list(email=email, limit=1)
+    if not customers.data:
+        log.error(
+            f"ADMIN ALERT — Stripe customer not found: {contact_name} ({email}) | "
+            f"Cancellation type: {cancellation_type} | Notice end: {notice_end_date} | "
+            f"Manual Stripe cancellation required."
+        )
+        return jsonify({"status": "no_customer"}), 200
+
+    customer = customers.data[0]
+    customer_id = customer.id
+
+    # 3. Get active subscription
+    subscriptions = stripe.Subscription.list(
+        customer=customer_id, status="active", limit=1
+    )
+    if not subscriptions.data:
+        log.error(
+            f"ADMIN ALERT — No active subscription: {contact_name} ({email}) | "
+            f"Cancellation type: {cancellation_type} | "
+            f"Manual cancellation required."
+        )
+        return jsonify({"status": "no_subscription"}), 200
+
+    subscription = subscriptions.data[0]
+    sub_id = subscription.id
+
+    # 4. Calculate cancel_at
+    # Find the last payment date within the 30-day notice period, then set
+    # cancel_at to the end of that billing period (last_payment_date + interval).
+    # Policy: member pays until their last scheduled payment within notice period;
+    # access ends when that period closes.
+    period_start_ts = subscription["current_period_start"]
+    current_period_start = datetime.fromtimestamp(period_start_ts, tz=timezone.utc).date()
+    interval_days = get_interval_days(subscription)
+
+    days_elapsed = (notice_end_date - current_period_start).days
+    num_periods = max(0, days_elapsed // interval_days)
+    last_payment_date = current_period_start + timedelta(days=num_periods * interval_days)
+    cancel_date = last_payment_date + timedelta(days=interval_days)
+
+    cancel_at_ts = int(
+        datetime.combine(cancel_date, datetime.min.time())
+        .replace(tzinfo=timezone.utc)
+        .timestamp()
+    )
+
+    # 5. Schedule cancellation
+    stripe.Subscription.modify(sub_id, cancel_at=cancel_at_ts)
+
+    log.info(
+        f"CANCELLATION SCHEDULED: {contact_name} ({email}) | "
+        f"sub={sub_id} | "
+        f"notice_end={notice_end_date} | "
+        f"last_payment={last_payment_date} | "
+        f"cancel_at={cancel_date} | "
+        f"cancellation_type={cancellation_type}"
+    )
+
+    return jsonify({"status": "ok", "cancel_at": str(cancel_date)}), 200
 
 
 @app.route("/health", methods=["GET"])

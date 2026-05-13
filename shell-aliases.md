@@ -38,7 +38,7 @@ Launches Claude Code with permission prompts disabled, then runs `/prime`. Claud
 ### `update-metrics` — Refresh Live Business Data
 
 ```bash
-alias update-metrics='cd ~/Downloads/claude-workspace-evolved && python3 scripts/update_metrics.py'
+alias update-metrics='cd ~/evolved-workspace && .venv/bin/python3 scripts/update_metrics.py'
 ```
 
 Reads the current week's column from the Google Sheet KPI tracker and rewrites `context/current-data.md`. Run this before starting a session to ensure Claude has current numbers during `/prime`.

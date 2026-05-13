@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>May 2026 — Sales Incentive</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .page {
+    max-width: 680px;
+    width: 100%;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #e43388;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+  .header p {
+    font-size: 1rem;
+    color: #999;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 16px;
+  }
+
+  /* Every session counts */
+  .individual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .individual-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .individual-card .amount {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #e43388;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .individual-card .label {
+    font-size: 0.9rem;
+    color: #bbb;
+    line-height: 1.4;
+  }
+  .individual-card .sublabel {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 6px;
+  }
+
+  /* Team bonus */
+  .team-section {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .team-header {
+    background: #1a0e1a;
+    border-bottom: 1px solid #2a1a2a;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .team-header .team-icon {
+    font-size: 1.6rem;
+  }
+  .team-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .team-header p {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
+  }
+  .tier {
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .tier + .tier {
+    border-top: 1px solid #1e1e1e;
+  }
+  .tier-left .target {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+  .tier-left .target span {
+    color: #e43388;
+  }
+  .tier-left .context {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 6px;
+  }
+  .tier-right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .tier-right .bonus-total {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #e43388;
+  }
+  .tier-right .bonus-each {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 4px;
+  }
+  .tier.stretch {
+    background: #0f0f0f;
+  }
+  .tier.stretch .tier-left .target {
+    color: #fff;
+  }
+  .tier.stretch .stretch-badge {
+    display: inline-block;
+    background: #e43388;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  /* Example earnings */
+  .example-section {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+  }
+  .example-section h3 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #bbb;
+    margin-bottom: 20px;
+  }
+  .example-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #1a1a1a;
+    font-size: 0.9rem;
+  }
+  .example-row:last-child {
+    border-bottom: none;
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .example-row .desc { color: #999; }
+  .example-row .val { color: #fff; font-weight: 600; }
+  .example-row.total .desc { color: #fff; font-weight: 700; }
+  .example-row.total .val { color: #e43388; font-size: 1.1rem; font-weight: 800; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #444;
+    line-height: 1.6;
+  }
+  .footer strong {
+    color: #666;
+  }
+
+  @media print {
+    body { background: #fff; color: #111; padding: 20px; }
+    .page { max-width: 100%; }
+    .individual-card { background: #f5f5f5; border-color: #ddd; }
+    .individual-card .amount { color: #c0206e; }
+    .team-section { border-color: #ddd; }
+    .team-header { background: #f0e8f0; border-color: #ddd; }
+    .tier-right .bonus-total { color: #c0206e; }
+    .example-section { background: #f9f9f9; border-color: #ddd; }
+    .example-row.total .val { color: #c0206e; }
+    .header .eyebrow { color: #c0206e; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="eyebrow">The Evolved — May 2026</div>
+    <h1>Your Month.<br>Your Earn.</h1>
+    <p>Every assessment you show up for, every client you convert — it pays. Here's exactly what's on the table this month.</p>
+  </div>
+
+  <!-- Individual bonuses -->
+  <div class="section-label">Every session, every sale</div>
+  <div class="individual-grid">
+    <div class="individual-card">
+      <div class="amount">$10</div>
+      <div class="label">Per strength assessment attended</div>
+      <div class="sublabel">Paid to whoever ran the session</div>
+    </div>
+    <div class="individual-card">
+      <div class="amount">$60</div>
+      <div class="label">Per new client sale</div>
+      <div class="sublabel">Paid to whoever closed the sale</div>
+    </div>
+  </div>
+
+  <!-- Team bonus -->
+  <div class="section-label">May team challenge — shared bonus</div>
+  <div class="team-section">
+    <div class="team-header">
+      <div class="team-icon">🤝</div>
+      <div>
+        <h2>Hit the target together, share the reward</h2>
+        <p>Both of you benefit — the more you support each other, the more you earn.</p>
+      </div>
+    </div>
+    <div class="tier">
+      <div class="tier-left">
+        <div class="target"><span>10</span> sales in May</div>
+        <div class="context">Solid month — better than average without the full team here</div>
+      </div>
+      <div class="tier-right">
+        <div class="bonus-total">$500</div>
+        <div class="bonus-each">$250 each</div>
+      </div>
+    </div>
+    <div class="tier stretch">
+      <div class="tier-left">
+        <div class="target"><span>20</span> sales in May <span class="stretch-badge">Stretch</span></div>
+        <div class="context">Best non-January month on record — exceptional result</div>
+      </div>
+      <div class="tier-right">
+        <div class="bonus-total">$1,000</div>
+        <div class="bonus-each">$500 each</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What a strong month looks like -->
+  <div class="section-label">What a strong month looks like — per person</div>
+  <div class="example-section">
+    <h3>Example: 12 assessments attended · 6 sales closed · Team hits 10 sales</h3>
+    <div class="example-row">
+      <span class="desc">12 assessments × $10</span>
+      <span class="val">$120</span>
+    </div>
+    <div class="example-row">
+      <span class="desc">6 sales × $60</span>
+      <span class="val">$360</span>
+    </div>
+    <div class="example-row">
+      <span class="desc">Team bonus (10 sales hit) — your share</span>
+      <span class="val">$250</span>
+    </div>
+    <div class="example-row total">
+      <span class="desc">Total extra earnings</span>
+      <span class="val">$730</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Mid-month checkpoint:</strong> If you're at 5+ sales by 15 May, you're on track for the team bonus.<br>
+    Keep each other accountable — your results are connected.
+  </div>
+
+</div>
+</body>
+</html>
