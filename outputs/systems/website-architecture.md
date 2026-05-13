@@ -5,6 +5,30 @@
 
 ---
 
+## SSH Deploy Reference
+
+**WordPress root:** `/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html`
+**SSH alias:** `evolved-prod` (configured in `~/.ssh/config`)
+**Homepage post ID:** 165
+
+**Standard deploy pattern:**
+```bash
+# 1. SCP the file
+scp /tmp/homepage-v5.html \
+  evolved-prod:/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html
+
+# 2. Write to DB + flush caches
+ssh evolved-prod "
+  cd '/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html'
+  wp eval 'global \$wpdb; \$wpdb->update(\$wpdb->posts, [\"post_content\" => file_get_contents(\"/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html\")], [\"ID\" => 165]);'
+  wp cache flush && wp transient delete --all && wp sg purge
+"
+```
+
+**Note:** `scripts/.env` cannot be `source`d directly — `GOOGLE_KPI_SHEET_NAME=KPI's The Evolved` contains an unmatched single quote that breaks shell parsing.
+
+---
+
 ## Domain Map
 
 | Domain | Platform | Purpose |

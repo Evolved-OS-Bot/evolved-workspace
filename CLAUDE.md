@@ -239,24 +239,8 @@ When in doubt: if it's a lookup table, it belongs in a reference file with a poi
 
 ---
 
-## SiteGround SSH Deploy (Homepage)
+## SiteGround SSH Deploy
 
-**WordPress location:** `/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html`
-**Homepage post ID:** 165
-**SSH alias:** `evolved-prod` (configured in `~/.ssh/config` — host, port, user, and key are stored there)
-
-**Important:** `scripts/.env` cannot be `source`d directly — `GOOGLE_KPI_SHEET_NAME=KPI's The Evolved` contains an unmatched single quote that breaks shell parsing.
-
-**Deploy pattern:**
-```bash
-# 1. SCP the file
-scp /tmp/homepage-v5.html \
-  evolved-prod:/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html
-
-# 2. Write to DB + flush caches
-ssh evolved-prod "
-  cd '/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html'
-  wp eval 'global \$wpdb; \$wpdb->update(\$wpdb->posts, [\"post_content\" => file_get_contents(\"/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html/homepage-v5.html\")], [\"ID\" => 165]);'
-  wp cache flush && wp transient delete --all && wp sg purge
-"
-```
+**WordPress root:** `/home/u2424-sxatvnipapmi/www/blog.theevolvedgym.com.au/public_html`
+**SSH alias:** `evolved-prod` · **Homepage post ID:** 165
+**Deploy pattern + notes:** `outputs/systems/website-architecture.md`
