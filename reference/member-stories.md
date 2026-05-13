@@ -370,6 +370,90 @@ Diagnosed with osteoporosis, Eleni stepped up from Pilates to strength training 
 
 ---
 
+### Belinda — 50s — Get Stronger / Frozen Shoulder Rehabilitation
+
+- **Decade:** 50s
+- **Driver:** Frozen shoulder (bicipital tendinitis) — had steroid injection, knew she needed strength or it would recur
+- **Duration:** Ongoing
+- **Key results:** Lifted 35kg (from barely holding a glass of water); frozen shoulder rehabilitated; pegging washing, moving tonnes of gravel independently
+- **Quote:** "I just wanted to hold a glass of water in my hand. I did 35 kilos last week. It was awesome."
+- **YouTube:** CsICP4wSMG0
+- **Photo:** none
+- **WP post ID:** 313
+- **Slug:** `/results/fifties-strength-frozen-shoulder-rehabilitation`
+
+---
+
+### Orlagh — 20s — Get Stronger / First-Timer
+
+- **Decade:** 20s
+- **Driver:** Lifestyle change; wanted a female-only safe space to learn from zero
+- **Duration:** Ongoing
+- **Key results:** Built from a complete baseline (no gym, no sports, no lingo) to confident self-directed training
+- **Quote:** "I started from a baseline of nothing. Having that safe space to grow and to learn — that's how I've been able to start and then grow from there."
+- **YouTube:** WY01XSdmevk
+- **Photo:** none
+- **WP post ID:** 314
+- **Slug:** `/results/twenties-strength-first-timer-safe-space`
+
+---
+
+### Peta — 40s — Recomposition / Daily Habit
+
+- **Decade:** 40s
+- **Driver:** Wanted to do more strength training; referred by Johanna
+- **Duration:** 9 months
+- **Key results:** Body recomposition; almost-daily training habit; "daily ritual" — the best way to start the day
+- **Quote:** "It's a little bit like a daily ritual. I just keep coming back — pretty much almost every day. It's the best way to start the day."
+- **YouTube:** 15q1XPdx1PU
+- **Photo:** none
+- **WP post ID:** 315
+- **Slug:** `/results/forties-strength-recomposition-daily-ritual`
+
+---
+
+### Tess — 30s — Get Stronger / Desk Worker
+
+- **Decade:** 30s
+- **Driver:** Sedentary desk job; worried about posture and how her body felt
+- **Duration:** 2+ years
+- **Key results:** 75kg deadlift PB; 37.5kg bench PB; drove from Ipswich for a year rather than quit
+- **Quote:** "I tell all my friends: if they want to see their body change quickly, stop running and lift heavy weights."
+- **YouTube:** O-ToRNZwB1w
+- **Photo:** none
+- **WP post ID:** 316
+- **Slug:** `/results/thirties-strength-deadlift-desk-worker`
+
+---
+
+### Laura — 20s — Get Stronger / Martial Arts / Mental Health
+
+- **Decade:** 20s
+- **Driver:** Needed more physicality for 8 years of martial arts training; also wanted something else in her life
+- **Duration:** 10 months
+- **Key results:** Strength doubled; cardiovascular recovery slashed from minutes to seconds; mental health significantly improved
+- **Quote:** "I leave every session feeling better than when I walked in. The coaches genuinely care about everyone that walks through the door. It's crazy."
+- **YouTube:** G2vXxlVJ0nk
+- **Photo:** none
+- **WP post ID:** 317
+- **Slug:** `/results/twenties-strength-martial-arts-mental-health`
+
+---
+
+### Sophie — 40s — Get Stronger / Career Change
+
+- **Decade:** 40s
+- **Driver:** Late-career transition to landscaping — needed to build functional, occupational strength
+- **Duration:** Ongoing
+- **Key results:** Farmers carries 2×20kg; built grip strength, posterior chain, and endurance for physically demanding work
+- **Quote:** "She didn't just change careers. She built the body to do it."
+- **YouTube:** ATNysZlwUvg (no dialogue — visual story)
+- **Photo:** none
+- **WP post ID:** 318
+- **Slug:** `/results/forties-strength-career-change-landscaping`
+
+---
+
 ## Profile Panel Mapping — Results Curve
 
 The right story for each goal × decade combination. Chosen based on primary goal match, confirmed decade, and strength of narrative.
@@ -379,7 +463,7 @@ The right story for each goal × decade combination. Chosen based on primary goa
 | Lose Weight | Katrina | Katherine | Karyn | Vicky | Helen |
 | Lose Fat & Gain Muscle | Monique | Ruth | Jules | Vicky | Eleni |
 | Stronger Bones | Eleni | Eleni | Eleni | Eleni | Eleni |
-| Get Stronger | Isabelle | Leisa | Jules | Vicky | Eleni |
+| Get Stronger | Isabelle | Leisa | Jules | Belinda | Eleni |
 | Train for HYROX | Johanna | Johanna | Johanna | Johanna | Johanna |
 
 ---

@@ -240,8 +240,14 @@ All homepage CTAs link to `go.theevolvedgym.com.au/strength-assessment`.
 | Michelle — strength 60s | 273 | `over-60-strength-longevity-brisbane` |
 | Jess — recomp/HYROX 20s | 309 | `twenties-strength-recomposition-hyrox` |
 | Bec — postpartum/wedding | 310 | `postpartum-wedding-weight-loss` |
+| Belinda — frozen shoulder 50s | 313 | `fifties-strength-frozen-shoulder-rehabilitation` |
+| Orlagh — first timer 20s | 314 | `twenties-strength-first-timer-safe-space` |
+| Peta — recomp/daily ritual 40s | 315 | `forties-strength-recomposition-daily-ritual` |
+| Tess — desk worker/deadlift 30s | 316 | `thirties-strength-deadlift-desk-worker` |
+| Laura — martial arts/mental health 20s | 317 | `twenties-strength-martial-arts-mental-health` |
+| Sophie — career change/landscaping 40s | 318 | `forties-strength-career-change-landscaping` |
 
-**Remaining to build:** ~9 results pages (see `outputs/systems/social-proof-pages.md` for full planned index).
+**Remaining to build:** 4 planned pages without source members (teens ×3, IVF ×1) — see `outputs/systems/social-proof-pages.md`.
 
 ---
 
