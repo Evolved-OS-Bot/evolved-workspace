@@ -9,8 +9,12 @@ import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-from sheets_client import read_ytd_revenue, read_appointments_this_week
+try:
+    sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+    from sheets_client import read_ytd_revenue, read_appointments_this_week
+except ImportError:
+    def read_ytd_revenue(): return None
+    def read_appointments_this_week(): return []
 
 BRISBANE_TZ = ZoneInfo("Australia/Brisbane")
 GOAL        = 1_000_000
