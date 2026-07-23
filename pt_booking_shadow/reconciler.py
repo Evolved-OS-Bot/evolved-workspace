@@ -21,6 +21,11 @@ def _next_occurrence(now: datetime, weekday: int, local_time) -> datetime:
     return candidate
 
 
+def _week_start(value: datetime) -> date:
+    """Return the Monday date for the appointment's local ISO week."""
+    return value.date() - timedelta(days=value.weekday())
+
+
 def _base_finding(contact: PTContact, category: str, reason: str) -> Finding:
     return Finding(
         contact_id=contact.id,
@@ -171,7 +176,9 @@ def reconcile_contact(
     unmatched = future.copy()
     missing: list[datetime] = []
     matched_dates: list[datetime] = []
+    expected_duration_by_start: dict[datetime, int] = {}
     for expected_start, expected_duration, expected_calendar in expected:
+        expected_duration_by_start[expected_start] = expected_duration
         exact = next(
             (
                 event
@@ -202,6 +209,36 @@ def reconcile_contact(
             continue
         missing.append(expected_start)
 
+    # A client may intentionally make up a missed session in the immediately
+    # following week. Only unmatched surplus appointments can cover the prior
+    # week's deficit, so the next week's own expected sessions remain protected.
+    carry_over_matches: list[dict[str, str]] = []
+    still_missing: list[datetime] = []
+    for expected_start in missing:
+        expected_duration = expected_duration_by_start[expected_start]
+        make_up_week = _week_start(expected_start) + timedelta(days=7)
+        make_up = next(
+            (
+                event
+                for event in unmatched
+                if _week_start(event.start) == make_up_week
+                and abs(event.duration_minutes - expected_duration) <= 1
+            ),
+            None,
+        )
+        if make_up is None:
+            still_missing.append(expected_start)
+            continue
+        unmatched.remove(make_up)
+        matched_dates.append(expected_start)
+        carry_over_matches.append(
+            {
+                "missed_expected": expected_start.isoformat(),
+                "make_up_appointment": make_up.start.isoformat(),
+            }
+        )
+    missing = still_missing
+
     first_missing = min(missing) if missing else None
     booked_through = max(matched_dates) if matched_dates else None
     last_future = future[-1].start
@@ -217,7 +254,15 @@ def reconcile_contact(
 
     if not missing:
         category = "HEALTHY"
-        reason = f"All {len(expected)} expected PT occurrence(s) are covered for 13 weeks."
+        reason = (
+            f"All {len(expected)} expected PT occurrence(s) are covered for "
+            f"{horizon_weeks} weeks."
+        )
+        if carry_over_matches:
+            reason += (
+                f" {len(carry_over_matches)} session(s) are covered by an "
+                "adjacent-week make-up."
+            )
     elif first_missing and first_missing < last_future:
         category = "GAP_INSIDE_SERIES"
         reason = (
@@ -243,6 +288,7 @@ def reconcile_contact(
             "matched_occurrences": len(matched_dates),
             "expected_occurrences": len(expected),
             "unmatched_future_events": len(unmatched),
+            "adjacent_week_make_ups": carry_over_matches,
         }
     )
     return finding

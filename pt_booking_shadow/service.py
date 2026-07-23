@@ -25,6 +25,32 @@ class ShadowAuditService:
         self.store = StateStore(settings.database_path)
         self._run_lock = threading.Lock()
 
+    def _resolve_full_cohort(self):
+        """Hydrate status-sensitive contacts before applying hold/cancellation rules."""
+        raw_contacts = self.client.list_contacts()
+        opportunities = self.client.list_opportunities()
+        cohort = resolve_cohort(raw_contacts, opportunities)
+
+        opportunities_by_contact: dict[str, list[dict]] = defaultdict(list)
+        for opportunity in opportunities:
+            contact_id = opportunity.get("contactId") or (
+                opportunity.get("contact") or {}
+            ).get("id")
+            if contact_id:
+                opportunities_by_contact[str(contact_id)].append(opportunity)
+
+        hydrated = []
+        for contact in cohort:
+            if contact.effective_status not in {"pt_cancellation", "pt_hold"}:
+                hydrated.append(contact)
+                continue
+            full = resolve_contact(
+                self.client.get_contact(contact.id),
+                opportunities_by_contact.get(contact.id, []),
+            )
+            hydrated.append(full or contact)
+        return hydrated
+
     def _registry_and_events(self):
         registry = build_registry(self.client.list_calendars())
         calendars = {item.id: item for item in registry}
@@ -45,9 +71,7 @@ class ShadowAuditService:
         run_id = self.store.start_run("full")
         try:
             calendars, by_contact, now = self._registry_and_events()
-            cohort = resolve_cohort(
-                self.client.list_contacts(), self.client.list_opportunities()
-            )
+            cohort = self._resolve_full_cohort()
             findings = [
                 reconcile_contact(
                     contact,

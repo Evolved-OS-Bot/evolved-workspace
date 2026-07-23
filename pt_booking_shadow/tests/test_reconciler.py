@@ -36,6 +36,88 @@ def test_missing_middle_week_is_gap(now, calendar, contact):
     assert len(finding.proposed_dates) == 1
 
 
+def test_same_week_reschedule_covers_expected_session(now, calendar, contact):
+    events = weekly_events(now, contact, calendar)
+    moved = events[4]
+    events[4] = make_event(
+        "same-week-reschedule",
+        contact.id,
+        calendar.id,
+        moved.start + timedelta(days=2, hours=1),
+    )
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "HEALTHY"
+    assert not finding.proposed_dates
+    assert not finding.evidence["adjacent_week_make_ups"]
+
+
+def test_next_week_surplus_covers_one_make_up(now, calendar, contact):
+    events = weekly_events(now, contact, calendar)
+    missed = events.pop(4)
+    next_week = events[4]
+    events.append(
+        make_event(
+            "next-week-make-up",
+            contact.id,
+            calendar.id,
+            next_week.start + timedelta(days=2, hours=1),
+        )
+    )
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "HEALTHY"
+    assert not finding.proposed_dates
+    assert finding.evidence["adjacent_week_make_ups"] == [
+        {
+            "missed_expected": missed.start.isoformat(),
+            "make_up_appointment": (next_week.start + timedelta(days=2, hours=1)).isoformat(),
+        }
+    ]
+
+
+def test_make_up_more_than_one_week_later_does_not_hide_gap(
+    now, calendar, contact
+):
+    events = weekly_events(now, contact, calendar)
+    events.pop(4)
+    two_weeks_later = events[5]
+    events.append(
+        make_event(
+            "late-extra",
+            contact.id,
+            calendar.id,
+            two_weeks_later.start + timedelta(days=2, hours=1),
+        )
+    )
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "GAP_INSIDE_SERIES"
+    assert len(finding.proposed_dates) == 1
+    assert not finding.evidence["adjacent_week_make_ups"]
+
+
+def test_unexplained_extra_is_retained_as_evidence(now, calendar, contact):
+    events = weekly_events(now, contact, calendar)
+    events.append(
+        make_event(
+            "unexplained-extra",
+            contact.id,
+            calendar.id,
+            events[4].start + timedelta(days=2, hours=1),
+        )
+    )
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "HEALTHY"
+    assert finding.evidence["unmatched_future_events"] == 1
+    assert not finding.evidence["adjacent_week_make_ups"]
+
+
 def test_short_series_would_top_up(now, calendar, contact):
     finding = reconcile_contact(
         contact,
