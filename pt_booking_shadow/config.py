@@ -97,7 +97,10 @@ class Settings:
             return value
 
         return cls(
-            ghl_api_key=required("GHL_API_KEY"),
+            ghl_api_key=(
+                os.getenv("GHL_CALENDAR_API_KEY", "").strip()
+                or required("GHL_API_KEY")
+            ),
             ghl_location_id=required("GHL_LOCATION_ID"),
             database_path=os.getenv("DATABASE_PATH", "/data/pt_booking_shadow.db"),
             webhook_secret=required("WEBHOOK_SHARED_SECRET", "local-development-only"),
