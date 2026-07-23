@@ -37,6 +37,8 @@ class PTContact:
     name: str
     tags: set[str]
     custom_fields: dict[str, Any]
+    email: str = ""
+    phone: str = ""
     stage_id: str | None = None
     expected_frequency: int | None = None
     effective_status: str = "active"

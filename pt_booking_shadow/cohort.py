@@ -111,6 +111,8 @@ def resolve_contact(
         name=str(name),
         tags=tags,
         custom_fields=fields,
+        email=str(raw.get("email") or "").strip().lower(),
+        phone=str(raw.get("phone") or "").strip(),
         stage_id=stage_id,
         expected_frequency=expected_frequency,
         effective_status=effective_status,

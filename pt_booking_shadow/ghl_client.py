@@ -19,7 +19,7 @@ class GHLReadOnlyClient:
 
     base_url = "https://services.leadconnectorhq.com"
 
-    def __init__(self, api_key: str, location_id: str, timeout: int = 30):
+    def __init__(self, api_key: str, location_id: str, timeout: int = 60):
         self.location_id = location_id
         self.timeout = timeout
         self.session = requests.Session()

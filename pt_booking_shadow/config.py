@@ -32,6 +32,13 @@ FIELD_IDS = {
 }
 
 CURRENT_TRAINERS = ("Megan", "Piper", "Nora", "Katrina", "Leisa")
+CURRENT_TRAINER_FULL_NAMES = {
+    "Megan": "Megan Brown",
+    "Piper": "Piper Mae",
+    "Nora": "Nora Silva",
+    "Katrina": "Katrina Parsons",
+    "Leisa": "Leisa Smith",
+}
 
 
 def _bool(name: str, default: bool = False) -> bool:
@@ -65,6 +72,17 @@ class Settings:
     horizon_weeks: int
     history_weeks: int
     future_read_weeks: int
+    kpi_write_enabled: bool
+    google_spreadsheet_id: str
+    google_kpi_sheet_name: str
+    google_service_account_json: str | None
+    google_credentials_file: str | None
+    cross_system_reconciliation_enabled: bool
+    stripe_restricted_key: str | None
+    trainerize_group_id: str | None
+    trainerize_api_token: str | None
+    trainerize_api_base_url: str
+    trainerize_location_id: int | None
 
     @classmethod
     def from_env(cls, require_runtime: bool = True) -> "Settings":
@@ -93,4 +111,30 @@ class Settings:
             horizon_weeks=int(os.getenv("HORIZON_WEEKS", "13")),
             history_weeks=int(os.getenv("HISTORY_WEEKS", "8")),
             future_read_weeks=int(os.getenv("FUTURE_READ_WEEKS", "15")),
+            kpi_write_enabled=_bool("KPI_WRITE_ENABLED", False),
+            google_spreadsheet_id=os.getenv(
+                "GOOGLE_SPREADSHEET_ID",
+                "1aeD8c2mY9rwltmVnTl86rx_rYXpSsAq3HTamk-hEs3c",
+            ),
+            google_kpi_sheet_name=os.getenv(
+                "GOOGLE_KPI_SHEET_NAME", "KPI's The Evolved"
+            ),
+            google_service_account_json=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+            or None,
+            google_credentials_file=os.getenv("GOOGLE_SHEETS_CREDENTIALS_FILE")
+            or None,
+            cross_system_reconciliation_enabled=_bool(
+                "CROSS_SYSTEM_RECONCILIATION_ENABLED", False
+            ),
+            stripe_restricted_key=os.getenv("STRIPE_RESTRICTED_KEY") or None,
+            trainerize_group_id=os.getenv("TRAINERIZE_GROUP_ID") or None,
+            trainerize_api_token=os.getenv("TRAINERIZE_API_TOKEN") or None,
+            trainerize_api_base_url=os.getenv(
+                "TRAINERIZE_API_BASE_URL", "https://api.trainerize.com/v03"
+            ).rstrip("/"),
+            trainerize_location_id=(
+                int(os.environ["TRAINERIZE_LOCATION_ID"])
+                if os.getenv("TRAINERIZE_LOCATION_ID", "").isdigit()
+                else None
+            ),
         )

@@ -16,6 +16,12 @@ Read-only auditor for The Evolved's active personal-training calendars.
 - Keeps unexplained extra appointments as evidence; shadow mode never removes
   them or assumes they are errors.
 - Sends Admin Eve an exception-led email and CSV.
+- Calculates two Monday utilisation measures from the same retained event set:
+  literal PT bookings and booked delivery hours.
+- Can write the trainer split and totals to the matching Monday column in Brown
+  & Casserly when `KPI_WRITE_ENABLED=true`.
+- Can add read-only Stripe entitlement, Trainerize access and Brown & Casserly
+  Active PT evidence to each GHL booking-continuity result.
 - Queues targeted checks after authenticated GHL webhook events.
 - Never creates, edits or deletes GHL data.
 
@@ -32,6 +38,49 @@ PT holds pause top-up recommendations and retain existing bookings.
 Contacts with an active PT hold or cancellation are hydrated from their full
 GHL contact record before reconciliation. This prevents the bulk contact list
 from omitting a status-sensitive date such as `CS: Final Access Date`.
+
+## Brown & Casserly KPI write
+
+The legacy manual trainer block is preserved. The automated blocks use the
+current trainer roster: Megan Brown, Piper Mae, Nora Silva, Katrina Parsons and
+Leisa Smith.
+
+The Monday calculation:
+
+- covers Monday 00:00 to the following Monday 00:00 in Brisbane;
+- attributes delivery by the exact active PT calendar name;
+- excludes deleted, cancelled and no-show appointments;
+- deduplicates by event ID and then contact plus start time;
+- records one booking per retained appointment;
+- converts retained appointment minutes into booked hours;
+- fails closed if the dated column or expected trainer rows are missing or
+  duplicated;
+- overwrites the same dated cells on retry rather than appending.
+
+Google Sheets writes are disabled by default. Railway requires
+`GOOGLE_SERVICE_ACCOUNT_JSON` and local runs may instead use
+`GOOGLE_SHEETS_CREDENTIALS_FILE`.
+
+## Cross-system evidence
+
+Set `CROSS_SYSTEM_RECONCILIATION_ENABLED=true` with protected Stripe,
+Trainerize and Google credentials to add source evidence to the Monday report.
+
+Identity matching uses normalised email for Stripe and Trainerize. Brown &
+Casserly uses email first and phone second. Names are never used as identity
+keys.
+
+The first exception layer reports:
+
+- an active PT contact without an email required for deterministic matching;
+- Brown & Casserly active PT without an entitled Stripe subscription;
+- future GHL PT bookings without active Trainerize access;
+- future GHL PT bookings without a matching Brown & Casserly Active PT row;
+- a source-read failure while preserving the GHL-only booking audit.
+
+A missing Stripe subscription is phrased as a review, not a cancellation or
+debt conclusion, because prepaid packs and approved manual payments can be
+valid exceptions. No Stripe, Trainerize or GHL write method is implemented.
 
 ## Local test
 
@@ -59,6 +108,9 @@ worker and mount a persistent volume at `/data`.
 
 The first report must be run privately with `sendEmail=false`. Enable email only
 after the contact cohort and finding categories have been reviewed.
+
+Keep `KPI_WRITE_ENABLED=false` for the first deployment. Validate one live
+calculation against the target workbook cells, then enable the write.
 
 ## Graduation
 

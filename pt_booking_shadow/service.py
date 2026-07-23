@@ -9,9 +9,15 @@ from .calendar_registry import build_registry
 from .cohort import resolve_cohort, resolve_contact
 from .config import BRISBANE_TZ, Settings
 from .ghl_client import GHLReadOnlyClient
+from .google_sheets import SheetsKPIWriter
+from .kpi import aggregate_weekly_pt_kpi, monday_for
 from .models import Appointment, Finding
 from .reconciler import reconcile_contact
 from .reporting import high_risk, send_report
+from .source_reconciliation import (
+    build_cross_system_snapshot,
+    cross_system_findings,
+)
 from .state_store import StateStore
 
 
@@ -63,14 +69,22 @@ class ShadowAuditService:
         by_contact: dict[str, list[Appointment]] = defaultdict(list)
         for event in events:
             by_contact[event.contact_id].append(event)
-        return calendars, by_contact, now
+        return calendars, by_contact, events, now
+
+    def _write_weekly_kpi(self, calendars, events, now) -> dict | None:
+        if not self.settings.kpi_write_enabled:
+            return None
+        kpi = aggregate_weekly_pt_kpi(events, calendars, monday_for(now))
+        result = SheetsKPIWriter(self.settings).write(kpi)
+        self.store.record_kpi_write(kpi.week_start.isoformat(), result)
+        return result
 
     def run_full(self, send_email: bool = True) -> tuple[str, list[Finding]]:
         if not self._run_lock.acquire(blocking=False):
             raise RuntimeError("A PT shadow audit is already running")
         run_id = self.store.start_run("full")
         try:
-            calendars, by_contact, now = self._registry_and_events()
+            calendars, by_contact, events, now = self._registry_and_events()
             cohort = self._resolve_full_cohort()
             findings = [
                 reconcile_contact(
@@ -83,7 +97,55 @@ class ShadowAuditService:
                 )
                 for contact in cohort
             ]
+            if self.settings.cross_system_reconciliation_enabled:
+                try:
+                    snapshot = build_cross_system_snapshot(self.settings)
+                    primary_by_contact = {
+                        item.contact_id: item for item in findings
+                    }
+                    for contact in cohort:
+                        evidence = snapshot.evidence_for(contact)
+                        primary_by_contact[contact.id].evidence[
+                            "cross_system"
+                        ] = evidence
+                        has_future = any(
+                            event.start >= now
+                            and not event.deleted
+                            and event.status
+                            not in {"cancelled", "canceled", "no_show", "noshow"}
+                            for event in by_contact.get(contact.id, [])
+                        )
+                        findings.extend(
+                            cross_system_findings(contact, evidence, has_future)
+                        )
+                except Exception as exc:
+                    log.exception("Cross-system reconciliation failed")
+                    findings.append(
+                        Finding(
+                            contact_id="system",
+                            contact_name="Cross-system reconciliation",
+                            category="CROSS_SYSTEM_SOURCE_UNAVAILABLE",
+                            reason=(
+                                "Stripe, Trainerize or Brown & Casserly could not be "
+                                f"read: {type(exc).__name__}. The GHL booking audit "
+                                "continued without cross-system evidence."
+                            ),
+                            effective_status="system",
+                        )
+                    )
             self.store.complete_run(run_id, findings, len(cohort))
+            try:
+                result = self._write_weekly_kpi(calendars, events, now)
+                if result:
+                    log.info(
+                        "Weekly PT KPI written: week=%s column=%s bookings=%s hours=%s",
+                        result["week_start"],
+                        result["column"],
+                        result["kpi"]["total_bookings"],
+                        result["kpi"]["total_booked_hours"],
+                    )
+            except Exception:
+                log.exception("Weekly PT KPI write failed; shadow report will still be sent")
             if send_email:
                 send_report(self.settings, findings, run_id)
             return run_id, findings
@@ -96,7 +158,7 @@ class ShadowAuditService:
     def run_targeted(self, contact_id: str, alert_high_risk: bool = True):
         run_id = self.store.start_run("targeted")
         try:
-            calendars, by_contact, now = self._registry_and_events()
+            calendars, by_contact, _events, now = self._registry_and_events()
             raw = self.client.get_contact(contact_id)
             contact = resolve_contact(
                 raw, self.client.list_contact_opportunities(contact_id)

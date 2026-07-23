@@ -177,3 +177,21 @@ class StateStore:
                 "SELECT value FROM app_state WHERE key='last_successful_run'"
             ).fetchone()
         return str(row["value"]) if row else None
+
+    def record_kpi_write(self, week_start: str, payload: dict) -> None:
+        now = datetime.now(timezone.utc).isoformat()
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO app_state(key, value, updated_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT(key) DO UPDATE SET
+                    value=excluded.value,
+                    updated_at=excluded.updated_at
+                """,
+                (
+                    f"kpi_write:{week_start}",
+                    json.dumps(payload, sort_keys=True, default=str),
+                    now,
+                ),
+            )

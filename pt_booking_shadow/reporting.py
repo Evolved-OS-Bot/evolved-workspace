@@ -25,6 +25,11 @@ PRIORITY = {
     "WOULD_TOP_UP": 8,
     "PT_HOLD_ACTIVE": 9,
     "PT_NOTICE_ACTIVE": 10,
+    "CROSS_SYSTEM_SOURCE_UNAVAILABLE": 11,
+    "CROSS_SYSTEM_IDENTITY_REVIEW": 12,
+    "COMMERCIAL_EVIDENCE_REVIEW_REQUIRED": 13,
+    "TRAINERIZE_ACCESS_REVIEW_REQUIRED": 14,
+    "WORKBOOK_PT_RECORD_MISSING": 15,
     "HEALTHY": 99,
 }
 
@@ -133,7 +138,9 @@ def build_html(findings: list[Finding], location_id: str, run_id: str) -> str:
         <strong>SHADOW MODE: NO GHL APPOINTMENTS WERE CHANGED</strong>
       </div>
       <h2>PT Booking Continuity · {now.strftime('%A, %-d %B %Y')}</h2>
-      <p>Run {html.escape(run_id)} · {len(findings)} PT contact(s) audited ·
+      <p>Run {html.escape(run_id)} ·
+         {len({item.contact_id for item in findings if item.contact_id != 'system'})}
+         PT contact(s) audited ·
          {len(action_items)} exception(s) · {healthy} healthy.</p>
       <table style="border-collapse:collapse;min-width:360px;">
         {count_rows}
