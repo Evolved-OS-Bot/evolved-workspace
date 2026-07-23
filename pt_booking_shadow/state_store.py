@@ -4,6 +4,7 @@ import json
 import sqlite3
 import threading
 import uuid
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
@@ -177,6 +178,45 @@ class StateStore:
                 "SELECT value FROM app_state WHERE key='last_successful_run'"
             ).fetchone()
         return str(row["value"]) if row else None
+
+    def latest_run_summary(self) -> dict | None:
+        with self._lock, self._connect() as connection:
+            run = connection.execute(
+                """
+                SELECT id, run_type, started_at, completed_at, status,
+                       cohort_count, finding_count, error
+                FROM audit_runs
+                WHERE run_type='full'
+                ORDER BY started_at DESC
+                LIMIT 1
+                """
+            ).fetchone()
+            if not run:
+                return None
+            category_rows = connection.execute(
+                """
+                SELECT category, COUNT(*) AS count
+                FROM findings
+                WHERE run_id=?
+                GROUP BY category
+                ORDER BY category
+                """,
+                (run["id"],),
+            ).fetchall()
+        categories = Counter(
+            {str(row["category"]): int(row["count"]) for row in category_rows}
+        )
+        return {
+            "runId": str(run["id"]),
+            "runType": str(run["run_type"]),
+            "startedAt": str(run["started_at"]),
+            "completedAt": str(run["completed_at"]) if run["completed_at"] else None,
+            "status": str(run["status"]),
+            "cohortCount": int(run["cohort_count"] or 0),
+            "findingCount": int(run["finding_count"] or 0),
+            "categories": dict(categories),
+            "error": str(run["error"]) if run["error"] else None,
+        }
 
     def record_kpi_write(self, week_start: str, payload: dict) -> None:
         now = datetime.now(timezone.utc).isoformat()

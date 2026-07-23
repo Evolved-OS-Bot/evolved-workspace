@@ -27,6 +27,24 @@ def test_store_persists_run_and_deduplicates_event(tmp_path):
     assert store.due_contacts() == []
 
 
+def test_latest_run_summary_returns_aggregate_categories(tmp_path):
+    store = StateStore(str(tmp_path / "state.db"))
+    run_id = store.start_run("full")
+    store.complete_run(
+        run_id,
+        [finding("HEALTHY"), finding("HEALTHY"), finding("WOULD_TOP_UP")],
+        3,
+    )
+
+    summary = store.latest_run_summary()
+
+    assert summary["status"] == "completed"
+    assert summary["cohortCount"] == 3
+    assert summary["findingCount"] == 3
+    assert summary["categories"] == {"HEALTHY": 2, "WOULD_TOP_UP": 1}
+    assert summary["error"] is None
+
+
 def test_report_contains_shadow_banner_and_contact_link():
     body = build_html([finding("WOULD_TOP_UP")], "location-1", "run-1")
     assert "NO GHL APPOINTMENTS WERE CHANGED" in body

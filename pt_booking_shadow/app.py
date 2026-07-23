@@ -69,6 +69,14 @@ def manual_run():
     return jsonify({"status": "started", "sendEmail": send_email}), 202
 
 
+@app.get("/runs/latest/summary")
+def latest_run_summary():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    summary = service.store.latest_run_summary()
+    return jsonify(summary or {"status": "not_found"}), (200 if summary else 404)
+
+
 @app.post("/webhooks/ghl")
 def ghl_webhook():
     if not _authorised():
