@@ -7,7 +7,7 @@ def test_contact_pagination_restarts_after_an_expired_cursor(monkeypatch):
     calls = []
 
     def fake_get(path, params):
-        calls.append(dict(params))
+        calls.append((path, dict(params)))
         if len(calls) == 1:
             return {
                 "contacts": [{"id": "discarded-after-restart"}],
@@ -21,4 +21,16 @@ def test_contact_pagination_restarts_after_an_expired_cursor(monkeypatch):
     monkeypatch.setattr("pt_booking_shadow.ghl_client.time.sleep", lambda _seconds: None)
 
     assert client.list_contacts() == [{"id": "kept"}]
-    assert calls[2] == {"locationId": "location-1", "limit": 100}
+    assert calls[1] == (
+        "/contacts/",
+        {
+            "locationId": "location-1",
+            "limit": 100,
+            "startAfter": 1,
+            "startAfterId": "cursor-1",
+        },
+    )
+    assert calls[2] == (
+        "/contacts/",
+        {"locationId": "location-1", "limit": 100},
+    )

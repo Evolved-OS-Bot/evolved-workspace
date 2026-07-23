@@ -34,10 +34,18 @@ class GHLReadOnlyClient:
     def _get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         url = path if path.startswith("http") else f"{self.base_url}{path}"
         last_error: Exception | None = None
-        for attempt in range(4):
+        for attempt in range(6):
             try:
                 response = self.session.get(url, params=params, timeout=self.timeout)
-                if response.status_code == 429 or response.status_code >= 500:
+                upstream_timeout = (
+                    response.status_code == 400
+                    and "Request Timeout" in response.text
+                )
+                if (
+                    upstream_timeout
+                    or response.status_code == 429
+                    or response.status_code >= 500
+                ):
                     delay = min(8, 2**attempt)
                     log.warning("GHL read retry: status=%s delay=%ss", response.status_code, delay)
                     time.sleep(delay)
@@ -53,7 +61,7 @@ class GHLReadOnlyClient:
                     and exc.response.status_code != 429
                 ):
                     break
-                if attempt == 3:
+                if attempt == 5:
                     break
                 time.sleep(min(8, 2**attempt))
         raise RuntimeError(f"GHL read failed for {path}: {last_error}") from last_error
@@ -86,7 +94,7 @@ class GHLReadOnlyClient:
                     break
                 delay = 2**attempt
                 log.warning(
-                    "GHL contact cursor expired; restarting pagination in %ss",
+                    "GHL contact pagination failed; restarting in %ss",
                     delay,
                 )
                 time.sleep(delay)
