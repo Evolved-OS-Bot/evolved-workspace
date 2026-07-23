@@ -57,8 +57,29 @@ The workbook must not override live calendars, Stripe or PT Minder. The first re
 12. Keep unexplained extras visible as evidence. Do not recommend removing them without an accepted cancellation or explicit Admin review.
 13. Hydrate active hold and cancellation contacts from their full GHL record before using status-sensitive dates.
 
-## Open decisions before implementation
+## Remaining operating decisions
 
-- Confirm whether Railway can receive the existing Google service-account credential through a protected environment variable, or whether a dedicated read-only service account should be created.
 - Confirm the intended lead time for prepaid pack renewal prompts.
 - Confirm which structured system should own PT commercial mode when Brown & Casserly, Stripe and PT Minder disagree.
+
+## KPI decisions completed: 24 July 2026
+
+- Track both literal PT bookings and booked delivery hours.
+- Preserve the stale trainer block as legacy historical data rather than relabelling prior values.
+- Use new automated blocks for Megan, Piper, Nora, Katrina and Leisa.
+- Use an idempotent snapshot in the column whose header matches the Monday being measured.
+- Count only active PT calendar events; deduplicate by event ID and contact/start time; exclude deleted, cancelled and no-show appointments.
+- Record the week, values and target cells in the persistent service state after every successful write.
+- The first verified baseline for the week of 20 July is 63 bookings and 36.5 booked hours.
+
+## Production integration completed: 24 July 2026
+
+- Railway now has protected read-only credentials for Google Sheets, Stripe and Trainerize.
+- The report email credential is a protected shared project variable. Reports are addressed to `admin@theevolvedgym.com.au`.
+- A dedicated calendar-capable GHL credential prevents the PT service from inheriting the triage service's narrower GHL access.
+- `KPI_WRITE_ENABLED=true` is live. The Monday-column write was verified in `AU115:AU130`: 63 bookings and 36.5 booked hours, with the five trainer rows matching the live calendar calculation.
+- Production run `742317c6-1075-4160-8e38-146cf7529ede` completed for 107 contacts and produced 130 findings.
+- The run produced no `CROSS_SYSTEM_SOURCE_UNAVAILABLE` finding, confirming that GHL, Stripe, Trainerize and Brown & Casserly were all readable.
+- Cross-system findings included 17 commercial-evidence reviews, 3 Trainerize-access reviews, 2 missing workbook PT records and 1 deterministic identity review.
+- The service remains read-only for contacts, appointments, Stripe, Trainerize and lifecycle state.
+- Thirty-seven regression tests pass.
