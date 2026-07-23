@@ -46,6 +46,13 @@ class GHLReadOnlyClient:
                 return response.json()
             except (requests.RequestException, ValueError) as exc:
                 last_error = exc
+                if (
+                    isinstance(exc, requests.HTTPError)
+                    and exc.response is not None
+                    and 400 <= exc.response.status_code < 500
+                    and exc.response.status_code != 429
+                ):
+                    break
                 if attempt == 3:
                     break
                 time.sleep(min(8, 2**attempt))
@@ -61,16 +68,31 @@ class GHLReadOnlyClient:
         }
 
     def list_contacts(self) -> list[dict[str, Any]]:
-        contacts: list[dict[str, Any]] = []
-        params: dict[str, Any] = {"locationId": self.location_id, "limit": 100}
-        while True:
-            data = self._get("/contacts/", params)
-            contacts.extend(data.get("contacts", []))
-            next_bits = self._next_params(data.get("meta", {}))
-            if not next_bits:
-                break
-            params.update(next_bits)
-        return contacts
+        last_error: Exception | None = None
+        for attempt in range(3):
+            contacts: list[dict[str, Any]] = []
+            params: dict[str, Any] = {"locationId": self.location_id, "limit": 100}
+            try:
+                while True:
+                    data = self._get("/contacts/", params)
+                    contacts.extend(data.get("contacts", []))
+                    next_bits = self._next_params(data.get("meta", {}))
+                    if not next_bits:
+                        return contacts
+                    params.update(next_bits)
+            except RuntimeError as exc:
+                last_error = exc
+                if attempt == 2:
+                    break
+                delay = 2**attempt
+                log.warning(
+                    "GHL contact cursor expired; restarting pagination in %ss",
+                    delay,
+                )
+                time.sleep(delay)
+        raise RuntimeError(
+            f"GHL contact pagination failed after 3 complete attempts: {last_error}"
+        ) from last_error
 
     def get_contact(self, contact_id: str) -> dict[str, Any]:
         return self._get(f"/contacts/{contact_id}").get("contact", {})
