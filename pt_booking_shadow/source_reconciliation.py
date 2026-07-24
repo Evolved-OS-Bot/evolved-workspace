@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import re
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any
@@ -48,10 +50,41 @@ class WorkbookPTRecord:
         }
 
 
+@dataclass(frozen=True)
+class StripeOneOffPayment:
+    payment_intent_id: str
+    customer_id: str
+    payer_email: str
+    amount_received: int
+    currency: str
+    created: int
+    beneficiary_contact_id: str | None = None
+
+    def to_evidence(self) -> dict[str, Any]:
+        return {
+            "payment_intent_id": self.payment_intent_id,
+            "payer_customer_id": self.customer_id,
+            "amount_received": self.amount_received,
+            "currency": self.currency,
+            "created": self.created,
+            "beneficiary_match_method": (
+                "approved_payment_to_contact_map"
+                if self.beneficiary_contact_id
+                else "payer_email"
+            ),
+        }
+
+
 @dataclass
 class CrossSystemSnapshot:
     stripe_statuses_by_email: dict[str, list[str]] = field(default_factory=dict)
     stripe_entitled_emails: set[str] = field(default_factory=set)
+    stripe_one_off_payments_by_email: dict[str, list[StripeOneOffPayment]] = field(
+        default_factory=dict
+    )
+    stripe_pack_payments_by_contact_id: dict[
+        str, list[StripeOneOffPayment]
+    ] = field(default_factory=dict)
     trainerize_active_emails: set[str] = field(default_factory=set)
     workbook_by_email: dict[str, WorkbookPTRecord] = field(default_factory=dict)
     workbook_by_phone: dict[str, WorkbookPTRecord] = field(default_factory=dict)
@@ -62,6 +95,15 @@ class CrossSystemSnapshot:
         workbook = self.workbook_by_email.get(email) if email else None
         if workbook is None and phone:
             workbook = self.workbook_by_phone.get(phone)
+        payer_matched_payments = (
+            self.stripe_one_off_payments_by_email.get(email, []) if email else []
+        )
+        verified_pack_payments = self.stripe_pack_payments_by_contact_id.get(
+            contact.id, []
+        )
+        recurring_entitled = (
+            email in self.stripe_entitled_emails if email else False
+        )
         return {
             "identity_match": {
                 "email_available": bool(email),
@@ -73,8 +115,16 @@ class CrossSystemSnapshot:
                 ),
             },
             "stripe": {
-                "entitled": email in self.stripe_entitled_emails if email else False,
+                "entitled": recurring_entitled or bool(verified_pack_payments),
+                "recurring_entitled": recurring_entitled,
+                "verified_prepaid_pack": bool(verified_pack_payments),
                 "statuses": self.stripe_statuses_by_email.get(email, []) if email else [],
+                "one_off_payments": [
+                    payment.to_evidence() for payment in payer_matched_payments
+                ],
+                "verified_pack_payments": [
+                    payment.to_evidence() for payment in verified_pack_payments
+                ],
             },
             "trainerize": {
                 "active_access": email in self.trainerize_active_emails if email else False
@@ -109,9 +159,23 @@ class StripeEntitlementReader:
                 return rows
             query["starting_after"] = batch[-1]["id"]
 
-    def snapshot(self) -> tuple[dict[str, list[str]], set[str]]:
+    def snapshot(
+        self,
+        beneficiary_map: dict[str, str] | None = None,
+        lookback_days: int = 365,
+    ) -> tuple[
+        dict[str, list[str]],
+        set[str],
+        dict[str, list[StripeOneOffPayment]],
+        dict[str, list[StripeOneOffPayment]],
+    ]:
         customers = self._collection("customers")
         subscriptions = self._collection("subscriptions", {"status": "all"})
+        payment_intents = self._collection(
+            "payment_intents",
+            {"created[gte]": int(time.time()) - (lookback_days * 86400)},
+        )
+        beneficiary_map = beneficiary_map or {}
         email_by_customer = {
             str(item.get("id")): normalise_email(item.get("email"))
             for item in customers
@@ -127,9 +191,39 @@ class StripeEntitlementReader:
             statuses[email].add(status)
             if status in STRIPE_ENTITLED_STATUSES:
                 entitled.add(email)
+        one_off_by_email: dict[str, list[StripeOneOffPayment]] = defaultdict(list)
+        pack_by_contact_id: dict[str, list[StripeOneOffPayment]] = defaultdict(list)
+        for payment_intent in payment_intents:
+            if str(payment_intent.get("status") or "").lower() != "succeeded":
+                continue
+            if int(payment_intent.get("amount_received") or 0) <= 0:
+                continue
+            if payment_intent.get("invoice"):
+                continue
+            payment_id = str(payment_intent.get("id") or "")
+            customer_id = str(payment_intent.get("customer") or "")
+            payer_email = email_by_customer.get(customer_id, "")
+            beneficiary_contact_id = beneficiary_map.get(payment_id)
+            if not payment_id or (not payer_email and not beneficiary_contact_id):
+                continue
+            payment = StripeOneOffPayment(
+                payment_intent_id=payment_id,
+                customer_id=customer_id,
+                payer_email=payer_email,
+                amount_received=int(payment_intent.get("amount_received") or 0),
+                currency=str(payment_intent.get("currency") or "").lower(),
+                created=int(payment_intent.get("created") or 0),
+                beneficiary_contact_id=beneficiary_contact_id,
+            )
+            if payer_email:
+                one_off_by_email[payer_email].append(payment)
+            if beneficiary_contact_id:
+                pack_by_contact_id[beneficiary_contact_id].append(payment)
         return (
             {email: sorted(values) for email, values in statuses.items()},
             entitled,
+            dict(one_off_by_email),
+            dict(pack_by_contact_id),
         )
 
 
@@ -244,9 +338,30 @@ def build_cross_system_snapshot(settings: Settings) -> CrossSystemSnapshot:
     if settings.trainerize_location_id is None:
         raise RuntimeError("TRAINERIZE_LOCATION_ID is required")
 
-    statuses, entitled = StripeEntitlementReader(
-        settings.stripe_restricted_key
-    ).snapshot()
+    try:
+        beneficiary_map = json.loads(
+            settings.stripe_pt_pack_beneficiary_map_json or "{}"
+        )
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            "STRIPE_PT_PACK_BENEFICIARY_MAP_JSON must be valid JSON"
+        ) from exc
+    if not isinstance(beneficiary_map, dict) or not all(
+        isinstance(payment_id, str) and isinstance(contact_id, str)
+        for payment_id, contact_id in beneficiary_map.items()
+    ):
+        raise RuntimeError(
+            "STRIPE_PT_PACK_BENEFICIARY_MAP_JSON must map payment IDs to contact IDs"
+        )
+    (
+        statuses,
+        entitled,
+        one_off_by_email,
+        pack_by_contact_id,
+    ) = StripeEntitlementReader(settings.stripe_restricted_key).snapshot(
+        beneficiary_map,
+        settings.stripe_pt_pack_lookback_days,
+    )
     trainerize_active = TrainerizeAccessReader(
         settings.trainerize_group_id,
         settings.trainerize_api_token,
@@ -257,6 +372,8 @@ def build_cross_system_snapshot(settings: Settings) -> CrossSystemSnapshot:
     return CrossSystemSnapshot(
         stripe_statuses_by_email=statuses,
         stripe_entitled_emails=entitled,
+        stripe_one_off_payments_by_email=one_off_by_email,
+        stripe_pack_payments_by_contact_id=pack_by_contact_id,
         trainerize_active_emails=trainerize_active,
         workbook_by_email=workbook_email,
         workbook_by_phone=workbook_phone,
@@ -293,7 +410,27 @@ def cross_system_findings(
         )
         return findings
 
-    if workbook["active_pt_record"] and not stripe["entitled"]:
+    if (
+        workbook["active_pt_record"]
+        and not stripe["entitled"]
+        and stripe["one_off_payments"]
+    ):
+        findings.append(
+            Finding(
+                contact_id=contact.id,
+                contact_name=contact.name,
+                category="STRIPE_PREPAID_PAYMENT_REVIEW_REQUIRED",
+                reason=(
+                    "Brown & Casserly lists active PT and Stripe has a successful "
+                    "one-off payment for the same payer email, but the payment has "
+                    "not been verified as this client's PT pack."
+                ),
+                effective_status=contact.effective_status,
+                expected_frequency=contact.expected_frequency,
+                evidence=evidence,
+            )
+        )
+    elif workbook["active_pt_record"] and not stripe["entitled"]:
         findings.append(
             Finding(
                 contact_id=contact.id,
@@ -301,8 +438,8 @@ def cross_system_findings(
                 category="COMMERCIAL_EVIDENCE_REVIEW_REQUIRED",
                 reason=(
                     "Brown & Casserly lists active PT, but no entitled Stripe "
-                    "subscription was found. Check for a prepaid pack, manual payment "
-                    "or stale workbook record."
+                    "subscription or verified prepaid-pack payment was found. Check "
+                    "the payer, pack beneficiary or workbook record."
                 ),
                 effective_status=contact.effective_status,
                 expected_frequency=contact.expected_frequency,

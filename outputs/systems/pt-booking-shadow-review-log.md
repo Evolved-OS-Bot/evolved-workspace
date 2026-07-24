@@ -8,8 +8,8 @@
 No single current system is sufficiently complete to determine PT booking continuity by itself.
 
 1. GHL calendars are the source of truth for appointments that exist.
-2. Stripe is the source of truth for active recurring billing and next-payment timing.
-3. PT Minder is the source of truth for active prepaid PT packs and remaining pack entitlement.
+2. Stripe is the primary payment source for both recurring PT and prepaid PT pack purchases.
+3. PT Minder remains the operational source for unused sessions remaining on a prepaid pack. A Stripe payment proves purchase, but does not by itself prove the current session balance.
 4. Brown & Casserly Pty Ltd 2026 is a secondary operational cross-check:
    - `Active SGPT` can support membership-status and membership-tier checks.
    - `Active PT` can support PT frequency, session length and debit checks.
@@ -60,7 +60,7 @@ The workbook must not override live calendars, Stripe or PT Minder. The first re
 ## Remaining operating decisions
 
 - Confirm the intended lead time for prepaid pack renewal prompts.
-- Confirm which structured system should own PT commercial mode when Brown & Casserly, Stripe and PT Minder disagree.
+- When sources disagree, use Stripe for whether and how the client paid, PT Minder for remaining prepaid sessions, and Brown & Casserly only as corroborating documentation.
 
 ## KPI decisions completed: 24 July 2026
 
@@ -83,3 +83,15 @@ The workbook must not override live calendars, Stripe or PT Minder. The first re
 - Cross-system findings included 17 commercial-evidence reviews, 3 Trainerize-access reviews, 2 missing workbook PT records and 1 deterministic identity review.
 - The service remains read-only for contacts, appointments, Stripe, Trainerize and lifecycle state.
 - Thirty-seven regression tests pass.
+
+## Prepaid PT pack correction: 24 July 2026
+
+- Owner correction: Stripe is the main payment processor for prepaid packs, not only recurring subscriptions.
+- Shaanta Boyes's recent $2,400 pack was paid through her husband Archer Boyes's Stripe customer account.
+- The successful PaymentIntent has no invoice, description or metadata. Stripe therefore cannot infer Shaanta as the beneficiary without an explicit relationship.
+- The reader now includes successful non-invoice PaymentIntents from a bounded 365-day window.
+- A governed mapping can link a PaymentIntent ID to the beneficiary's GHL contact ID. This is deterministic and does not weaken the rule against name-only matching.
+- Verified mapped pack payments satisfy the commercial-evidence check. An unverified one-off payment on the client's own payer email produces `STRIPE_PREPAID_PAYMENT_REVIEW_REQUIRED` instead of being silently treated as a subscription failure.
+- Shaanta's $2,400 PaymentIntent is mapped to her GHL contact. The live reader verified the payment at 240,000 cents AUD.
+- PT Minder still owns the remaining-session balance and pack-exhaustion decision.
+- Forty regression tests pass after this correction.

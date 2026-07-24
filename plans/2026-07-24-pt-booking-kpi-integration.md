@@ -17,12 +17,19 @@ Extend the deployed PT Booking Continuity Shadow so its Monday run:
 ## Source hierarchy
 
 1. GHL calendar events: appointments that exist.
-2. Stripe: recurring commercial entitlement.
-3. Trainerize: active coaching access.
-4. Brown & Casserly: documented trainer, duration, frequency, debit, cancellation and downgrade evidence.
-5. GHL conversation history and owner review: structured-source conflict resolution.
+2. Stripe: recurring payments and prepaid PT pack purchases.
+3. PT Minder: unused sessions remaining on a prepaid pack.
+4. Trainerize: active coaching access.
+5. Brown & Casserly: documented trainer, duration, frequency, debit, cancellation and downgrade evidence.
+6. GHL conversation history and owner review: structured-source conflict resolution.
 
 The workbook is evidence and a KPI destination. It does not authorise appointment creation, removal or lifecycle changes.
+
+Stripe one-off payments are also evidence, not perpetual pack balances. A
+successful non-invoice payment can be linked to a beneficiary by an approved
+PaymentIntent-to-GHL-contact mapping. This covers third-party payers without
+introducing name-only matching. PT Minder remains authoritative for remaining
+prepaid sessions.
 
 ## KPI rules
 
@@ -97,3 +104,11 @@ Production run `742317c6-1075-4160-8e38-146cf7529ede` completed across all four
 sources for 107 contacts and 130 findings, with no source-unavailable errors.
 The Brown & Casserly cells for the week of 20 July were verified at 63 bookings
 and 36.5 booked hours after the idempotent write.
+
+The 24 July owner correction established that Stripe is also the main payment
+processor for prepaid packs. The service now reads successful non-invoice
+PaymentIntents within a 365-day window, distinguishes unverified one-off
+payments from recurring entitlement and supports an approved third-party
+payer-to-beneficiary mapping. Shaanta Boyes's $2,400 pack payment through
+Archer Boyes is the first verified mapped example. PT Minder still owns the
+remaining-session balance. Forty regression tests pass.

@@ -79,6 +79,8 @@ class Settings:
     google_credentials_file: str | None
     cross_system_reconciliation_enabled: bool
     stripe_restricted_key: str | None
+    stripe_pt_pack_beneficiary_map_json: str | None
+    stripe_pt_pack_lookback_days: int
     trainerize_group_id: str | None
     trainerize_api_token: str | None
     trainerize_api_base_url: str
@@ -130,6 +132,12 @@ class Settings:
                 "CROSS_SYSTEM_RECONCILIATION_ENABLED", False
             ),
             stripe_restricted_key=os.getenv("STRIPE_RESTRICTED_KEY") or None,
+            stripe_pt_pack_beneficiary_map_json=(
+                os.getenv("STRIPE_PT_PACK_BENEFICIARY_MAP_JSON") or None
+            ),
+            stripe_pt_pack_lookback_days=int(
+                os.getenv("STRIPE_PT_PACK_LOOKBACK_DAYS", "365")
+            ),
             trainerize_group_id=os.getenv("TRAINERIZE_GROUP_ID") or None,
             trainerize_api_token=os.getenv("TRAINERIZE_API_TOKEN") or None,
             trainerize_api_base_url=os.getenv(
