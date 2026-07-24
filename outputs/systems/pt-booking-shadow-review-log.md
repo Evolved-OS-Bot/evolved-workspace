@@ -95,3 +95,5 @@ The workbook must not override live calendars, Stripe or PT Minder. The first re
 - Shaanta's $2,400 PaymentIntent is mapped to her GHL contact. The live reader verified the payment at 240,000 cents AUD.
 - PT Minder still owns the remaining-session balance and pack-exhaustion decision.
 - Forty regression tests pass after this correction.
+- Production run `904fb075-7f99-4da7-80f3-090c36926a25` completed for all 107 contacts with no source error.
+- The generic commercial-evidence queue reduced from 17 to 12. Four same-email one-off payments moved into the more accurate `STRIPE_PREPAID_PAYMENT_REVIEW_REQUIRED` queue, while Shaanta's approved third-party payment was accepted as verified pack evidence.
