@@ -18,18 +18,17 @@ Extend the deployed PT Booking Continuity Shadow so its Monday run:
 
 1. GHL calendar events: appointments that exist.
 2. Stripe: recurring payments and prepaid PT pack purchases.
-3. PT Minder: unused sessions remaining on a prepaid pack.
-4. Trainerize: active coaching access.
-5. Brown & Casserly: documented trainer, duration, frequency, debit, cancellation and downgrade evidence.
-6. GHL conversation history and owner review: structured-source conflict resolution.
+3. Trainerize: active coaching access.
+4. Brown & Casserly: documented trainer, duration, frequency, debit, cancellation and downgrade evidence.
+5. GHL conversation history and owner review: structured-source conflict resolution.
 
 The workbook is evidence and a KPI destination. It does not authorise appointment creation, removal or lifecycle changes.
 
 Stripe one-off payments are also evidence, not perpetual pack balances. A
 successful non-invoice payment can be linked to a beneficiary by an approved
 PaymentIntent-to-GHL-contact mapping. This covers third-party payers without
-introducing name-only matching. PT Minder remains authoritative for remaining
-prepaid sessions.
+introducing name-only matching. No verified structured source currently holds
+the remaining prepaid-session balance.
 
 ## KPI rules
 
@@ -110,8 +109,8 @@ processor for prepaid packs. The service now reads successful non-invoice
 PaymentIntents within a 365-day window, distinguishes unverified one-off
 payments from recurring entitlement and supports an approved third-party
 payer-to-beneficiary mapping. Shaanta Boyes's $2,400 pack payment through
-Archer Boyes is the first verified mapped example. PT Minder still owns the
-remaining-session balance. Forty regression tests pass.
+Archer Boyes is the first verified mapped example. The remaining-session
+balance is an unresolved operational-data gap. Forty regression tests pass.
 
 Production run `904fb075-7f99-4da7-80f3-090c36926a25` completed for 107
 contacts with no source error. The generic commercial-evidence queue reduced

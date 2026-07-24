@@ -1,6 +1,6 @@
 # Cancellation System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-04-27
+**Last Updated:** 2026-07-23 (trainer-field option lists reconciled)
 
 ---
 
@@ -48,6 +48,22 @@ Used in the `MC: Other` pathway when a manager call is requested.
 
 ---
 
+# Retention Economics
+
+**Last updated:** 2026-07-09 — based on 10 lifetime cancellations reviewed.
+
+| Metric | Value |
+|---|---|
+| Cancellations reviewed | 10 |
+| Total revenue across all 10 | $26,775 |
+| Average lifetime value (LTV) | $2,677 |
+
+Every member retained by the reason workflows is worth ~$2,677 in already-demonstrated LTV — and likely more in future tenure if the underlying issue is resolved. At $99/week, the average cancelling member represents ~27 weeks of membership. Even a 30-day hold or a schedule adjustment that keeps one member is worth more than any offer cost.
+
+This data should inform how assertively retention offers are positioned across the eight reason workflows and the separate booked-call pathway.
+
+---
+
 # PART 1: Membership (SGPT) Cancellation
 
 ---
@@ -58,17 +74,17 @@ Used in the `MC: Other` pathway when a manager call is requested.
 |---|---|---|
 | Send Membership Cancellation Form | **published** | `f203b01c-f7d3-486a-baf7-8981cdeda13a` |
 | Membership Cancellation Form Received | **published** | `73345f90-6ca8-444c-a694-8d1b25cdfdc6` |
-| MC: Financial | draft | `cf2d159c-2704-4865-8611-d36fbddd01a7` |
-| MC: Health/Injury | draft | `df73b324-e02b-4961-b017-4c2a9f235dbb` |
-| MC: Moving/Travel | draft | `93997227-0272-4aa0-a0ec-da56938f3901` |
-| MC: New Gym | draft | `4300ef4f-7ba6-4ac2-b603-5cc45e2df495` |
-| MC: New Style | draft | `49275845-d251-4847-9254-b08a976963b4` |
-| MC: Other | draft | `4f9ec2c2-4d59-4c69-8a51-2ec3b9eccc9b` |
-| MC: Other (Booked Call) | draft | `62c34799-0de4-4281-b5e3-bab95ae70eb9` |
-| MC: Results/Value | draft | `bc2fc64e-f02c-49f9-bc60-7434fbea1588` |
-| MC: Schedule/Time | draft | `0a999c4e-2951-4670-974f-632969c37b56` |
+| MC: Financial | **published** | `cf2d159c-2704-4865-8611-d36fbddd01a7` |
+| MC: Health/Injury | **published** | `df73b324-e02b-4961-b017-4c2a9f235dbb` |
+| MC: Moving/Travel | **published** | `93997227-0272-4aa0-a0ec-da56938f3901` |
+| MC: New Gym | **published** | `4300ef4f-7ba6-4ac2-b603-5cc45e2df495` |
+| MC: New Style | **published** | `49275845-d251-4847-9254-b08a976963b4` |
+| MC: Other | **published** | `4f9ec2c2-4d59-4c69-8a51-2ec3b9eccc9b` |
+| MC: Other (Booked Call) | **published** | `62c34799-0de4-4281-b5e3-bab95ae70eb9` |
+| MC: Results/Value | **published** | `bc2fc64e-f02c-49f9-bc60-7434fbea1588` |
+| MC: Schedule/Time | **published** | `0a999c4e-2951-4670-974f-632969c37b56` |
 
-> **Note:** The 9 `MC:` reason workflows are currently in **draft**. The two core trigger workflows (form sent, form received) are live/published.
+> **Note:** All 8 `MC:` reason workflows published 2026-07-15. Build guide and confirmed merge tags at `outputs/systems/mc-reason-workflows-build-guide.md`.
 
 ---
 
@@ -92,7 +108,7 @@ Used in the `MC: Other` pathway when a manager call is requested.
 7. Cancellation Status: None path continues:
    → Update Cancellation Type → Update Cancellation Status → Add to Cancellation OS Pipeline
    → Update Date Submitted Field → Update Notice End Date +30 Days
-   → Admin Notification Email → Owner SMS → Add Admin Task
+   → Admin Notification Email → Owner SMS → Admin Eve task `Membership Cancellation: Process`, due in 30 days
    → Wait 5 mins
    → Webhook → Stripe (schedule cancel_at = end of last billing period within notice window)
    → Create SGPT Cancellation Spreadsheet Row
@@ -102,6 +118,21 @@ Used in the `MC: Other` pathway when a manager call is requested.
    → Remove Member Opportunity → Move to Cancelled Member
    → Update Contact Type → Remove Member Tag → Add Old Member Tag → END
 ```
+
+### Live Task Routing Audit: 17 July 2026
+
+| Workflow group | Task path | Assignee | Due | Live finding |
+|---|---|---|---|---|
+| Eight `MC:` reason workflows | Initial retention call after the 10-minute wait | Piper Mae | 1 day at 12:00 pm, weekends skipped | Reason-specific brief. |
+| Eight `MC:` reason workflows | Farewell-session check around Day 5 | Piper Mae | 2 days, weekends skipped | Book the complimentary 30-minute session if it was not secured on the retention call. |
+| Eight `MC:` reason workflows | Mid-notice call after no reply | Piper Mae | 1 day, weekends skipped | Attendance and re-offer guidance varies by reason. |
+| `MC: Other (Booked Call)` | Cancellation Call calendar booking | Megan Brown | 7 days at 12:00 pm, weekends skipped | Full cancellation-call task; owner receives a separate internal notification. |
+| `Membership Cancellation Form Recieved` | Accepted membership cancellation | Admin Eve | 30 days | `Membership Cancellation: Process`, populated with reason and notice dates. |
+| `PT Cancellation Form Received` | Accepted PT cancellation | Admin Eve | 1 day | `PT Cancellation: Process`; verifies Stripe and the final payment date, determines the final service week, and removes later PT bookings. |
+
+The eight reason workflows and the separate booked-call workflow are all published. The manager-call task is assigned to Megan Brown, not Piper or a joint owner assignment.
+
+The cancellation-processing due dates are intentionally different. The membership task is a 30-day notice-period reconciliation; the PT task is a one-day operational check because payment timing determines which future PT sessions must be retained or deleted.
 
 ---
 
@@ -188,13 +219,13 @@ Options:
 | CS: Results/Value - Expected Outcome | LARGE_TEXT | — |
 | CS: Results/Value - Missing Element | RADIO | More guidance/clarity, More accountability, More personalised adjustments, Struggled with consistency, Expected faster results, Program didn't feel right, Not sure |
 | CS: Results/Value - Struggles Communicated | RADIO | Yes / No |
-| CS: Results/Value - Coach Contacted | SINGLE_OPTIONS | Megan / Leisa / Hannah / Beth / Piper |
+| CS: Results/Value - Coach Contacted | SINGLE_OPTIONS | Megan / Piper / Nora / Katrina / Leisa |
 | CS: Results/Value - Reset | RADIO | Yes, I'd like a fresh plan / No, continue cancellation |
 | CS: Metabolic Interest - Continue Cancel | RADIO | No, please continue with my cancellation |
 | CS: - PT Interest | RADIO | No, I prefer to continue with the cancellation |
 | CS: PT Package Offer - Declined | RADIO | I've paid for the Reset & I'm ready to continue with my cancellation / No thanks |
 
-**Retention offers:** Results Reset (fresh program/direction), Metabolic Blueprint, PT package upgrade.
+**Retention offers:** Results Reset (fresh program/direction) and PT package upgrade. The former Metabolic Blueprint offer is inactive because its delivery workflow was unpublished on 17 July 2026; redesign the Results/Value branch before presenting it again.
 
 ---
 
@@ -286,7 +317,7 @@ Options:
 7. Cancellation Status: None path continues:
    → Update Cancellation Type → Update Cancellation Status → Add to Cancellation OS Pipeline
    → Update Date Submitted Field → Update Notice End Date +30 Days
-   → Admin Notification Email → Owner SMS → Add Admin Task
+   → Admin Notification Email → Owner SMS → Admin Eve task `PT Cancellation: Process`, due in one day
    → Wait 5 mins
    → Webhook → Stripe (schedule cancel_at = end of last billing period within notice window)
    → Create PT Cancellation Spreadsheet Row
@@ -298,6 +329,14 @@ Options:
 ```
 
 > PT cancellation does not have branching reason workflows — it follows a single linear path. No reason capture or retention offers currently in place.
+
+### PT Cancellation Admin Processing Rule
+
+The Stripe webhook schedules the subscription cancellation. Admin Eve must then verify the cancellation in Stripe, confirm the final payment date, and reconcile future PT appointments.
+
+The calendar week immediately after the final payment date is the client's final PT service week. Keep sessions scheduled in that week and delete every scheduled PT session after the end of that week. If the Stripe cancellation, payment date, or session entitlement is unclear, escalate to Peter before deleting appointments.
+
+Example: if the notice end date is Wednesday 23 July and the final payment falls on Tuesday 22 July, keep sessions from Monday 28 July to Sunday 3 August. Delete sessions scheduled from Monday 4 August onward.
 
 ---
 
@@ -325,9 +364,10 @@ The PT cancellation uses the same `CS:` administrative fields as membership:
 Both workflows fire a webhook after the 5-minute wait (once Notice End Date is written):
 
 - **Endpoint:** `POST https://believable-happiness-production-9870.up.railway.app/stripe/cancel`
-- **Handler:** `stripe_handler/app.py` on Railway (same service as hold pause handler)
+- **Handler:** `stripe_handler/app.py` on Railway — `Billing OS` service (`tender-comfort` project)
+- **Status:** Live — deployed 2026-07-09. Was written but undeployed (14 commits unpushed to GitHub). All existing pipeline contacts verified: either already cancelled or correctly scheduled with `cancel_at`.
 - **Logic:** Finds the last scheduled billing date within the 30-day notice period → sets Stripe `cancel_at` to the end of that billing period (last payment date + billing interval)
-- **Error handling:** No Stripe customer found or no active subscription → admin alert logged, returns 200 (workflow continues unaffected — PT Minder members handled manually)
+- **Error handling:** No Stripe customer found or no active subscription → admin alert logged and a manual exception review is required. This includes prepaid-pack clients and any other non-subscription payment pathway.
 
 **Payload sent by GHL:**
 ```json
@@ -351,7 +391,6 @@ Both workflows fire a webhook after the 5-minute wait (once Notice End Date is w
 - **Hold conflict check** on both workflows blocks cancellation if a hold is active or pending, preventing simultaneous hold/cancel scenarios
 
 ### Current gaps / things to review
-- **9 MC: reason workflows are in draft** — the branching logic exists but may not be fully active. Confirm whether these are intentionally paused or need to be published
 - **PT cancellation has no branching logic** — unlike membership, PT cancellations follow a single path with no reason capture or retention offers. Worth considering whether this should be expanded
 - **No win-back workflow visible** — once a contact reaches "Cancelled Member" there's no visible automated re-engagement sequence. Longer-term win-back (e.g. 90 days post-cancellation) may be missing
 - **Cancellation Call calendar is personal type** — may limit availability/scalability if multiple staff need to handle retention calls

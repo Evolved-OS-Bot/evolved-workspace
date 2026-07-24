@@ -4,6 +4,8 @@
 **Status:** Built — Pending Live Test
 **Depends on:** `outputs/systems/membership-hold.md`
 
+> **Superseded assumption, 24 July 2026:** PT Minder references in this historical plan are not current operating instructions. The owner confirmed that The Evolved does not use PT Minder or its remaining-pack-sessions function. Current billing evidence comes from Stripe; prepaid-pack session balances remain an unresolved operational-data gap.
+
 ---
 
 ## Objective

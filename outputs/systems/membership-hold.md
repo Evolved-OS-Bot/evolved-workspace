@@ -1,6 +1,6 @@
 # Membership Hold System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-07-17 (live task-routing audit)
 
 ---
 
@@ -10,7 +10,9 @@ Two parallel hold systems exist — one for **Membership (SGPT) holds** and one 
 
 The hold system is also a retention pathway offered inside the membership cancellation flow (Health/Injury and Moving/Travel reasons), meaning a contact may enter the hold pipeline directly from a cancellation form rather than via a standalone hold request.
 
-**The entire system is now fully automated end-to-end** — from form submission through Stripe billing pause through pre-return communications through auto-completion. No manual admin steps are required for standard holds.
+The member journey, Stripe pause, pre-return communications, and auto-completion are automated end to end. Standard membership holds still create Admin Eve verification tasks, so the system is automated but not administration-free.
+
+> **Bug fix 2026-07-09:** `pre_return_date` was missing from the `HS: Hold Activates` webhook body. Added `pre_return_date → {{contact.hs_prereturn_date}}` to the GHL webhook custom data. Affected contacts were reviewed and Stripe subscriptions manually corrected.
 
 ---
 
@@ -81,11 +83,28 @@ Both hold funnels (`theevolvedgym.com.au/hold-membership` and `theevolvedgym.com
 
 > Four `Copy -` draft workflows exist for the four form submission workflows. These are inactive development copies — do not publish.
 
+### Live Task Routing Audit: 17 July 2026
+
+| Workflow | Task trigger | Assignee | Due | Live finding |
+|---|---|---|---|---|
+| `HS: Membership Hold Form Submitted` | Duplicate request while Hold Status is Pending Hold or On Hold | Admin Eve | 1 day | Follow up the member and escalate extension requests to Peter. |
+| `HS: Membership Hold Form Submitted` | Applicable 1, 2, 3, or 4-week duration branch | Admin Eve | 1 day | Four equivalent `Membership Hold: Process` actions verify dates, billing pause, and Hold Status. |
+| `HS: Extended Hold Approval` | Entry to Escalated Hold | Peter Brown | 1 day | Review and approve or reject the request within 24 hours. |
+| `HS: Extended Hold Approval` | Approval still not actioned after two days | Admin Eve | 1 day | Chase Peter for the approval decision. |
+| `HS: Hold Return Journey` | Seven days before return | Contact's Assigned User | 1 day | Check Trainerize bookings and contact the member. |
+| `HS: Hold Return Journey` | Return day | Contact's Assigned User | 1 day | Confirm the member's first session back. |
+
+All six task types above are published and live-verified. The four duration-specific processing actions make nine individual Create Task actions across the Hold OS family. Skip weekends is off for these audited hold tasks.
+
+`HS: PT Hold Form Submitted`, both extended-hold form-submission workflows, and `HS: Hold Activates` currently contain no Create Task actions. Any prepaid-pack or other non-subscription exception therefore requires manual review when Railway cannot find an active Stripe subscription.
+
+The historical `PT Hold: Process` tasks were traced on 24 July 2026. The execution log for Erin Wilkinson proves that `HS: PT Hold Form Submitted` executed its former `Add An 'Admin' Task` action on 5 July at the exact creation time recorded on the task. That action has since been removed from the published builder. The nine standard PT-hold tasks and one extended PT-hold task returned by the task-title search now show completed, so they are retained history rather than an active duplicate task source.
+
 ---
 
 ## Stripe Webhook Handler
 
-**Service:** Railway — `believable-happiness` service in the `tender-comfort` project
+**Service:** Railway — `Billing OS` (formerly `believable-happiness`) in the `tender-comfort` project
 **Endpoint:** `POST https://believable-happiness-production-9870.up.railway.app/stripe/pause-hold`
 **File:** `stripe_handler/app.py` in the `Evolved-OS-Bot/evolved-workspace` GitHub repo
 **Environment variable:** `STRIPE_API_KEY` (restricted key — Customers Read, Subscriptions Write only)
@@ -97,11 +116,11 @@ The handler:
 4. Pauses subscription with `behavior: void` and `resumes_at` = Pre-Return Date timestamp
 5. Logs all actions
 
-PT Minder members have no Stripe subscription — handler logs an alert and admin processes the pause manually.
+When no active Stripe subscription exists, the handler logs an alert and Admin reviews the payment pathway manually. A prepaid pack may require an access-date or booking decision, but there is no PT Minder step.
 
 ---
 
-## Standard Hold Flow — Full Automation (1–4 Weeks)
+## Standard Hold Flow — Automated Journey with Admin Verification (1–4 Weeks)
 
 ```
 Member submits Hold Form (Membership or PT)
@@ -116,6 +135,7 @@ HS: Membership/PT Hold Form Submitted workflow fires
       ├─ HS: Hold End Date calculated (Hold Start Date + weeks)
       ├─ HS: Pre-Hold-Start Date = Hold Start Date − 7 days
       ├─ HS: Pre-Return Date = Hold End Date − 7 days
+      ├─ Admin Eve task: verify the selected hold branch, dates, billing pause, and Hold Status
       ├─ Email: Hold received (Level 1 — immediate)
       ├─ Wait 1 day
       ├─ Email: Hold approved + key dates (Level 2)
@@ -170,7 +190,7 @@ HS: Extended Membership/PT Hold Form Submitted workflow fires
       │
       ▼
 HS: Extended Hold Approval workflow fires (trigger: Pipeline → Escalated Hold)
-      ├─ Owner task: review within 24hrs
+      ├─ Peter Brown task: review within 24hrs
       ├─ Owner internal notification
       ├─ Wait 2 days
       └─ If/Else: HS: Extended Hold Approved = Yes?
@@ -261,7 +281,8 @@ When a member indicates they are moving/travelling but may return, the `MC: Movi
 - Extended hold approval chase — 2-day wait, escalation if not actioned
 
 ### What remains manual
-- PT Minder billing pauses — no API integration, admin processes manually when Railway alerts
+- Standard membership-hold verification tasks — Admin Eve checks dates, billing pause, and Hold Status on the selected duration branch
+- Prepaid-pack and other non-subscription exceptions: Admin reviews manually when Railway alerts
 - Extended hold rejection — system flags but staff communicate outcome to member
 - Non-returners — coaches manage directly, no automated re-engagement sequence (deliberate)
 
