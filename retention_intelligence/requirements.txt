@@ -1,0 +1,10 @@
+APScheduler==3.10.4
+Flask==3.0.3
+gunicorn==22.0.0
+requests==2.32.3
+SQLAlchemy==2.0.41
+psycopg[binary]==3.2.13
+google-api-python-client==2.177.0
+google-auth==2.40.3
+python-dotenv==1.0.1
+pytest==8.3.5

@@ -24,7 +24,10 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from trainerize_client import TrainerizeClient
+try:
+    from .trainerize_client import TrainerizeClient
+except ImportError:  # Direct script execution.
+    from trainerize_client import TrainerizeClient
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -309,6 +312,18 @@ def load_authoritative_stripe_customers(
             if email and customer_id:
                 authoritative[email] = customer_id
     return authoritative
+
+
+def canonicalise_control_keys(
+    controls: dict[str, Any],
+    identity_links: dict[str, str],
+) -> dict[str, Any]:
+    """Apply confirmed email aliases to owner-approved control registers."""
+    return {
+        identity_links.get(normalise_email(key), normalise_email(key)): value
+        for key, value in controls.items()
+        if normalise_email(key)
+    }
 
 
 def normalise_text(value: Any) -> str:
@@ -1524,6 +1539,10 @@ def run_reconciliation(
     *,
     database: Path = DATABASE,
     fetch_invoices: bool = False,
+    identity_links: dict[str, str] | None = None,
+    identity_record_links: dict[tuple[str, str], str] | None = None,
+    account_classifications: dict[str, dict[str, Any]] | None = None,
+    authoritative_stripe_customers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     env = load_env()
     required = (
@@ -1570,6 +1589,26 @@ def run_reconciliation(
             trainerize, "deactivatedClient"
         )
 
+        resolved_identity_links = (
+            identity_links if identity_links is not None else load_identity_links()
+        )
+        resolved_account_classifications = canonicalise_control_keys(
+            (
+                account_classifications
+                if account_classifications is not None
+                else load_account_classifications()
+            ),
+            resolved_identity_links,
+        )
+        resolved_authoritative_customers = canonicalise_control_keys(
+            (
+                authoritative_stripe_customers
+                if authoritative_stripe_customers is not None
+                else load_authoritative_stripe_customers()
+            ),
+            resolved_identity_links,
+        )
+
         identities, missing_email = build_identity_records(
             contacts,
             opportunities,
@@ -1578,14 +1617,18 @@ def run_reconciliation(
             invoices,
             trainerize_active,
             trainerize_deactivated,
-            load_identity_links(),
-            load_identity_record_links(),
+            resolved_identity_links,
+            (
+                identity_record_links
+                if identity_record_links is not None
+                else load_identity_record_links()
+            ),
         )
         exceptions = classify_exceptions(
             identities,
             missing_email,
-            account_classifications=load_account_classifications(),
-            authoritative_stripe_customers=load_authoritative_stripe_customers(),
+            account_classifications=resolved_account_classifications,
+            authoritative_stripe_customers=resolved_authoritative_customers,
         )
         insert_snapshots(
             connection,
