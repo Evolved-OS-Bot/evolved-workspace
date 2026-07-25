@@ -134,6 +134,28 @@ def latest_revenue_run():
     return jsonify(summary or {"status": "not_found"}), (200 if summary else 404)
 
 
+@app.get("/revenue/evidence/legacy/status")
+def legacy_evidence_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.legacy_evidence_status())
+
+
+@app.post("/revenue/evidence/legacy")
+def replace_legacy_evidence():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    if request.content_length and request.content_length > 256_000:
+        return jsonify({"error": "payload too large"}), 413
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_legacy_evidence(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
 @app.post("/webhooks/ghl")
 def ghl_webhook():
     if not _authorised():

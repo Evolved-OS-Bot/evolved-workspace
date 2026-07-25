@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import base64
+import csv
+import hashlib
 import html
+import io
 import json
 import logging
 import os
+import re
 import sys
 import threading
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +23,25 @@ from .cli import run as run_controller
 
 
 log = logging.getLogger(__name__)
+
+LEGACY_EVIDENCE_FIELDS = (
+    "email",
+    "payment_rail",
+    "status",
+    "weekly_amount",
+    "last_receipt_date",
+    "next_due_date",
+    "notes",
+)
+LEGACY_EVIDENCE_STATUSES = {
+    "collecting",
+    "review_required",
+    "paused",
+    "inactive",
+    "paid_in_advance",
+    "pif",
+}
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 class RailwayRevenueRuntime:
@@ -93,6 +117,105 @@ class RailwayRevenueRuntime:
         if not self.latest_state_path.exists():
             return None
         return json.loads(self.latest_state_path.read_text(encoding="utf-8"))
+
+    @staticmethod
+    def _validate_iso_date(value: Any, field: str) -> str:
+        text = str(value or "").strip()
+        if not text:
+            return ""
+        try:
+            date.fromisoformat(text)
+        except ValueError as exc:
+            raise ValueError(f"{field} must be an ISO date") from exc
+        return text
+
+    def replace_legacy_evidence(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
+        if not isinstance(rows, list):
+            raise ValueError("rows must be a list")
+        if len(rows) > 500:
+            raise ValueError("rows cannot exceed 500 entries")
+
+        cleaned: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for position, row in enumerate(rows, start=1):
+            if not isinstance(row, dict):
+                raise ValueError(f"row {position} must be an object")
+            email = str(row.get("email") or "").strip().lower()
+            if not EMAIL_PATTERN.fullmatch(email):
+                raise ValueError(f"row {position} has an invalid email")
+            if email in seen:
+                raise ValueError(f"duplicate email at row {position}")
+            seen.add(email)
+
+            rail = str(row.get("payment_rail") or "").strip()
+            if rail.lower() not in {
+                "ptminder",
+                "ezidebit",
+                "ptminder/ezidebit",
+            }:
+                raise ValueError(f"row {position} has an unapproved payment rail")
+
+            status = str(row.get("status") or "").strip().lower()
+            if status not in LEGACY_EVIDENCE_STATUSES:
+                raise ValueError(f"row {position} has an invalid status")
+
+            amount_text = str(row.get("weekly_amount") or "").strip()
+            try:
+                amount = Decimal(amount_text)
+            except InvalidOperation as exc:
+                raise ValueError(f"row {position} has an invalid weekly amount") from exc
+            if amount <= 0 or amount > Decimal("5000"):
+                raise ValueError(f"row {position} has an invalid weekly amount")
+
+            notes = " ".join(str(row.get("notes") or "").split())
+            if len(notes) > 500:
+                raise ValueError(f"row {position} notes exceed 500 characters")
+
+            cleaned.append(
+                {
+                    "email": email,
+                    "payment_rail": "PTMinder/EziDebit",
+                    "status": status,
+                    "weekly_amount": f"{amount:.2f}",
+                    "last_receipt_date": self._validate_iso_date(
+                        row.get("last_receipt_date"), "last_receipt_date"
+                    ),
+                    "next_due_date": self._validate_iso_date(
+                        row.get("next_due_date"), "next_due_date"
+                    ),
+                    "notes": notes,
+                }
+            )
+
+        output = io.StringIO(newline="")
+        writer = csv.DictWriter(output, fieldnames=LEGACY_EVIDENCE_FIELDS)
+        writer.writeheader()
+        writer.writerows(cleaned)
+        payload = output.getvalue().encode("utf-8")
+        temporary = self.legacy_evidence_path.with_suffix(".tmp")
+        temporary.write_bytes(payload)
+        temporary.replace(self.legacy_evidence_path)
+        return {
+            "status": "replaced",
+            "rowCount": len(cleaned),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        }
+
+    def legacy_evidence_status(self) -> dict[str, Any]:
+        if not self.legacy_evidence_path.exists():
+            return {"status": "not_found", "rowCount": 0}
+        payload = self.legacy_evidence_path.read_bytes()
+        with io.StringIO(payload.decode("utf-8-sig")) as handle:
+            row_count = sum(1 for _ in csv.DictReader(handle))
+        return {
+            "status": "ready",
+            "rowCount": row_count,
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "updatedAt": datetime.fromtimestamp(
+                self.legacy_evidence_path.stat().st_mtime,
+                tz=self.settings.timezone,
+            ).isoformat(),
+        }
 
     def _send_report(self, metadata: dict[str, Any], kind: str) -> dict[str, Any]:
         if not self.settings.resend_api_key:

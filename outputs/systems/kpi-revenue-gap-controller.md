@@ -47,6 +47,8 @@ The live files should normally be:
 
 Each PTMinder or EziDebit row must be supported by an actual receipt check. Do not mark a member as collecting merely because an old account classification or active roster row exists.
 
+A recurring legacy receipt expires as proof of current collection after 14 days. The next scheduled audit then returns the row to the payment-review queue until a newer completed receipt is loaded. PIF and paid-in-advance evidence use their separate entitlement controls.
+
 Timing items are only for dated, evidenced differences between the receipt date and the service week. Every item needs an owner, next action and due date.
 
 ## Standard Run
@@ -99,22 +101,24 @@ No write-back is enabled until those cycles produce zero unsafe cancellation, bi
 
 Stripe, GHL, Trainerize, Active SGPT, Active PT and KPI inputs are available through the existing reconciliation sources. A current PT booking snapshot must also be supplied.
 
-The remaining operational dependency is a complete approved PTMinder and EziDebit receipt register. Until it is populated, the controller will deliberately leave those members unresolved and the cash bridge will remain open.
+The protected PTMinder/EziDebit register was populated on 25 July 2026 with 24 identity-verified rows. Twenty-one rows have recent completed receipt evidence; Belinda Peters, Bronte Holt and Rabail Aisha remain `review_required` because the latest receipt is stale or conflicts with the approved current service.
 
-The first protected July shadow run reproduced the $12,735 workbook allocation and $10,927.24 KPI cash. It did not close the bridge because legacy-rail receipts were incomplete. Two later live validation retries failed closed on Google Sheet read timeouts, without changing any source or overwriting the completed evidence.
+The first production run after loading the register read 143 roster rows and reproduced the $12,735 workbook allocation and $10,927.24 KPI cash. Confirmed current income increased from $7,317 to $9,380, unresolved exceptions fell from 56 to 33 and the unexplained variance reduced from $3,610.24 to $1,547.24. Cash is above confirmed current income, so the remaining variance is incomplete or differently timed evidence rather than proof of a cash shortfall.
 
 ## Railway Deployment
 
 The controller is deployed inside the existing `PT Booking Shadow` Railway service at `https://pt-booking-shadow-production.up.railway.app`.
 
-- Deployment `c60d7e77-4b12-45cf-b614-5a032a8ae89c` passed its health check on 25 July 2026.
+- Deployment `18d9266d-3dda-4a72-8235-e16dc7c73441` includes the protected register, due-date controls and 14-day recurring-receipt expiry.
 - The service uses one worker, Brisbane scheduling and the existing `/data` persistent volume.
 - `POST /revenue/run` starts an authenticated Monday or Friday audit.
 - `GET /revenue/runs/latest` returns the authenticated aggregate run state.
+- `POST /revenue/evidence/legacy` atomically replaces the authenticated legacy register after strict validation.
+- `GET /revenue/evidence/legacy/status` returns only the row count, update time and SHA-256 fingerprint.
 - The public health route exposes only run status, type and completion time.
 - GitHub auto-deploy is disabled because the connected workspace repository is public. Future production releases must use a reviewed, code-only direct Railway package.
 - The duplicate local Codex Monday and Friday automations are paused.
 
-The first Railway validation run completed in 78 seconds with fresh membership run `20260725T061222Z` and booking run `904fb075-7f99-4da7-80f3-090c36926a25`. It read 143 roster rows and reproduced $8,957 SGPT, $3,778 PT and $10,927.24 cash.
+Use `scripts/upload_legacy_payment_evidence.py` through `railway run` to refresh the protected register. The command obtains the existing Railway secret without printing it, sends the register over HTTPS and receives only a count and fingerprint.
 
-The validation bridge remained open at $3,610.24 because the Railway legacy-payment register is empty. This is a source-completeness result, not evidence that those members are unpaid.
+Production run `e722b7c5-81ba-4285-b09b-5a3ed8564ec4` completed with fresh membership run `20260725T073227Z` and booking run `904fb075-7f99-4da7-80f3-090c36926a25`. It read 143 roster rows, reported $9,380 confirmed current income, $9,928 scheduled run-rate, $10,927.24 cash and 33 owned exceptions. The final control assigns every residual exception a next-business-day due date.

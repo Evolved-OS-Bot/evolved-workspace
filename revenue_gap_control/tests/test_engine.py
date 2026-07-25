@@ -159,10 +159,39 @@ def test_approved_legacy_payment_can_prove_collecting():
             rail="PTMinder",
             status="collecting",
             weekly_amount=Decimal("120"),
+            last_receipt_date="2026-07-22",
         )
     }
     result = AuditEngine().run(inputs([item], [source], legacy=legacy))
     assert result.assessments[0].classification == CLEAN_COLLECTING
+
+
+def test_stale_legacy_receipt_does_not_prove_current_collection():
+    item = roster(email="legacy@example.com")
+    source = SourceEvidence(email=item.email)
+    legacy = {
+        item.email: LegacyPaymentEvidence(
+            email=item.email,
+            rail="PTMinder/EziDebit",
+            status="collecting",
+            weekly_amount=Decimal("99"),
+            last_receipt_date="2026-07-01",
+        )
+    }
+
+    result = AuditEngine().run(inputs([item], [source], legacy=legacy))
+
+    assert result.assessments[0].classification == BOOKING_PAYMENT_UNRESOLVED
+
+
+def test_every_exception_has_owner_action_and_due_date():
+    item = roster()
+    result = AuditEngine().run(inputs([item], [SourceEvidence(email=item.email)]))
+
+    assert result.exceptions
+    assert all(exception.owner for exception in result.exceptions)
+    assert all(exception.next_action for exception in result.exceptions)
+    assert {exception.due_date for exception in result.exceptions} == {"2026-07-27"}
 
 
 def test_fast_track_requires_both_allocation_rows():

@@ -118,6 +118,19 @@ class LegacyPaymentEvidence:
             "pif",
         }
 
+    def collecting_as_of(self, as_of: date, max_age_days: int = 14) -> bool:
+        status = self.status.strip().lower()
+        if status in {"paid_in_advance", "pif"}:
+            return True
+        if status not in {"collecting", "active", "paid"}:
+            return False
+        try:
+            receipt_date = date.fromisoformat(self.last_receipt_date[:10])
+        except (TypeError, ValueError):
+            return False
+        age = (as_of - receipt_date).days
+        return 0 <= age <= max_age_days
+
 
 @dataclass(frozen=True)
 class TimingItem:

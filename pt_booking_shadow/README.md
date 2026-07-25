@@ -100,6 +100,8 @@ python3 -m pt_booking_shadow.run_weekly
 - `POST /revenue/run?kind=monday&sendEmail=false`
 - `POST /revenue/run?kind=friday&sendEmail=false`
 - `GET /revenue/runs/latest`
+- `POST /revenue/evidence/legacy`
+- `GET /revenue/evidence/legacy/status`
 
 Protected endpoints require `X-Webhook-Secret` or a Bearer token matching
 `WEBHOOK_SHARED_SECRET`.
@@ -108,6 +110,12 @@ The revenue controller runs Monday at 6:30 am and Friday at 4:30 pm in
 Australia/Brisbane. It stores its audit database and identified evidence below
 `/data/revenue-gap-control/`; scheduled reports are sent to
 `REVENUE_REPORT_TO`, which defaults to Peter's business address.
+
+The legacy-evidence replacement endpoint accepts only validated
+PTMinder/EziDebit rows, writes the register atomically and returns only the row
+count and SHA-256 fingerprint. Use
+`scripts/upload_legacy_payment_evidence.py` through `railway run` so the
+production secret is never placed on the command line or printed.
 
 ## Railway
 

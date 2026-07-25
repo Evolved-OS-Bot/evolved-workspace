@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from collections import Counter, defaultdict
+from datetime import timedelta
 from decimal import Decimal
 
 from .models import (
@@ -309,7 +310,7 @@ class AuditEngine:
             assessment = self.assess_record(
                 record,
                 evidence,
-                bool(legacy and legacy.collecting),
+                bool(legacy and legacy.collecting_as_of(inputs.window_end)),
             )
             assessments.append(assessment)
             exception = self._exception_for(assessment)
@@ -332,6 +333,13 @@ class AuditEngine:
                     next_action="Restore the source and rerun before authorising changes.",
                 )
             )
+
+        default_due = inputs.window_end + timedelta(days=1)
+        while default_due.weekday() >= 5:
+            default_due += timedelta(days=1)
+        for exception in exceptions:
+            if not exception.due_date:
+                exception.due_date = default_due.isoformat()
 
         bridge = CashBridge(cleared_cash=inputs.cleared_cash)
         for item in assessments:
