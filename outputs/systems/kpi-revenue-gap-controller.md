@@ -1,6 +1,6 @@
 # KPI Revenue Gap and Active Client Audit Controller
 
-**Status:** Read-only shadow operation
+**Status:** Railway read-only shadow operation
 
 **Canonical policy:** `reference/sops/active-client-payment-and-booking-reconciliation.md` version 1.8
 
@@ -19,6 +19,8 @@ It does not charge a client, void an invoice, cancel a membership, delete an app
 - An identified exception list with evidence checked, owner, next action and due date.
 - A protected cash bridge for the selected service week.
 - A durable SQLite audit history at `data/private/revenue-gap-control/revenue_gap.sqlite`.
+
+The production service stores the equivalent protected evidence below `/data/revenue-gap-control/` on the existing Railway persistent volume.
 
 ## Evidence Hierarchy
 
@@ -68,8 +70,8 @@ Use `--cleared-cash` only when the operator is intentionally supplying a separat
 ## Operating Cadence
 
 - Within one business day: review starts, failed payments, refunds, holds, returns, cancellations, downgrades, price changes and payment-rail changes.
-- Monday at 6:30 am Brisbane: the active `Monday active-client revenue audit` automation runs the full Active PT audit and SGPT exception review.
-- Friday at 4:30 pm Brisbane: the active `Friday KPI cash close` automation closes the bridge after bank cash is confirmed.
+- Monday at 6:30 am Brisbane: Railway runs the full Active PT audit and SGPT exception review.
+- Friday at 4:30 pm Brisbane: Railway closes the bridge after bank cash is confirmed and emails Peter.
 - First Monday monthly: complete the full SGPT, PT pack and identity deep check.
 - Quarterly: validate identity, lifecycle, current tier and KPI formulas.
 - Extra full audit: trigger when the unexplained residual remains above $99 for SGPT or $120 for PT after timing items, or when lifecycle evidence is missing.
@@ -100,3 +102,19 @@ Stripe, GHL, Trainerize, Active SGPT, Active PT and KPI inputs are available thr
 The remaining operational dependency is a complete approved PTMinder and EziDebit receipt register. Until it is populated, the controller will deliberately leave those members unresolved and the cash bridge will remain open.
 
 The first protected July shadow run reproduced the $12,735 workbook allocation and $10,927.24 KPI cash. It did not close the bridge because legacy-rail receipts were incomplete. Two later live validation retries failed closed on Google Sheet read timeouts, without changing any source or overwriting the completed evidence.
+
+## Railway Deployment
+
+The controller is deployed inside the existing `PT Booking Shadow` Railway service at `https://pt-booking-shadow-production.up.railway.app`.
+
+- Deployment `c60d7e77-4b12-45cf-b614-5a032a8ae89c` passed its health check on 25 July 2026.
+- The service uses one worker, Brisbane scheduling and the existing `/data` persistent volume.
+- `POST /revenue/run` starts an authenticated Monday or Friday audit.
+- `GET /revenue/runs/latest` returns the authenticated aggregate run state.
+- The public health route exposes only run status, type and completion time.
+- GitHub auto-deploy is disabled because the connected workspace repository is public. Future production releases must use a reviewed, code-only direct Railway package.
+- The duplicate local Codex Monday and Friday automations are paused.
+
+The first Railway validation run completed in 78 seconds with fresh membership run `20260725T061222Z` and booking run `904fb075-7f99-4da7-80f3-090c36926a25`. It read 143 roster rows and reproduced $8,957 SGPT, $3,778 PT and $10,927.24 cash.
+
+The validation bridge remained open at $3,610.24 because the Railway legacy-payment register is empty. This is a source-completeness result, not evidence that those members are unpaid.

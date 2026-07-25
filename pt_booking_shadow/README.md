@@ -97,9 +97,17 @@ python3 -m pt_booking_shadow.run_weekly
 - `GET /health`
 - `POST /run?sendEmail=false`
 - `POST /webhooks/ghl`
+- `POST /revenue/run?kind=monday&sendEmail=false`
+- `POST /revenue/run?kind=friday&sendEmail=false`
+- `GET /revenue/runs/latest`
 
 Protected endpoints require `X-Webhook-Secret` or a Bearer token matching
 `WEBHOOK_SHARED_SECRET`.
+
+The revenue controller runs Monday at 6:30 am and Friday at 4:30 pm in
+Australia/Brisbane. It stores its audit database and identified evidence below
+`/data/revenue-gap-control/`; scheduled reports are sent to
+`REVENUE_REPORT_TO`, which defaults to Peter's business address.
 
 ## Railway
 
