@@ -1,0 +1,2 @@
+label,email,amount,category,receipt_date,service_week,owner,next_action,due_date
+Example receipt timing,member@example.com,99.00,receipt_timing,2026-07-27,2026-07-20 to 2026-07-26,Admin Eve,Verify the receipt belongs to this service week,2026-07-28

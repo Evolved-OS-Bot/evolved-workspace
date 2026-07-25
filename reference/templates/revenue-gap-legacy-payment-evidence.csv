@@ -1,0 +1,2 @@
+email,payment_rail,status,weekly_amount,last_receipt_date,next_due_date,notes
+member@example.com,PTMinder,collecting,99.00,2026-07-20,2026-07-27,Example only: replace or remove before a live audit

@@ -5,6 +5,8 @@ and reads the KPI tab.
 """
 
 import os
+import json
+import time
 from pathlib import Path
 from datetime import date, datetime, timedelta
 from google.oauth2 import service_account
@@ -20,11 +22,21 @@ SCRIPTS_DIR = Path(__file__).parent
 
 
 def get_sheets_service():
-    creds_file = os.environ["GOOGLE_SHEETS_CREDENTIALS_FILE"]
-    creds_path = Path(creds_file) if Path(creds_file).is_absolute() else SCRIPTS_DIR / creds_file
-    creds = service_account.Credentials.from_service_account_file(
-        str(creds_path), scopes=SCOPES
-    )
+    credentials_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    if credentials_json:
+        creds = service_account.Credentials.from_service_account_info(
+            json.loads(credentials_json), scopes=SCOPES
+        )
+    else:
+        creds_file = os.environ["GOOGLE_SHEETS_CREDENTIALS_FILE"]
+        creds_path = (
+            Path(creds_file)
+            if Path(creds_file).is_absolute()
+            else SCRIPTS_DIR / creds_file
+        )
+        creds = service_account.Credentials.from_service_account_file(
+            str(creds_path), scopes=SCOPES
+        )
     return build("sheets", "v4", credentials=creds)
 
 
@@ -37,7 +49,7 @@ def read_sheet(sheet_name, cell_range, formatted=False):
     service = get_sheets_service()
     spreadsheet_id = os.environ["GOOGLE_SPREADSHEET_ID"]
     render_option = "FORMATTED_VALUE" if formatted else "UNFORMATTED_VALUE"
-    result = (
+    request = (
         service.spreadsheets()
         .values()
         .get(
@@ -45,8 +57,15 @@ def read_sheet(sheet_name, cell_range, formatted=False):
             range=f"'{sheet_name}'!{cell_range}",
             valueRenderOption=render_option,
         )
-        .execute()
     )
+    for attempt in range(3):
+        try:
+            result = request.execute()
+            break
+        except Exception:
+            if attempt == 2:
+                raise
+            time.sleep(2**attempt)
     return result.get("values", [])
 
 

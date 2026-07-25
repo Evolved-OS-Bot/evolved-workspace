@@ -86,6 +86,10 @@ class Settings:
     trainerize_api_base_url: str
     trainerize_location_id: int | None
 
+    @property
+    def timezone(self):
+        return BRISBANE_TZ
+
     @classmethod
     def from_env(cls, require_runtime: bool = True) -> "Settings":
         shadow = _bool("SHADOW_MODE", True)
