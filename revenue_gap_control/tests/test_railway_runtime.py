@@ -177,6 +177,82 @@ def test_hub_pt_minder_shadow_applies_approved_identity_link(
     assert status["matchedRows"] == 1
     assert status["hubOnlyRows"] == 0
     assert status["legacyOnlyRows"] == 0
+    assert status["status"] == "source_contract_incomplete"
+    assert status["cutoverEligible"] is False
+
+
+def test_hub_pt_minder_shadow_separates_recurring_and_ad_hoc_pt(
+    tmp_path, monkeypatch
+):
+    service = runtime(tmp_path)
+    service.replace_legacy_evidence(
+        [
+            {
+                **valid_row(),
+                "email": "anne@example.com",
+                "weekly_amount": "69",
+                "last_receipt_date": "2026-07-23",
+                "next_due_date": "2026-07-30",
+            }
+        ]
+    )
+    monkeypatch.setattr(
+        "revenue_gap_control.railway_runtime.fetch_latest_source",
+        lambda *args, **kwargs: {
+            "snapshot_id": "snapshot-v2",
+            "fingerprint": "c" * 64,
+            "observed_at": "2026-07-27T10:00:00+10:00",
+            "payload": {
+                "schema_version": 2,
+                "transaction_detail_complete": True,
+                "rows": [
+                    {
+                        "email": "anne@example.com",
+                        "state": "collecting",
+                        "transactions": [
+                            {
+                                "source_transaction_id": "gypsy-23",
+                                "occurred_on": "2026-07-23",
+                                "description": "Gypsy Program",
+                                "amount": "69.00",
+                                "status": "completed",
+                                "service_type": "sgpt",
+                                "cadence": "recurring",
+                                "next_scheduled_payment": "2026-07-30",
+                            },
+                            {
+                                "source_transaction_id": "pt-22",
+                                "occurred_on": "2026-07-22",
+                                "description": "1xPT 24/7",
+                                "amount": "60.00",
+                                "status": "completed",
+                                "service_type": "personal_training",
+                                "cadence": "ad_hoc",
+                                "next_scheduled_payment": None,
+                            },
+                            {
+                                "source_transaction_id": "pt-20",
+                                "occurred_on": "2026-07-20",
+                                "description": "2x30 min PT with Megan",
+                                "amount": "120.00",
+                                "status": "completed",
+                                "service_type": "personal_training",
+                                "cadence": "ad_hoc",
+                                "next_scheduled_payment": None,
+                            },
+                        ],
+                    }
+                ],
+            },
+        },
+    )
+
+    status = service.refresh_hub_pt_minder_shadow()
+
+    assert status["status"] == "parity"
+    assert status["matchedRows"] == 1
+    assert status["adHocPtTransactions"] == 2
+    assert status["adHocPtCash"] == "180.00"
     assert status["cutoverEligible"] is True
 
 

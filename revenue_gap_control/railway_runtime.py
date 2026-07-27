@@ -233,18 +233,80 @@ class RailwayRevenueRuntime:
         }
 
     @staticmethod
-    def _weekly_amount(row: dict[str, Any]) -> str:
-        amount = Decimal(str(row.get("amount") or "0"))
-        receipt = date.fromisoformat(str(row["last_successful_payment"]))
-        due = date.fromisoformat(str(row["next_scheduled_payment"]))
+    def _weekly_amount_from_values(
+        amount_value: Any,
+        receipt_value: Any,
+        due_value: Any,
+    ) -> str:
+        amount = Decimal(str(amount_value or "0"))
+        receipt = date.fromisoformat(str(receipt_value))
+        due = date.fromisoformat(str(due_value))
         interval_weeks = max(1, round((due - receipt).days / 7))
         return f"{amount / interval_weeks:.2f}"
 
+    @classmethod
+    def _weekly_amount(cls, row: dict[str, Any]) -> str:
+        return cls._weekly_amount_from_values(
+            row.get("amount"),
+            row["last_successful_payment"],
+            row["next_scheduled_payment"],
+        )
+
+    @classmethod
+    def _recurring_transaction_evidence(
+        cls,
+        row: dict[str, Any],
+    ) -> tuple[dict[str, str] | None, bool]:
+        transactions = row.get("transactions")
+        if not isinstance(transactions, list):
+            return None, False
+        recurring = [
+            transaction
+            for transaction in transactions
+            if transaction.get("status") == "completed"
+            and transaction.get("cadence") == "recurring"
+            and transaction.get("occurred_on")
+            and transaction.get("next_scheduled_payment")
+            and transaction.get("amount")
+        ]
+        recurring_types = {
+            str(transaction.get("service_type") or "")
+            for transaction in recurring
+        }
+        if len(recurring_types) > 1:
+            return None, True
+        if not recurring:
+            return None, False
+        latest = max(
+            recurring,
+            key=lambda transaction: (
+                str(transaction["occurred_on"]),
+                str(transaction["source_transaction_id"]),
+            ),
+        )
+        return (
+            {
+                "status": "collecting",
+                "weekly_amount": cls._weekly_amount_from_values(
+                    latest["amount"],
+                    latest["occurred_on"],
+                    latest["next_scheduled_payment"],
+                ),
+                "last_receipt_date": str(latest["occurred_on"]),
+                "next_due_date": str(latest["next_scheduled_payment"]),
+            },
+            False,
+        )
+
     def refresh_hub_pt_minder_shadow(self) -> dict[str, Any]:
         snapshot = fetch_latest_source("pt_minder", max_age_hours=192)
-        rows = snapshot.get("payload", {}).get("rows")
+        payload = snapshot.get("payload", {})
+        rows = payload.get("rows")
         if not isinstance(rows, list):
             raise ValueError("PT Minder hub snapshot rows are missing")
+        transaction_detail_complete = (
+            payload.get("transaction_detail_complete") is True
+        )
 
         aliases: dict[str, str] = {}
         if self.identity_links_path.exists():
@@ -262,9 +324,35 @@ class RailwayRevenueRuntime:
                         aliases[linked] = canonical
 
         hub: dict[str, dict[str, str]] = {}
+        ambiguous_recurring: list[str] = []
+        ad_hoc_pt_transactions = 0
+        ad_hoc_pt_cash = Decimal("0")
         for row in rows:
             email = str(row.get("email") or "").strip().lower()
             email = aliases.get(email, email)
+            for transaction in row.get("transactions") or []:
+                if (
+                    transaction.get("status") == "completed"
+                    and transaction.get("service_type")
+                    == "personal_training"
+                    and transaction.get("cadence") == "ad_hoc"
+                ):
+                    ad_hoc_pt_transactions += 1
+                    ad_hoc_pt_cash += Decimal(
+                        str(transaction.get("amount") or "0")
+                    )
+            if transaction_detail_complete:
+                evidence, ambiguous = self._recurring_transaction_evidence(row)
+                if ambiguous and EMAIL_PATTERN.fullmatch(email):
+                    ambiguous_recurring.append(email)
+                if (
+                    not EMAIL_PATTERN.fullmatch(email)
+                    or row.get("state") != "collecting"
+                    or evidence is None
+                ):
+                    continue
+                hub[email] = evidence
+                continue
             if (
                 not EMAIL_PATTERN.fullmatch(email)
                 or row.get("state") != "collecting"
@@ -318,11 +406,24 @@ class RailwayRevenueRuntime:
                 "next_due_date",
             )
         }
+        parity_equal = (
+            not mismatched
+            and set(hub) == set(legacy)
+            and bool(hub)
+        )
+        if not transaction_detail_complete:
+            status = "source_contract_incomplete"
+        elif ambiguous_recurring:
+            status = "ambiguous_recurring_streams"
+        else:
+            status = "parity" if parity_equal else "differences_found"
         state = {
-            "status": "parity" if not mismatched else "differences_found",
+            "status": status,
             "snapshotId": snapshot.get("snapshot_id"),
             "fingerprint": snapshot.get("fingerprint"),
             "observedAt": snapshot.get("observed_at"),
+            "sourceContractVersion": payload.get("schema_version", 1),
+            "transactionDetailComplete": transaction_detail_complete,
             "hubEligibleRows": len(hub),
             "legacyRows": len(legacy),
             "matchedRows": len(shared) - len(mismatched),
@@ -330,13 +431,19 @@ class RailwayRevenueRuntime:
             "hubOnlyRows": len(set(hub) - set(legacy)),
             "legacyOnlyRows": len(set(legacy) - set(hub)),
             "mismatchFieldCounts": mismatch_field_counts,
+            "ambiguousRecurringAccounts": len(ambiguous_recurring),
+            "adHocPtTransactions": ad_hoc_pt_transactions,
+            "adHocPtCash": f"{ad_hoc_pt_cash:.2f}",
             "cutoverEligible": (
-                not mismatched and set(hub) == set(legacy) and bool(hub)
+                transaction_detail_complete
+                and not ambiguous_recurring
+                and parity_equal
             ),
             "privateDifferences": {
                 "mismatched": mismatched,
                 "hubOnly": sorted(set(hub) - set(legacy)),
                 "legacyOnly": sorted(set(legacy) - set(hub)),
+                "ambiguousRecurring": sorted(ambiguous_recurring),
             },
             "checkedAt": datetime.now(self.settings.timezone).isoformat(),
         }
