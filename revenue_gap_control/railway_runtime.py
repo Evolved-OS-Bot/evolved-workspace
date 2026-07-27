@@ -246,9 +246,25 @@ class RailwayRevenueRuntime:
         if not isinstance(rows, list):
             raise ValueError("PT Minder hub snapshot rows are missing")
 
+        aliases: dict[str, str] = {}
+        if self.identity_links_path.exists():
+            with self.identity_links_path.open(
+                newline="", encoding="utf-8-sig"
+            ) as handle:
+                for row in csv.DictReader(handle):
+                    canonical = str(
+                        row.get("canonical_email") or ""
+                    ).strip().lower()
+                    linked = str(
+                        row.get("linked_email") or ""
+                    ).strip().lower()
+                    if canonical and linked:
+                        aliases[linked] = canonical
+
         hub: dict[str, dict[str, str]] = {}
         for row in rows:
             email = str(row.get("email") or "").strip().lower()
+            email = aliases.get(email, email)
             if (
                 not EMAIL_PATTERN.fullmatch(email)
                 or row.get("state") != "collecting"
@@ -289,6 +305,19 @@ class RailwayRevenueRuntime:
         mismatched = [
             email for email in shared if hub[email] != legacy[email]
         ]
+        mismatch_field_counts = {
+            field: sum(
+                1
+                for email in mismatched
+                if hub[email].get(field) != legacy[email].get(field)
+            )
+            for field in (
+                "status",
+                "weekly_amount",
+                "last_receipt_date",
+                "next_due_date",
+            )
+        }
         state = {
             "status": "parity" if not mismatched else "differences_found",
             "snapshotId": snapshot.get("snapshot_id"),
@@ -300,6 +329,7 @@ class RailwayRevenueRuntime:
             "mismatchedRows": len(mismatched),
             "hubOnlyRows": len(set(hub) - set(legacy)),
             "legacyOnlyRows": len(set(legacy) - set(hub)),
+            "mismatchFieldCounts": mismatch_field_counts,
             "cutoverEligible": (
                 not mismatched and set(hub) == set(legacy) and bool(hub)
             ),

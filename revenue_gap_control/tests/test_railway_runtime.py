@@ -131,7 +131,53 @@ def test_hub_pt_minder_shadow_reports_status_differences(
     assert status["matchedRows"] == 1
     assert status["mismatchedRows"] == 1
     assert status["cutoverEligible"] is False
+    assert status["mismatchFieldCounts"]["status"] == 1
     assert "privateDifferences" not in service.hub_pt_minder_status()
+
+
+def test_hub_pt_minder_shadow_applies_approved_identity_link(
+    tmp_path, monkeypatch
+):
+    service = runtime(tmp_path)
+    service.replace_legacy_evidence([valid_row()])
+    service.replace_identity_links(
+        [
+            {
+                "canonical_email": "member@example.com",
+                "linked_email": "new-address@example.com",
+                "confirmed_name": "Member Example",
+                "confirmed_by": "Peter Brown",
+                "confirmed_date": "2026-07-27",
+                "note": "Approved exact account link.",
+            }
+        ]
+    )
+    monkeypatch.setattr(
+        "revenue_gap_control.railway_runtime.fetch_latest_source",
+        lambda *args, **kwargs: {
+            "snapshot_id": "snapshot-2",
+            "fingerprint": "b" * 64,
+            "observed_at": "2026-07-27T10:00:00+10:00",
+            "payload": {
+                "rows": [
+                    {
+                        "email": "new-address@example.com",
+                        "state": "collecting",
+                        "amount": "99",
+                        "last_successful_payment": "2026-07-22",
+                        "next_scheduled_payment": "2026-07-29",
+                    }
+                ]
+            },
+        },
+    )
+
+    status = service.refresh_hub_pt_minder_shadow()
+
+    assert status["matchedRows"] == 1
+    assert status["hubOnlyRows"] == 0
+    assert status["legacyOnlyRows"] == 0
+    assert status["cutoverEligible"] is True
 
 
 def test_replace_shared_identity_and_account_evidence(tmp_path):
