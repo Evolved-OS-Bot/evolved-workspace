@@ -49,3 +49,17 @@ def test_dashboard_requires_login(monkeypatch, tmp_path):
         == 302
     )
     assert client.get("/dashboard").status_code == 200
+
+
+def test_ceo_report_is_authenticated_and_aggregate(monkeypatch, tmp_path):
+    app = make_app(monkeypatch, tmp_path)
+    client = app.test_client()
+    assert client.get("/api/v1/ceo-report").status_code == 401
+    response = client.get(
+        "/api/v1/ceo-report",
+        headers={"X-Hub-Secret": "test-secret"},
+    )
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["report_id"] == "ceo-report"
+    assert "email" not in str(payload).lower()

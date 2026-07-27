@@ -100,6 +100,56 @@ def dashboard_api():
     return jsonify(service.dashboard_data())
 
 
+@app.get("/api/v1/ceo-report")
+def ceo_report():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    data = service.dashboard_data()
+    metrics = data["metrics"]
+    members = metrics.get("members") or {}
+    stale = [
+        source["source"]
+        for source in data["sources"]
+        if source["freshness"] == "stale"
+    ]
+    return jsonify(
+        {
+            "schema_version": 1,
+            "report_id": "ceo-report",
+            "generated_at": data["generated_at"],
+            "mode": data["mode"],
+            "period": metrics.get("period"),
+            "decision_metrics": {
+                "unique_active_clients": members.get("unique_clients"),
+                "service_relationships": members.get(
+                    "service_relationships"
+                ),
+                "cross_service_overlaps": members.get(
+                    "cross_service_overlaps"
+                ),
+                "cash_collected": metrics.get("cash_collected"),
+                "year_to_date_cash_collected": metrics.get(
+                    "year_to_date_cash_collected"
+                ),
+                "sales_total": metrics.get("sales_total"),
+                "leads_total": metrics.get("leads_total"),
+                "bookings_total": metrics.get("bookings_total"),
+                "show_rate": metrics.get("show_rate"),
+                "conversion_rate": metrics.get("conversion_rate"),
+                "sgpt_net": metrics.get("sgpt_net"),
+                "pt_net": metrics.get("pt_net"),
+                "pt_bookings": metrics.get("pt_bookings"),
+                "pt_booked_hours": metrics.get("pt_booked_hours"),
+            },
+            "source_health": {
+                "accepted_sources": len(data["sources"]),
+                "stale_sources": stale,
+            },
+            "open_exceptions": data["exceptions"],
+        }
+    )
+
+
 @app.post("/api/v1/ingest/pt-minder")
 def ingest_pt_minder():
     if not _authorised():
