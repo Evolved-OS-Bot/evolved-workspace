@@ -14,6 +14,7 @@ from flask import Flask, jsonify, request
 from .config import BRISBANE_TZ, Settings, load_local_env
 from .service import ShadowAuditService
 from revenue_gap_control.railway_runtime import RailwayRevenueRuntime
+from reporting_control.hub_client import publish_summary
 
 
 load_local_env(Path(__file__).parent / ".env")
@@ -42,8 +43,26 @@ def _authorised() -> bool:
 
 def _start_full_audit(send_email: bool) -> None:
     try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
         run_id, findings = service.run_full(send_email=send_email)
         log.info("Full shadow audit complete: run=%s contacts=%s", run_id, len(findings))
+        try:
+            publish_summary(
+                "pt_booking_continuity",
+                {
+                    "runId": run_id,
+                    "findingCount": len(findings),
+                    "lastSuccessfulRun": service.store.last_successful_run(),
+                },
+            )
+        except Exception as exc:
+            log.warning("Hub PT publish failed: %s", type(exc).__name__)
     except Exception:
         log.exception("Full shadow audit failed")
 
@@ -62,6 +81,7 @@ def health():
                 "kind": revenue_state.get("kind"),
                 "completedAt": revenue_state.get("completedAt"),
             },
+            "hubPtMinder": revenue_service.hub_pt_minder_status(),
         }
     )
 
@@ -77,6 +97,13 @@ def _revenue_window(kind: str) -> tuple[str, str]:
 def _start_revenue_audit(kind: str, send_email: bool) -> None:
     window_start, window_end = _revenue_window(kind)
     try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
         state = revenue_service.run(
             kind=kind,
             window_start=window_start,
@@ -84,6 +111,14 @@ def _start_revenue_audit(kind: str, send_email: bool) -> None:
             send_email=send_email,
         )
         log.info("Revenue-gap audit complete: %s", state)
+        try:
+            publish_summary(
+                "revenue_control",
+                state,
+                observed_at=state.get("completedAt"),
+            )
+        except Exception as exc:
+            log.warning("Hub revenue publish failed: %s", type(exc).__name__)
     except Exception:
         log.exception("Revenue-gap audit failed")
 
@@ -151,6 +186,39 @@ def replace_legacy_evidence():
     rows = payload.get("rows") if isinstance(payload, dict) else None
     try:
         result = revenue_service.replace_legacy_evidence(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.get("/revenue/evidence/shared/status")
+def shared_evidence_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.shared_evidence_status())
+
+
+@app.post("/revenue/evidence/identity-links")
+def replace_identity_links():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_identity_links(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/revenue/evidence/account-classifications")
+def replace_account_classifications():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_account_classifications(rows)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     return jsonify(result)

@@ -18,6 +18,8 @@ from typing import Any
 
 import requests
 
+from reporting_control.hub_source_client import fetch_latest_source
+
 from .cli import parser as controller_parser
 from .cli import run as run_controller
 
@@ -41,6 +43,16 @@ LEGACY_EVIDENCE_STATUSES = {
     "paid_in_advance",
     "pif",
 }
+ACCOUNT_CLASSIFICATIONS = {
+    "approved_internal_access",
+    "current_pt_client",
+    "external_payment_client",
+    "inactive_pt_credit",
+    "online_client",
+    "owner_admin",
+    "prepaid_credit_client",
+    "staff",
+}
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
@@ -59,6 +71,9 @@ class RailwayRevenueRuntime:
         self.identity_links_path = self.base_dir / "identity-links.csv"
         self.account_classifications_path = (
             self.base_dir / "account-classifications.csv"
+        )
+        self.hub_pt_minder_state_path = (
+            self.base_dir / "hub-pt-minder-parity.json"
         )
         self._lock = threading.Lock()
 
@@ -215,6 +230,244 @@ class RailwayRevenueRuntime:
                 self.legacy_evidence_path.stat().st_mtime,
                 tz=self.settings.timezone,
             ).isoformat(),
+        }
+
+    @staticmethod
+    def _weekly_amount(row: dict[str, Any]) -> str:
+        amount = Decimal(str(row.get("amount") or "0"))
+        receipt = date.fromisoformat(str(row["last_successful_payment"]))
+        due = date.fromisoformat(str(row["next_scheduled_payment"]))
+        interval_weeks = max(1, round((due - receipt).days / 7))
+        return f"{amount / interval_weeks:.2f}"
+
+    def refresh_hub_pt_minder_shadow(self) -> dict[str, Any]:
+        snapshot = fetch_latest_source("pt_minder", max_age_hours=192)
+        rows = snapshot.get("payload", {}).get("rows")
+        if not isinstance(rows, list):
+            raise ValueError("PT Minder hub snapshot rows are missing")
+
+        hub: dict[str, dict[str, str]] = {}
+        for row in rows:
+            email = str(row.get("email") or "").strip().lower()
+            if (
+                not EMAIL_PATTERN.fullmatch(email)
+                or row.get("state") != "collecting"
+                or not row.get("amount")
+                or not row.get("last_successful_payment")
+                or not row.get("next_scheduled_payment")
+            ):
+                continue
+            hub[email] = {
+                "status": "collecting",
+                "weekly_amount": self._weekly_amount(row),
+                "last_receipt_date": str(row["last_successful_payment"]),
+                "next_due_date": str(row["next_scheduled_payment"]),
+            }
+
+        legacy: dict[str, dict[str, str]] = {}
+        if self.legacy_evidence_path.exists():
+            with self.legacy_evidence_path.open(
+                newline="", encoding="utf-8-sig"
+            ) as handle:
+                for row in csv.DictReader(handle):
+                    email = str(row.get("email") or "").strip().lower()
+                    if email:
+                        legacy[email] = {
+                            "status": str(row.get("status") or "").strip().lower(),
+                            "weekly_amount": (
+                                f"{Decimal(str(row.get('weekly_amount'))):.2f}"
+                            ),
+                            "last_receipt_date": str(
+                                row.get("last_receipt_date") or ""
+                            ).strip(),
+                            "next_due_date": str(
+                                row.get("next_due_date") or ""
+                            ).strip(),
+                        }
+
+        shared = sorted(set(hub) & set(legacy))
+        mismatched = [
+            email for email in shared if hub[email] != legacy[email]
+        ]
+        state = {
+            "status": "parity" if not mismatched else "differences_found",
+            "snapshotId": snapshot.get("snapshot_id"),
+            "fingerprint": snapshot.get("fingerprint"),
+            "observedAt": snapshot.get("observed_at"),
+            "hubEligibleRows": len(hub),
+            "legacyRows": len(legacy),
+            "matchedRows": len(shared) - len(mismatched),
+            "mismatchedRows": len(mismatched),
+            "hubOnlyRows": len(set(hub) - set(legacy)),
+            "legacyOnlyRows": len(set(legacy) - set(hub)),
+            "cutoverEligible": (
+                not mismatched and set(hub) == set(legacy) and bool(hub)
+            ),
+            "privateDifferences": {
+                "mismatched": mismatched,
+                "hubOnly": sorted(set(hub) - set(legacy)),
+                "legacyOnly": sorted(set(legacy) - set(hub)),
+            },
+            "checkedAt": datetime.now(self.settings.timezone).isoformat(),
+        }
+        temporary = self.hub_pt_minder_state_path.with_suffix(".tmp")
+        temporary.write_text(
+            json.dumps(state, indent=2),
+            encoding="utf-8",
+        )
+        temporary.replace(self.hub_pt_minder_state_path)
+        return {
+            key: value
+            for key, value in state.items()
+            if key != "privateDifferences"
+        }
+
+    def hub_pt_minder_status(self) -> dict[str, Any]:
+        if not self.hub_pt_minder_state_path.exists():
+            return {"status": "not_checked"}
+        state = json.loads(
+            self.hub_pt_minder_state_path.read_text(encoding="utf-8")
+        )
+        return {
+            key: value
+            for key, value in state.items()
+            if key != "privateDifferences"
+        }
+
+    @staticmethod
+    def _atomic_csv(
+        path: Path,
+        fieldnames: list[str],
+        rows: list[dict[str, str]],
+    ) -> dict[str, Any]:
+        output = io.StringIO(newline="")
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+        payload = output.getvalue().encode("utf-8")
+        temporary = path.with_suffix(".tmp")
+        temporary.write_bytes(payload)
+        temporary.replace(path)
+        return {
+            "status": "replaced",
+            "rowCount": len(rows),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        }
+
+    def replace_identity_links(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
+        if not isinstance(rows, list) or len(rows) > 500:
+            raise ValueError("rows must be a list with at most 500 entries")
+        cleaned: list[dict[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for position, row in enumerate(rows, start=1):
+            canonical = str(row.get("canonical_email") or "").strip().lower()
+            linked = str(row.get("linked_email") or "").strip().lower()
+            if not EMAIL_PATTERN.fullmatch(canonical) or not EMAIL_PATTERN.fullmatch(linked):
+                raise ValueError(f"row {position} has an invalid email")
+            if canonical == linked:
+                raise ValueError(f"row {position} links an email to itself")
+            pair = (canonical, linked)
+            if pair in seen:
+                raise ValueError(f"duplicate identity link at row {position}")
+            seen.add(pair)
+            cleaned.append(
+                {
+                    "canonical_email": canonical,
+                    "linked_email": linked,
+                    "confirmed_name": " ".join(
+                        str(row.get("confirmed_name") or "").split()
+                    ),
+                    "confirmed_by": " ".join(
+                        str(row.get("confirmed_by") or "").split()
+                    ),
+                    "confirmed_date": self._validate_iso_date(
+                        row.get("confirmed_date"), "confirmed_date"
+                    ),
+                    "note": " ".join(str(row.get("note") or "").split())[:500],
+                }
+            )
+        return self._atomic_csv(
+            self.identity_links_path,
+            [
+                "canonical_email",
+                "linked_email",
+                "confirmed_name",
+                "confirmed_by",
+                "confirmed_date",
+                "note",
+            ],
+            cleaned,
+        )
+
+    def replace_account_classifications(
+        self, rows: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        if not isinstance(rows, list) or len(rows) > 500:
+            raise ValueError("rows must be a list with at most 500 entries")
+        cleaned: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for position, row in enumerate(rows, start=1):
+            email = str(row.get("email") or "").strip().lower()
+            if not EMAIL_PATTERN.fullmatch(email):
+                raise ValueError(f"row {position} has an invalid email")
+            if email in seen:
+                raise ValueError(f"duplicate account email at row {position}")
+            seen.add(email)
+            classification = str(row.get("classification") or "").strip().lower()
+            if classification not in ACCOUNT_CLASSIFICATIONS:
+                raise ValueError(f"row {position} has an invalid classification")
+            approved = str(
+                row.get("approved_active_without_local_entitlement") or ""
+            ).strip().lower() in {"1", "true", "yes"}
+            cleaned.append(
+                {
+                    "email": email,
+                    "name": " ".join(str(row.get("name") or "").split()),
+                    "classification": classification,
+                    "approved_active_without_local_entitlement": (
+                        "true" if approved else "false"
+                    ),
+                    "confirmed_by": " ".join(
+                        str(row.get("confirmed_by") or "").split()
+                    ),
+                    "confirmed_date": self._validate_iso_date(
+                        row.get("confirmed_date"), "confirmed_date"
+                    ),
+                    "note": " ".join(str(row.get("note") or "").split())[:500],
+                }
+            )
+        return self._atomic_csv(
+            self.account_classifications_path,
+            [
+                "email",
+                "name",
+                "classification",
+                "approved_active_without_local_entitlement",
+                "confirmed_by",
+                "confirmed_date",
+                "note",
+            ],
+            cleaned,
+        )
+
+    def shared_evidence_status(self) -> dict[str, Any]:
+        def status(path: Path) -> dict[str, Any]:
+            if not path.exists():
+                return {"status": "not_found", "rowCount": 0}
+            payload = path.read_bytes()
+            with io.StringIO(payload.decode("utf-8-sig")) as handle:
+                count = sum(1 for _ in csv.DictReader(handle))
+            return {
+                "status": "ready",
+                "rowCount": count,
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }
+
+        return {
+            "legacyPayments": status(self.legacy_evidence_path),
+            "identityLinks": status(self.identity_links_path),
+            "accountClassifications": status(self.account_classifications_path),
+            "hubPtMinder": self.hub_pt_minder_status(),
         }
 
     def _send_report(self, metadata: dict[str, Any], kind: str) -> dict[str, Any]:

@@ -100,6 +100,27 @@ def dashboard_api():
     return jsonify(service.dashboard_data())
 
 
+@app.get("/api/v1/sources/<source>/latest")
+def latest_source_snapshot(source: str):
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    if source not in {
+        "google_kpi",
+        "pt_minder",
+        "retention_intelligence",
+        "pt_booking_continuity",
+        "revenue_control",
+        "conversation_triage",
+        "strength_assessment_prequalification",
+        "trainerize_performance",
+    }:
+        return jsonify({"error": "unknown source"}), 404
+    snapshot = service.store.latest_snapshot(source)
+    if not snapshot:
+        return jsonify({"status": "not_found", "source": source}), 404
+    return jsonify(snapshot)
+
+
 @app.get("/api/v1/ceo-report")
 def ceo_report():
     if not _authorised():

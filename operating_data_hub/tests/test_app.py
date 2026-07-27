@@ -35,6 +35,28 @@ def test_health_and_authenticated_pt_minder_ingestion(monkeypatch, tmp_path):
     )
     assert accepted.status_code == 200
     assert accepted.get_json()["status"] == "accepted"
+    latest = client.get(
+        "/api/v1/sources/pt_minder/latest",
+        headers={"X-Hub-Secret": "test-secret"},
+    )
+    assert latest.status_code == 200
+    assert latest.get_json()["record_count"] == 1
+    assert latest.get_json()["payload"]["rows"][0]["email"] == (
+        "member@example.com"
+    )
+
+
+def test_latest_source_requires_auth_and_known_source(monkeypatch, tmp_path):
+    app = make_app(monkeypatch, tmp_path)
+    client = app.test_client()
+    assert client.get("/api/v1/sources/pt_minder/latest").status_code == 401
+    assert (
+        client.get(
+            "/api/v1/sources/not-real/latest",
+            headers={"X-Hub-Secret": "test-secret"},
+        ).status_code
+        == 404
+    )
 
 
 def test_dashboard_requires_login(monkeypatch, tmp_path):
