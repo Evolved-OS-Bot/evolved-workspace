@@ -9,19 +9,32 @@ Usage:
     python scripts/update_metrics.py --dry-run  # Print without writing
 """
 
-import sys
+import csv
+import json
 import os
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 from sheets_client import read_sheet, find_current_week_col
+from reporting_control import (
+    ReportingPeriod,
+    deduplicate_service_rosters,
+    filter_roster_by_values,
+)
 
 DRY_RUN     = "--dry-run" in sys.argv
-OUTPUT_PATH = Path(__file__).parent.parent / "context" / "current-data.md"
+OUTPUT_PATH = ROOT / "context" / "current-data.md"
+JSON_OUTPUT_PATH = ROOT / "context" / "current-data.json"
+IDENTITY_LINKS_PATH = (
+    ROOT / "data" / "private" / "integration-reporting" / "identity_links.csv"
+)
 SHEET_NAME  = os.environ.get("GOOGLE_KPI_SHEET_NAME", "KPI's The Evolved")
 
 # Row index map — 0-based (sheet row number minus 1)
@@ -81,8 +94,9 @@ ROWS = {
     "suspensions_active":   97,   # Row 98
     # Revenue
     "cash_collected":       105,  # Row 106
-    # PT sessions
-    "pt_sessions":          113,  # Row 114
+    # Automated PT utilisation
+    "pt_booked_hours":      114,  # Row 115
+    "pt_bookings":          122,  # Row 123
 }
 
 
@@ -115,9 +129,36 @@ def fmt_currency(val):
         return str(val)
 
 
+def number(val, *, integer=False):
+    if val is None or str(val).strip() in {"", "—"}:
+        return None
+    try:
+        parsed = float(str(val).replace("$", "").replace(",", ""))
+        return int(parsed) if integer and parsed.is_integer() else parsed
+    except (ValueError, TypeError):
+        return None
+
+
+def load_approved_aliases(path=IDENTITY_LINKS_PATH):
+    if not path.exists():
+        return []
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        return [
+            (row.get("canonical_email", ""), row.get("linked_email", ""))
+            for row in csv.DictReader(handle)
+            if row.get("canonical_email") and row.get("linked_email")
+        ]
+
+
+def atomic_write_text(path, content):
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(content, encoding="utf-8")
+    temporary.replace(path)
+
+
 def main():
     print(f"Reading sheet: {SHEET_NAME}")
-    rows = read_sheet(SHEET_NAME, "A1:BF115")
+    rows = read_sheet(SHEET_NAME, "A1:BF140")
 
     col_idx, week_date = find_current_week_col(rows)
     if col_idx is None:
@@ -125,19 +166,39 @@ def main():
         sys.exit(1)
 
     print(f"Current week: {week_date} (col index {col_idx})")
+    period = ReportingPeriod.from_kpi_posting_date(week_date)
+    limitations = []
 
     def g(key):
         return get_cell(rows, ROWS[key], col_idx)
 
-    # Derived metrics
+    # Stock and service-relationship metrics
     active_sgpt = g("active_sgpt")
     active_pt   = g("active_pt")
     try:
-        total_clients = int(str(active_sgpt)) + int(str(active_pt))
-    except (ValueError, TypeError):
+        sgpt_roster = filter_roster_by_values(
+            read_sheet("Active SGPT", "A1:K500"),
+            column_names=("Status",),
+            accepted_values=("Active", "Active - PIA"),
+        )
+        roster_summary = deduplicate_service_rosters(
+            {
+                "SGPT": sgpt_roster,
+                "PT": read_sheet("Active PT", "A1:M500"),
+            },
+            approved_email_aliases=load_approved_aliases(),
+        )
+        total_clients = roster_summary.unique_clients
+    except Exception as exc:
+        roster_summary = None
         total_clients = None
+        limitations.append(
+            "Unique active roster clients unavailable because the Active SGPT "
+            f"or Active PT roster could not be read: {type(exc).__name__}."
+        )
 
     cash = g("cash_collected")
+    ytd_cash = get_cell(rows, ROWS["cash_collected"], 2)
     try:
         cash_num    = float(str(cash).replace("$", "").replace(",", ""))
         annual_est  = f"${cash_num * 52:,.0f}"
@@ -149,13 +210,114 @@ def main():
     if cash_num and total_clients:
         blended = f"${cash_num / total_clients:.2f}"
 
-    now      = datetime.now().strftime("%Y-%m-%d %H:%M")
-    week_str = week_date.strftime("%d %b %Y") if week_date else "unknown"
+    now_local = datetime.now().astimezone()
+    now = now_local.strftime("%Y-%m-%d %H:%M %Z")
+    generated_at = now_local.isoformat(timespec="seconds")
+    week_str = period.label
+    service_relationships = (
+        roster_summary.service_relationships if roster_summary else None
+    )
+    overlaps = roster_summary.cross_service_overlaps if roster_summary else None
+
+    data = {
+        "schema_version": 1,
+        "report_id": "current-business-metrics",
+        "generated_at": generated_at,
+        "mode": "read_only",
+        "period": period.to_dict(),
+        "source": {
+            "spreadsheet": "Brown & Casserly Pty Ltd 2026",
+            "kpi_sheet": SHEET_NAME,
+            "posting_column_date": period.posting_date.isoformat(),
+            "limitations": limitations,
+        },
+        "members": {
+            "active_sgpt_service_relationships": number(
+                active_sgpt, integer=True
+            ),
+            "active_pt_service_relationships": number(active_pt, integer=True),
+            "unique_active_roster_clients": total_clients,
+            "active_service_roster_rows": service_relationships,
+            "cross_service_overlaps": overlaps,
+            "active_suspensions": number(g("suspensions_active"), integer=True),
+            "unique_client_definition": (
+                roster_summary.to_dict()["definition"]
+                if roster_summary
+                else None
+            ),
+        },
+        "revenue": {
+            "cash_collected": cash_num,
+            "year_to_date_cash_collected": number(ytd_cash),
+            "estimated_annual_revenue": (
+                cash_num * 52 if cash_num is not None else None
+            ),
+            "blended_weekly_revenue_per_unique_client": (
+                cash_num / total_clients
+                if cash_num is not None and total_clients
+                else None
+            ),
+            "new_cash_collected": number(g("ncc_total")),
+            "new_cash_via_ads": number(g("ncc_ads_total")),
+            "new_cash_organic": number(g("ncc_organic")),
+            "new_cash_meta": number(g("ncc_meta")),
+            "new_cash_google": number(g("ncc_google")),
+        },
+        "acquisition": {
+            "meta_ad_spend": number(g("meta_ad_spend")),
+            "google_ad_spend": number(g("google_ad_spend")),
+            "total_ad_spend": number(g("total_ad_spend")),
+            "organic_subscribes": number(g("subscribes_organic"), integer=True),
+            "paid_subscribes": number(g("subscribes_paid"), integer=True),
+            "total_subscribes": number(g("subscribes_total"), integer=True),
+            "organic_leads": number(g("leads_organic"), integer=True),
+            "meta_leads": number(g("leads_meta"), integer=True),
+            "google_leads": number(g("leads_google"), integer=True),
+            "paid_leads": number(g("leads_paid_total"), integer=True),
+            "total_leads": number(g("leads_total"), integer=True),
+            "studio_bookings": number(g("bookings_total"), integer=True),
+            "bookings_via_ads": number(g("bookings_via_ads"), integer=True),
+            "bookings_without_ads": number(
+                g("bookings_no_ads"), integer=True
+            ),
+            "studio_bookings_attended": number(
+                g("bookings_attended"), integer=True
+            ),
+            "show_rate_ads": number(g("show_rate_ads")),
+            "show_rate_no_ads": number(g("show_rate_no_ads")),
+            "show_rate_total": number(g("show_rate_total")),
+            "sales_conversion_rate": number(g("conversion_rate_total")),
+        },
+        "sales": {
+            "sgpt_meta": number(g("sgpt_meta"), integer=True),
+            "sgpt_google": number(g("sgpt_google"), integer=True),
+            "sgpt_organic": number(g("sgpt_organic"), integer=True),
+            "sgpt_total": number(g("sgpt_total"), integer=True),
+            "pt_meta": number(g("pt_meta"), integer=True),
+            "pt_google": number(g("pt_google"), integer=True),
+            "pt_organic": number(g("pt_organic"), integer=True),
+            "pt_total": number(g("pt_total"), integer=True),
+            "via_ads": number(g("sales_via_ads"), integer=True),
+            "without_ads": number(g("sales_no_ads"), integer=True),
+            "total": number(g("sales_total"), integer=True),
+        },
+        "retention": {
+            "sgpt_cancels": number(g("sgpt_cancels"), integer=True),
+            "pt_cancels": number(g("pt_cancels"), integer=True),
+            "sgpt_net": number(g("sgpt_net"), integer=True),
+            "pt_net": number(g("pt_net"), integer=True),
+        },
+        "pt_utilisation": {
+            "bookings": number(g("pt_bookings"), integer=True),
+            "booked_hours": number(g("pt_booked_hours")),
+        },
+    }
 
     content = f"""\
 # Current Data
 
-> Auto-generated by `update_metrics.py` — last updated {now} (week of {week_str})
+> Auto-generated by `update_metrics.py` — last updated {now}
+> Completed service period: **{week_str}**. KPI posting column: **{period.posting_date.strftime("%d %b %Y")}**.
 > Run `update-metrics` to refresh.
 
 ---
@@ -176,15 +338,21 @@ def main():
 | Active SGPT Members | {fmt(active_sgpt)} |
 | Active PT Clients | {fmt(active_pt)} |
 | Total Clients | {fmt(total_clients)} |
+| Active Service Roster Rows | {fmt(service_relationships)} |
+| Cross-Service Overlaps Removed | {fmt(overlaps)} |
 | Active Suspensions | {fmt(g("suspensions_active"))} |
+
+`Total Clients` is a deduplicated roster-person count. It uses exact email,
+exact phone and owner-approved email aliases only; names are never matched.
 
 ---
 
-## Revenue (Week of {week_str})
+## Revenue ({week_str})
 
 | Metric | Value |
 |---|---|
 | Cash Collected | {cash_fmt} |
+| Year-to-Date Cash Collected | {fmt_currency(ytd_cash)} |
 | Estimated Annual Revenue | {annual_est} |
 | Blended Weekly Revenue Per Client | {blended} |
 | Total New Cash Collected | {fmt_currency(g("ncc_total"))} |
@@ -257,27 +425,41 @@ def main():
 
 ---
 
-## PT Sessions
+## PT Utilisation
 
 | Metric | Value |
 |---|---|
-| PT Sessions (week) | {fmt(g("pt_sessions"))} |
+| PT Bookings (week) | {fmt(g("pt_bookings"))} |
+| PT Booked Hours (week) | {fmt(g("pt_booked_hours"))} |
 
 ---
 
 ## Data Sources
 
 - Google Sheet: KPI's The Evolved tab
+- Active SGPT and Active PT rosters for the unique-client control
 - Raw data from GHL → aggregated via COUNTIFS formulas
 - Cash Collected and Ad Spend entered manually each week
+- Machine-readable contract: `context/current-data.json`
 """
+
+    if limitations:
+        content += "\n## Data Limitations\n\n" + "\n".join(
+            f"- {item}" for item in limitations
+        ) + "\n"
 
     if DRY_RUN:
         print("\n--- DRY RUN (no file written) ---\n")
         print(content)
+        print("\n--- JSON CONTRACT ---\n")
+        print(json.dumps(data, indent=2))
     else:
-        OUTPUT_PATH.write_text(content)
-        print(f"Written to {OUTPUT_PATH}")
+        atomic_write_text(OUTPUT_PATH, content)
+        atomic_write_text(
+            JSON_OUTPUT_PATH,
+            json.dumps(data, indent=2, sort_keys=True) + "\n",
+        )
+        print(f"Written to {OUTPUT_PATH} and {JSON_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

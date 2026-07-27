@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Evolved CEO Dashboard</title>
+  <style>
+    :root{--bg:#0b1220;--card:#141e2f;--line:#263247;--text:#f5f7fb;--muted:#94a3b8;--accent:#d5ff3f;--bad:#fb7185;--good:#4ade80}
+    *{box-sizing:border-box}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);margin:0}
+    main{max-width:1280px;margin:auto;padding:32px}header{display:flex;justify-content:space-between;align-items:start;gap:20px}
+    h1,h2,p{margin-top:0}.muted{color:var(--muted)}.badge{background:#243047;padding:6px 10px;border-radius:99px;font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+    .metric{font-size:30px;font-weight:750}.good{color:var(--good)}.bad{color:var(--bad)}table{width:100%;border-collapse:collapse}
+    th,td{text-align:left;border-bottom:1px solid var(--line);padding:12px 8px;font-size:14px}th{color:var(--muted)}
+    section{margin-top:26px}button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 12px;border-radius:8px}
+    @media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.grid{grid-template-columns:1fr}main{padding:20px}}
+  </style>
+</head>
+<body><main>
+  <header><div><p class="muted">THE EVOLVED</p><h1>CEO Operating Dashboard</h1><p class="muted">Generated {{ data.generated_at }} · Shadow mode</p></div>
+  <form action="/logout" method="post"><button>Sign out</button></form></header>
+  {% set m = data.metrics %}
+  {% set members = m.get('members', {}) %}
+  <div class="grid">
+    <div class="card"><p class="muted">Unique active clients</p><div class="metric">{{ members.get('unique_clients', '—') }}</div></div>
+    <div class="card"><p class="muted">Service relationships</p><div class="metric">{{ members.get('service_relationships', '—') }}</div></div>
+    <div class="card"><p class="muted">Cash collected</p><div class="metric">{% if m.get('cash_collected') is not none %}${{ "{:,.0f}".format(m.get('cash_collected')) }}{% else %}—{% endif %}</div></div>
+    <div class="card"><p class="muted">Sales</p><div class="metric">{{ m.get('sales_total', '—') }}</div></div>
+  </div>
+  <section class="card"><h2>Source health</h2><table><thead><tr><th>Source</th><th>Status</th><th>Age</th><th>Records</th><th>Snapshot</th></tr></thead><tbody>
+  {% for source in data.sources %}<tr><td>{{ source.source }}</td><td class="{{ 'good' if source.freshness == 'fresh' else 'bad' }}">{{ source.freshness }}</td><td>{{ source.age_hours }}h</td><td>{{ source.record_count }}</td><td>{{ source.snapshot_id }}</td></tr>{% else %}<tr><td colspan="5">No accepted snapshots yet.</td></tr>{% endfor %}
+  </tbody></table></section>
+  <section class="card"><h2>Recent hub jobs</h2><table><thead><tr><th>Job</th><th>Status</th><th>Started</th><th>Error</th></tr></thead><tbody>
+  {% for job in data.jobs %}<tr><td>{{ job.job_id }}</td><td class="{{ 'good' if job.status == 'complete' else 'bad' }}">{{ job.status }}</td><td>{{ job.started_at }}</td><td>{{ job.error or '' }}</td></tr>{% else %}<tr><td colspan="4">No hub jobs yet.</td></tr>{% endfor %}
+  </tbody></table></section>
+</main></body></html>
+
