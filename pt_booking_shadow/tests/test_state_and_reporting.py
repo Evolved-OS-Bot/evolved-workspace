@@ -5,10 +5,10 @@ from pt_booking_shadow.reporting import build_csv, build_html
 from pt_booking_shadow.state_store import StateStore
 
 
-def finding(category="HEALTHY"):
+def finding(category="HEALTHY", contact_id="c1", contact_name="Test Member"):
     return Finding(
-        contact_id="c1",
-        contact_name="Test Member",
+        contact_id=contact_id,
+        contact_name=contact_name,
         category=category,
         reason="Evidence-led test.",
         effective_status="active",
@@ -56,3 +56,27 @@ def test_csv_contains_category_and_no_phone_or_email():
     assert "HEALTHY" in content
     assert "phone" not in content.lower()
     assert "email" not in content.lower()
+
+
+def test_report_suppresses_routine_former_pt_but_keeps_future_booking_exception():
+    findings = [
+        finding("FORMER_PT", "former-1", "Routine Former"),
+        finding(
+            "FORMER_PT_WITH_FUTURE_BOOKINGS",
+            "former-2",
+            "Former With Booking",
+        ),
+        finding("HEALTHY", "active-1", "Healthy Member"),
+    ]
+
+    body = build_html(findings, "location-1", "run-1")
+    content = build_csv(findings, "location-1", "run-1").decode()
+
+    assert "Routine Former" not in body
+    assert "Routine Former" not in content
+    assert ">FORMER_PT<" not in body
+    assert ",FORMER_PT," not in content
+    assert "Former With Booking" in body
+    assert "Former With Booking" in content
+    assert "FORMER_PT_WITH_FUTURE_BOOKINGS" in body
+    assert "FORMER_PT_WITH_FUTURE_BOOKINGS" in content

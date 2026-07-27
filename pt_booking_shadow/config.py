@@ -85,6 +85,11 @@ class Settings:
     trainerize_api_token: str | None
     trainerize_api_base_url: str
     trainerize_location_id: int | None
+    revenue_gap_data_dir: str
+
+    @property
+    def timezone(self):
+        return BRISBANE_TZ
 
     @classmethod
     def from_env(cls, require_runtime: bool = True) -> "Settings":
@@ -147,5 +152,8 @@ class Settings:
                 int(os.environ["TRAINERIZE_LOCATION_ID"])
                 if os.getenv("TRAINERIZE_LOCATION_ID", "").isdigit()
                 else None
+            ),
+            revenue_gap_data_dir=os.getenv(
+                "REVENUE_GAP_DATA_DIR", "/data/revenue-gap-control"
             ),
         )

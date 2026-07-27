@@ -12,11 +12,13 @@ from .ghl_client import GHLReadOnlyClient
 from .google_sheets import SheetsKPIWriter
 from .kpi import aggregate_weekly_pt_kpi, monday_for
 from .models import Appointment, Finding
+from .pack_ledger import prepaid_pack_findings
 from .reconciler import reconcile_contact
 from .reporting import high_risk, send_report
 from .source_reconciliation import (
     build_cross_system_snapshot,
     cross_system_findings,
+    reconcile_primary_with_cross_system_evidence,
 )
 from .state_store import StateStore
 
@@ -115,8 +117,22 @@ class ShadowAuditService:
                             not in {"cancelled", "canceled", "no_show", "noshow"}
                             for event in by_contact.get(contact.id, [])
                         )
+                        reconcile_primary_with_cross_system_evidence(
+                            primary_by_contact[contact.id],
+                            contact,
+                            evidence,
+                            has_future,
+                        )
                         findings.extend(
                             cross_system_findings(contact, evidence, has_future)
+                        )
+                        findings.extend(
+                            prepaid_pack_findings(
+                                contact,
+                                by_contact.get(contact.id, []),
+                                evidence,
+                                now,
+                            )
                         )
                 except Exception as exc:
                     log.exception("Cross-system reconciliation failed")

@@ -160,6 +160,9 @@ class GHLReadOnlyClient:
                     ).lower(),
                     assigned_user_id=raw.get("assignedUserId"),
                     deleted=bool(raw.get("deleted", False)),
+                    title=str(raw.get("title") or raw.get("appointmentTitle") or ""),
+                    description=str(raw.get("description") or ""),
+                    notes=str(raw.get("notes") or ""),
                 )
             )
         return result

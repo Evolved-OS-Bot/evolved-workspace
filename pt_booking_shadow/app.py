@@ -5,6 +5,7 @@ import logging
 import os
 import threading
 import uuid
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -12,6 +13,8 @@ from flask import Flask, jsonify, request
 
 from .config import BRISBANE_TZ, Settings, load_local_env
 from .service import ShadowAuditService
+from revenue_gap_control.railway_runtime import RailwayRevenueRuntime
+from reporting_control.hub_client import publish_summary
 
 
 load_local_env(Path(__file__).parent / ".env")
@@ -24,6 +27,7 @@ log = logging.getLogger(__name__)
 
 settings = Settings.from_env()
 service = ShadowAuditService(settings)
+revenue_service = RailwayRevenueRuntime(settings)
 app = Flask(__name__)
 scheduler: BackgroundScheduler | None = None
 
@@ -39,22 +43,84 @@ def _authorised() -> bool:
 
 def _start_full_audit(send_email: bool) -> None:
     try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
         run_id, findings = service.run_full(send_email=send_email)
         log.info("Full shadow audit complete: run=%s contacts=%s", run_id, len(findings))
+        try:
+            publish_summary(
+                "pt_booking_continuity",
+                {
+                    "runId": run_id,
+                    "findingCount": len(findings),
+                    "lastSuccessfulRun": service.store.last_successful_run(),
+                },
+            )
+        except Exception as exc:
+            log.warning("Hub PT publish failed: %s", type(exc).__name__)
     except Exception:
         log.exception("Full shadow audit failed")
 
 
 @app.get("/health")
 def health():
+    revenue_state = revenue_service.latest_state() or {}
     return jsonify(
         {
             "status": "ok",
             "shadowMode": settings.shadow_mode,
             "lastSuccessfulRun": service.store.last_successful_run(),
             "schedulerEnabled": settings.scheduler_enabled,
+            "latestRevenueRun": {
+                "status": revenue_state.get("status"),
+                "kind": revenue_state.get("kind"),
+                "completedAt": revenue_state.get("completedAt"),
+            },
+            "hubPtMinder": revenue_service.hub_pt_minder_status(),
         }
     )
+
+
+def _revenue_window(kind: str) -> tuple[str, str]:
+    today = datetime.now(BRISBANE_TZ).date()
+    monday = today - timedelta(days=today.weekday())
+    if kind == "monday":
+        monday -= timedelta(days=7)
+    return monday.isoformat(), (monday + timedelta(days=6)).isoformat()
+
+
+def _start_revenue_audit(kind: str, send_email: bool) -> None:
+    window_start, window_end = _revenue_window(kind)
+    try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
+        state = revenue_service.run(
+            kind=kind,
+            window_start=window_start,
+            window_end=window_end,
+            send_email=send_email,
+        )
+        log.info("Revenue-gap audit complete: %s", state)
+        try:
+            publish_summary(
+                "revenue_control",
+                state,
+                observed_at=state.get("completedAt"),
+            )
+        except Exception as exc:
+            log.warning("Hub revenue publish failed: %s", type(exc).__name__)
+    except Exception:
+        log.exception("Revenue-gap audit failed")
 
 
 @app.post("/run")
@@ -75,6 +141,87 @@ def latest_run_summary():
         return jsonify({"error": "unauthorised"}), 401
     summary = service.store.latest_run_summary()
     return jsonify(summary or {"status": "not_found"}), (200 if summary else 404)
+
+
+@app.post("/revenue/run")
+def manual_revenue_run():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    kind = str(request.args.get("kind", "friday")).lower()
+    if kind not in {"monday", "friday"}:
+        return jsonify({"error": "kind must be monday or friday"}), 400
+    send_email = str(request.args.get("sendEmail", "false")).lower() == "true"
+    thread = threading.Thread(
+        target=_start_revenue_audit,
+        args=(kind, send_email),
+        daemon=True,
+        name=f"manual-revenue-{kind}",
+    )
+    thread.start()
+    return jsonify({"status": "started", "kind": kind, "sendEmail": send_email}), 202
+
+
+@app.get("/revenue/runs/latest")
+def latest_revenue_run():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    summary = revenue_service.latest_state()
+    return jsonify(summary or {"status": "not_found"}), (200 if summary else 404)
+
+
+@app.get("/revenue/evidence/legacy/status")
+def legacy_evidence_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.legacy_evidence_status())
+
+
+@app.post("/revenue/evidence/legacy")
+def replace_legacy_evidence():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    if request.content_length and request.content_length > 256_000:
+        return jsonify({"error": "payload too large"}), 413
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_legacy_evidence(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.get("/revenue/evidence/shared/status")
+def shared_evidence_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.shared_evidence_status())
+
+
+@app.post("/revenue/evidence/identity-links")
+def replace_identity_links():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_identity_links(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/revenue/evidence/account-classifications")
+def replace_account_classifications():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_account_classifications(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
 
 
 @app.post("/webhooks/ghl")
@@ -117,6 +264,30 @@ def start_scheduler() -> None:
         "interval",
         minutes=1,
         id="process-event-queue",
+        max_instances=1,
+        coalesce=True,
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _start_revenue_audit,
+        "cron",
+        day_of_week="mon",
+        hour=6,
+        minute=30,
+        args=["monday", True],
+        id="monday-revenue-audit",
+        max_instances=1,
+        coalesce=True,
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _start_revenue_audit,
+        "cron",
+        day_of_week="fri",
+        hour=16,
+        minute=30,
+        args=["friday", True],
+        id="friday-cash-close",
         max_instances=1,
         coalesce=True,
         replace_existing=True,

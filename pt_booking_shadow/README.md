@@ -13,15 +13,34 @@ Read-only auditor for The Evolved's active personal-training calendars.
 - Counts an unmatched surplus appointment in the immediately following week as
   a make-up for the prior week's deficit. The following week's own expected
   sessions are matched first, so a normal booking cannot be consumed twice.
+- Protects every exact recurring booking before matching same-week
+  reschedules. A later booked slot can no longer be consumed by an earlier gap
+  and then incorrectly reported as missing itself.
+- Excludes expected occurrences inside recorded GHL hold start/end windows.
+- Suppresses booking actions when the shared revenue controller confirms an
+  approved payment or lifecycle pause.
+- Reclassifies a no-booking contact as `GHL_ONLY_PT_RECORD_REVIEW` when GHL is
+  the only active-PT signal and there is no Active PT workbook row, supported
+  payment evidence or active Trainerize access.
 - Keeps unexplained extra appointments as evidence; shadow mode never removes
   them or assumes they are errors.
 - Sends Admin Eve an exception-led email and CSV.
+- Suppresses routine `FORMER_PT` rows from the email and CSV while retaining
+  `FORMER_PT_WITH_FUTURE_BOOKINGS` as an actionable cleanup exception.
 - Calculates two Monday utilisation measures from the same retained event set:
   literal PT bookings and booked delivery hours.
 - Can write the trainer split and totals to the matching Monday column in Brown
   & Casserly when `KPI_WRITE_ENABLED=true`.
 - Can add read-only Stripe entitlement, Trainerize access and Brown & Casserly
   Active PT evidence to each GHL booking-continuity result.
+- Reuses the revenue controller's latest resolved PT classification, protected
+  PTMinder/EziDebit receipt register, approved Stripe-email aliases and approved
+  external-payment records instead of independently reopening resolved cases.
+- Reads `Session X/Y` counters from GHL appointment descriptions or notes for
+  verified prepaid-pack clients.
+- Prompts for renewal when a clean terminal session is approaching, flags
+  bookings after a clean pack end, and fails closed when counters regress,
+  duplicate or switch pack totals.
 - Queues targeted checks after authenticated GHL webhook events.
 - Never creates, edits or deletes GHL data.
 
@@ -34,6 +53,10 @@ PT cancellation suppresses top-up recommendations. Only appointments strictly
 after `CS: Final Access Date` can be classified as hypothetical removals.
 
 PT holds pause top-up recommendations and retain existing bookings.
+
+Recorded hold windows are respected even when the contact's current status has
+since moved on. This prevents an approved, requested or processed historical
+hold from appearing as a gap inside an otherwise valid series.
 
 Contacts with an active PT hold or cancellation are hydrated from their full
 GHL contact record before reconciliation. This prevents the bulk contact list
@@ -66,9 +89,15 @@ Google Sheets writes are disabled by default. Railway requires
 Set `CROSS_SYSTEM_RECONCILIATION_ENABLED=true` with protected Stripe,
 Trainerize and Google credentials to add source evidence to the Monday report.
 
-Identity matching uses normalised email for Stripe and Trainerize. Brown &
-Casserly uses email first and phone second. Names are never used as identity
-keys.
+Identity matching uses normalised email for Stripe and Trainerize, then approved
+canonical-to-alternate email links. Brown & Casserly uses email first and phone
+second. Names are never used as identity keys.
+
+Commercial support can be established by direct Stripe entitlement, a verified
+prepaid-pack mapping, a current protected PTMinder/EziDebit receipt, a resolved
+PT classification from the revenue controller, or a current owner-approved
+external-payment record. External-payment confirmations expire after 14 days
+unless reconfirmed.
 
 The first exception layer reports:
 
@@ -78,9 +107,19 @@ The first exception layer reports:
 - future GHL PT bookings without a matching Brown & Casserly Active PT row;
 - a source-read failure while preserving the GHL-only booking audit.
 
+For an explicitly verified prepaid pack, the second exception layer reports:
+
+- no valid `Session X/Y` counter in the active appointment series;
+- a contradictory counter sequence that must be corrected or confirmed;
+- future bookings after the first clean terminal `Session Y/Y`; or
+- a clean terminal session inside the 21-day renewal window.
+
 A missing Stripe subscription is phrased as a review, not a cancellation or
 debt conclusion, because prepaid packs and approved manual payments can be
-valid exceptions. No Stripe, Trainerize or GHL write method is implemented.
+valid exceptions. Appointment counters do not prove payment and payment does
+not prove sessions remaining; the two evidence sources are joined only after
+the PaymentIntent-to-contact relationship is approved. No Stripe, Trainerize
+or GHL write method is implemented.
 
 ## Local test
 
@@ -97,9 +136,29 @@ python3 -m pt_booking_shadow.run_weekly
 - `GET /health`
 - `POST /run?sendEmail=false`
 - `POST /webhooks/ghl`
+- `POST /revenue/run?kind=monday&sendEmail=false`
+- `POST /revenue/run?kind=friday&sendEmail=false`
+- `GET /revenue/runs/latest`
+- `POST /revenue/evidence/legacy`
+- `GET /revenue/evidence/legacy/status`
+- `POST /revenue/evidence/identity-links`
+- `POST /revenue/evidence/account-classifications`
+- `GET /revenue/evidence/shared/status`
 
 Protected endpoints require `X-Webhook-Secret` or a Bearer token matching
 `WEBHOOK_SHARED_SECRET`.
+
+The revenue controller runs Monday at 6:30 am and Friday at 4:30 pm in
+Australia/Brisbane. It stores its audit database and identified evidence below
+`/data/revenue-gap-control/`; scheduled reports are sent to
+`REVENUE_REPORT_TO`, which defaults to Peter's business address.
+
+The evidence replacement endpoints strictly validate and atomically replace the
+PTMinder/EziDebit register, approved identity links and account
+classifications. Status responses expose only row counts and SHA-256
+fingerprints. Use
+`scripts/upload_legacy_payment_evidence.py` through `railway run` so the
+production secret is never placed on the command line or printed.
 
 ## Railway
 

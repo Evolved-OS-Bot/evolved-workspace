@@ -53,6 +53,61 @@ def test_same_week_reschedule_covers_expected_session(now, calendar, contact):
     assert not finding.evidence["adjacent_week_make_ups"]
 
 
+def test_exact_later_slot_is_not_consumed_by_an_earlier_gap(
+    now, calendar, contact
+):
+    contact.expected_frequency = 2
+    tuesday = (now + timedelta(days=(1 - now.weekday()) % 7)).replace(
+        hour=17, minute=15
+    )
+    saturday = (now + timedelta(days=(5 - now.weekday()) % 7)).replace(
+        hour=9, minute=0
+    )
+    events = []
+    for week in range(13):
+        if week != 4:
+            events.append(
+                make_event(
+                    f"tue-{week}",
+                    contact.id,
+                    calendar.id,
+                    tuesday + timedelta(weeks=week),
+                )
+            )
+        events.append(
+            make_event(
+                f"sat-{week}",
+                contact.id,
+                calendar.id,
+                saturday + timedelta(weeks=week),
+            )
+        )
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "GAP_INSIDE_SERIES"
+    assert finding.proposed_dates == [
+        (tuesday + timedelta(weeks=4)).isoformat()
+    ]
+
+
+def test_expected_occurrences_inside_recorded_hold_window_are_excluded(
+    now, calendar, contact
+):
+    events = weekly_events(now, contact, calendar)
+    held = events.pop(4)
+    contact.hold_start = held.start.date()
+    contact.hold_end = held.start.date()
+
+    finding = reconcile_contact(contact, events, {calendar.id: calendar}, now)
+
+    assert finding.category == "HEALTHY"
+    assert not finding.proposed_dates
+    assert finding.evidence["hold_excluded_occurrences"] == [
+        held.start.isoformat()
+    ]
+
+
 def test_next_week_surplus_covers_one_make_up(now, calendar, contact):
     events = weekly_events(now, contact, calendar)
     missed = events.pop(4)
