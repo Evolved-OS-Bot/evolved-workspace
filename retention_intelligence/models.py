@@ -13,6 +13,12 @@ class UsageMetrics:
     baseline_weeks: float = 12.0
     last_workout_date: str | None = None
     days_since_last_workout: int | None = None
+    class_bookings_7d: int = 0
+    class_bookings_28d: int = 0
+    class_bookings_90d: int = 0
+    baseline_class_bookings: int = 0
+    last_class_booking_date: str | None = None
+    days_since_last_class_booking: int | None = None
 
     @property
     def recent_weekly_rate(self) -> float:
@@ -30,6 +36,25 @@ class UsageMetrics:
         if baseline < 0.25:
             return None
         return round((self.recent_weekly_rate - baseline) / baseline * 100, 1)
+
+    @property
+    def class_recent_weekly_rate(self) -> float:
+        return round(self.class_bookings_28d / 4.0, 2)
+
+    @property
+    def class_baseline_weekly_rate(self) -> float:
+        if self.baseline_weeks <= 0:
+            return 0.0
+        return round(self.baseline_class_bookings / self.baseline_weeks, 2)
+
+    @property
+    def class_change_percent(self) -> float | None:
+        baseline = self.class_baseline_weekly_rate
+        if baseline < 0.25:
+            return None
+        return round(
+            (self.class_recent_weekly_rate - baseline) / baseline * 100, 1
+        )
 
 
 @dataclass(frozen=True)
@@ -75,6 +100,15 @@ class RetentionAssessment:
     change_percent: float | None
     last_workout_date: str | None
     days_since_last_workout: int | None
+    engagement_source: str
+    class_bookings_7d: int
+    class_bookings_28d: int
+    class_bookings_90d: int
+    class_baseline_weekly_rate: float
+    class_recent_weekly_rate: float
+    class_change_percent: float | None
+    last_class_booking_date: str | None
+    days_since_last_class_booking: int | None
     classifier_version: str
     included_in_kpi: bool
 

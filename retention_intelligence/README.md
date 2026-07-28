@@ -6,6 +6,7 @@ Read-only Railway service for explainable member-engagement and retention review
 
 - Runs the established GHL, Stripe and Trainerize membership reconciliation.
 - Reads only the latest 112 days of tracked Trainerize workout-calendar activity for current active accounts.
+- Counts retained past `appointmentV2` group-class bookings as an operational attendance proxy. Trainers remove the booking when a client does not attend; this is not a platform check-in.
 - Compares each member's latest 28-day activity with her own preceding 12-week baseline.
 - Stores a dated identified snapshot in private PostgreSQL.
 - Produces `Thriving`, `Stable`, `Drifting`, `At risk`, `Insufficient data`, `Operational exception` and `Excluded` classifications with plain-language reasons.
@@ -17,7 +18,7 @@ It does not create tasks, send member communications or mutate GHL, Stripe, Trai
 
 This is a coach decision-support control, not a churn-prediction model.
 
-Fit & Flexible clients remain `Insufficient data` from Trainerize workouts alone because their Cardio and Pilates attendance is not reliably represented by strength-program completion. Connect reliable class-attendance evidence before applying usage-risk labels to that service.
+Fit & Flexible clients use retained past class bookings as their engagement source when at least four bookings exist in the personal baseline window. Other services continue to use tracked workouts by default, with class bookings filling a sparse workout baseline.
 
 Staff, owners, demo and approved internal accounts are excluded through the protected account-classification register.
 
@@ -26,6 +27,8 @@ Staff, owners, demo and approved internal accounts are excluded through the prot
 The Railway scheduler runs daily at 5:45 am in Australia/Brisbane.
 
 The first seven runs are a shadow-validation period. Google Sheets writes remain disabled during this period.
+
+The class-attendance proxy records counts over 7, 28 and 90 days, a preceding 12-week personal baseline, recent weekly rate, percentage change, last retained class booking and days since that booking. Future bookings, personal appointments and non-class calendar items are excluded.
 
 ## Local validation
 

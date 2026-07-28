@@ -41,6 +41,35 @@ def tracked_workout_dates(payload: dict[str, Any]) -> list[date]:
     return dates
 
 
+def retained_past_class_booking_dates(
+    payload: dict[str, Any],
+    *,
+    today: date,
+) -> list[date]:
+    """Return retained past group-class bookings.
+
+    The Evolved operating rule is that trainers remove a client's booking when
+    she does not attend. A retained past booking is therefore an attendance
+    proxy, not a platform-verified check-in.
+    """
+    dates: list[date] = []
+    for day in payload.get("calendar") or []:
+        observed = _iso_date(day.get("date"))
+        if observed is None or observed > today:
+            continue
+        for item in day.get("items") or []:
+            if str(item.get("type") or "").lower() != "appointmentv2":
+                continue
+            detail = item.get("detail") or {}
+            if not isinstance(detail, dict):
+                continue
+            is_group = detail.get("isGroupAppointment")
+            category = str(detail.get("eventCategory") or "").lower()
+            if is_group in {True, 1, "1"} and category == "class":
+                dates.append(observed)
+    return dates
+
+
 class TrainerizeUsageReader:
     def __init__(self, client: TrainerizeClient | None = None, retries: int = 3):
         self.client = client or TrainerizeClient()
@@ -76,11 +105,20 @@ class TrainerizeUsageReader:
         start = today - timedelta(days=111)
         result: dict[int, UsageMetrics] = {}
         for user_id in user_ids:
-            dates = tracked_workout_dates(self._calendar(user_id, start, today))
+            calendar = self._calendar(user_id, start, today)
+            dates = tracked_workout_dates(calendar)
+            class_dates = retained_past_class_booking_dates(
+                calendar,
+                today=today,
+            )
             counts: dict[date, int] = defaultdict(int)
+            class_counts: dict[date, int] = defaultdict(int)
             for observed in dates:
                 counts[observed] += 1
+            for observed in class_dates:
+                class_counts[observed] += 1
             last = max(dates) if dates else None
+            last_class = max(class_dates) if class_dates else None
             result[user_id] = UsageMetrics(
                 workouts_7d=sum(
                     count for observed, count in counts.items()
@@ -103,5 +141,29 @@ class TrainerizeUsageReader:
                 baseline_weeks=12.0,
                 last_workout_date=last.isoformat() if last else None,
                 days_since_last_workout=(today - last).days if last else None,
+                class_bookings_7d=sum(
+                    count for observed, count in class_counts.items()
+                    if observed >= today - timedelta(days=6)
+                ),
+                class_bookings_28d=sum(
+                    count for observed, count in class_counts.items()
+                    if observed >= today - timedelta(days=27)
+                ),
+                class_bookings_90d=sum(
+                    count for observed, count in class_counts.items()
+                    if observed >= today - timedelta(days=89)
+                ),
+                baseline_class_bookings=sum(
+                    count for observed, count in class_counts.items()
+                    if today - timedelta(days=111)
+                    <= observed
+                    <= today - timedelta(days=28)
+                ),
+                last_class_booking_date=(
+                    last_class.isoformat() if last_class else None
+                ),
+                days_since_last_class_booking=(
+                    (today - last_class).days if last_class else None
+                ),
             )
         return result

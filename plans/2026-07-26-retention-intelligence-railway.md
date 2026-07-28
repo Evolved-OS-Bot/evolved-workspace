@@ -1,6 +1,6 @@
 # Retention Intelligence Railway Service
 
-**Status:** In Progress
+**Status:** Live, read-only shadow validation
 **Owner:** Peter Brown
 **Created:** 26 July 2026
 **Operating mode:** Read-only shadow
@@ -136,3 +136,16 @@ One row per weekly snapshot:
 - The Retention Radar and Retention KPI payloads can be previewed without writing.
 - Documentation, environment requirements and recovery behaviour are recorded.
 - The roadmap reflects the seven-run shadow-validation gate.
+
+## Deployment Record
+
+- Deployed to the existing Railway project as `Retention Intelligence` on 26 July 2026.
+- Production source: `codex/retention-intelligence`, commit `0929cf9`.
+- Private PostgreSQL persistence is live.
+- Public health endpoint: `https://retention-intelligence-production-dd86.up.railway.app/health`.
+- First production read-only run `20260725T224824Z-e52d390f` completed successfully: 149 active Trainerize accounts, 141 included member records and no source failure.
+- First-run distribution: 40 Thriving, 41 Stable, 16 Drifting, 14 At risk and 30 Insufficient data.
+- `SHEETS_WRITE_ENABLED=false`; no Google Sheet, member, GHL, Stripe or Trainerize write occurred.
+- The former local Codex daily reconciliation automation is paused to prevent duplicate scheduled extraction.
+- Next gate: complete seven consecutive Railway runs, review stability and owner-validate the classifications before enabling the allowlisted Sheet views.
+- 29 July 2026: added retained past Trainerize group-class bookings as an operational attendance proxy. Fit & Flexible now uses class participation when baseline coverage is adequate; other services use it when workout tracking is sparse. The proxy excludes future bookings and personal appointments and retains explicit provenance.

@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from .models import MemberInput, RetentionAssessment
 
 
-CLASSIFIER_VERSION = "retention-v1.0"
+CLASSIFIER_VERSION = "retention-v1.1"
 EXCLUDED_CLASSIFICATIONS = {
     "staff",
     "owner_admin",
@@ -35,6 +35,35 @@ def _new_member(member: MemberInput, today: date) -> bool:
     return created is not None and (today - created).days < 42
 
 
+def _engagement_signal(member: MemberInput) -> dict[str, object]:
+    usage = member.usage
+    use_classes = _service_is_fit_flexible(
+        member.service
+    ) or (
+        usage.baseline_workouts < 4
+        and usage.baseline_class_bookings >= 4
+    )
+    if use_classes:
+        return {
+            "source": "retained_class_booking",
+            "label": "retained class attendance",
+            "baseline_count": usage.baseline_class_bookings,
+            "baseline_rate": usage.class_baseline_weekly_rate,
+            "recent_rate": usage.class_recent_weekly_rate,
+            "change": usage.class_change_percent,
+            "days_since": usage.days_since_last_class_booking,
+        }
+    return {
+        "source": "tracked_workout",
+        "label": "tracked workout usage",
+        "baseline_count": usage.baseline_workouts,
+        "baseline_rate": usage.baseline_weekly_rate,
+        "recent_rate": usage.recent_weekly_rate,
+        "change": usage.change_percent,
+        "days_since": usage.days_since_last_workout,
+    }
+
+
 def classify_member(
     member: MemberInput,
     *,
@@ -50,6 +79,8 @@ def classify_member(
     owner = member.trainer_name or "Admin Eve"
     review_date: str | None = None
     included = True
+    signal = _engagement_signal(member)
+    engagement_source = str(signal["source"])
 
     if account_classification in EXCLUDED_CLASSIFICATIONS:
         status = "Excluded"
@@ -70,46 +101,51 @@ def classify_member(
         confidence = "High"
         reason = "Trainerize access is not active; do not interpret missing workouts as disengagement."
         included = False
-    elif _service_is_fit_flexible(member.service):
-        status = "Insufficient data"
-        urgency = "Routine"
-        confidence = "Low"
-        reason = (
-            "Fit & Flexible attendance is not reliably represented by strength-workout "
-            "tracking; connect verified class attendance before applying a usage-risk label."
-        )
     elif _new_member(member, today):
         status = "Insufficient data"
         urgency = "Routine"
         confidence = "Medium"
         reason = "The member has fewer than six weeks of observed tenure."
-    elif usage.baseline_workouts < 4:
+    elif int(signal["baseline_count"]) < 4:
         status = "Insufficient data"
         urgency = "Routine"
         confidence = "Low"
-        reason = "Fewer than four tracked workouts exist in the personal baseline window."
+        if engagement_source == "retained_class_booking":
+            reason = (
+                "Fewer than four retained past class bookings exist in the "
+                "personal baseline window."
+            )
+        else:
+            reason = (
+                "Fewer than four tracked workouts exist in the personal baseline window."
+            )
     else:
-        decline = usage.change_percent
-        days_since = usage.days_since_last_workout
-        confidence = "High" if usage.baseline_workouts >= 8 else "Medium"
+        decline = signal["change"]
+        days_since = signal["days_since"]
+        recent_rate = float(signal["recent_rate"])
+        baseline_rate = float(signal["baseline_rate"])
+        label = str(signal["label"])
+        confidence = (
+            "High" if int(signal["baseline_count"]) >= 8 else "Medium"
+        )
         if (
             (days_since is not None and days_since >= 28)
             or (
                 decline is not None
                 and decline <= -65
-                and usage.recent_weekly_rate <= 0.5
+                and recent_rate <= 0.5
             )
         ):
             status = "At risk"
             urgency = "High"
             review_date = today.isoformat()
             if days_since is not None and days_since >= 28:
-                reason = f"No tracked workout for {days_since} days."
+                reason = f"No {label} for {days_since} days."
             else:
                 reason = (
-                    f"Recent usage is {abs(decline or 0):.0f}% below the personal baseline "
-                    f"({usage.recent_weekly_rate:.2f} vs "
-                    f"{usage.baseline_weekly_rate:.2f} workouts/week)."
+                    f"Recent {label} is {abs(decline or 0):.0f}% below the "
+                    f"personal baseline ({recent_rate:.2f} vs "
+                    f"{baseline_rate:.2f} per week)."
                 )
         elif (
             (days_since is not None and days_since >= 14)
@@ -120,23 +156,21 @@ def classify_member(
             review_date = (today + timedelta(days=2)).isoformat()
             if decline is not None and decline <= -35:
                 reason = (
-                    f"Recent usage is {abs(decline):.0f}% below the personal baseline "
-                    f"({usage.recent_weekly_rate:.2f} vs "
-                    f"{usage.baseline_weekly_rate:.2f} workouts/week)."
+                    f"Recent {label} is {abs(decline):.0f}% below the personal "
+                    f"baseline ({recent_rate:.2f} vs {baseline_rate:.2f} per week)."
                 )
             else:
-                reason = f"No tracked workout for {days_since} days."
+                reason = f"No {label} for {days_since} days."
         elif (
-            usage.recent_weekly_rate >= 1.0
+            recent_rate >= 1.0
             and decline is not None
             and decline >= 10
         ):
             status = "Thriving"
             urgency = "None"
             reason = (
-                f"Recent usage is {decline:.0f}% above the personal baseline "
-                f"({usage.recent_weekly_rate:.2f} vs "
-                f"{usage.baseline_weekly_rate:.2f} workouts/week)."
+                f"Recent {label} is {decline:.0f}% above the personal baseline "
+                f"({recent_rate:.2f} vs {baseline_rate:.2f} per week)."
             )
 
     return RetentionAssessment(
@@ -161,6 +195,15 @@ def classify_member(
         change_percent=usage.change_percent,
         last_workout_date=usage.last_workout_date,
         days_since_last_workout=usage.days_since_last_workout,
+        engagement_source=engagement_source,
+        class_bookings_7d=usage.class_bookings_7d,
+        class_bookings_28d=usage.class_bookings_28d,
+        class_bookings_90d=usage.class_bookings_90d,
+        class_baseline_weekly_rate=usage.class_baseline_weekly_rate,
+        class_recent_weekly_rate=usage.class_recent_weekly_rate,
+        class_change_percent=usage.class_change_percent,
+        last_class_booking_date=usage.last_class_booking_date,
+        days_since_last_class_booking=usage.days_since_last_class_booking,
         classifier_version=CLASSIFIER_VERSION,
         included_in_kpi=included,
     )

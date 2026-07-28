@@ -26,6 +26,15 @@ RADAR_HEADERS = [
     "Change from baseline",
     "Last workout",
     "Days since activity",
+    "Engagement source",
+    "Class attendance proxy 7d",
+    "Class attendance proxy 28d",
+    "Class attendance proxy 90d",
+    "Class baseline / week",
+    "Recent class rate / week",
+    "Class change from baseline",
+    "Last retained class booking",
+    "Days since retained class booking",
     "Reason",
     "Action owner",
     "Review date",
@@ -154,6 +163,23 @@ class RetentionSheetsWriter:
                         if item.days_since_last_workout is not None
                         else ""
                     ),
+                    item.engagement_source,
+                    item.class_bookings_7d,
+                    item.class_bookings_28d,
+                    item.class_bookings_90d,
+                    item.class_baseline_weekly_rate,
+                    item.class_recent_weekly_rate,
+                    (
+                        item.class_change_percent
+                        if item.class_change_percent is not None
+                        else ""
+                    ),
+                    item.last_class_booking_date or "",
+                    (
+                        item.days_since_last_class_booking
+                        if item.days_since_last_class_booking is not None
+                        else ""
+                    ),
                     item.reason,
                     item.action_owner,
                     item.review_date or "",
@@ -174,10 +200,24 @@ class RetentionSheetsWriter:
         adequate = [
             item for item in included if item.data_confidence in {"High", "Medium"}
         ]
-        active_28 = sum(item.workouts_28d > 0 for item in adequate)
-        decline = sum(
-            item.change_percent is not None and item.change_percent <= -35
+        active_28 = sum(
+            (
+                item.class_bookings_28d > 0
+                if item.engagement_source == "retained_class_booking"
+                else item.workouts_28d > 0
+            )
             for item in adequate
+        )
+        changes = [
+            (
+                item.class_change_percent
+                if item.engagement_source == "retained_class_booking"
+                else item.change_percent
+            )
+            for item in adequate
+        ]
+        decline = sum(
+            change is not None and change <= -35 for change in changes
         )
         version = assessments[0].classifier_version if assessments else ""
         return [
@@ -234,7 +274,7 @@ class RetentionSheetsWriter:
             }
         self._ensure_allowlisted_tabs()
         radar_values = self.radar_values(assessments, snapshot)
-        radar_range = f"{_quote(self.settings.radar_sheet_name)}!A1:S"
+        radar_range = f"{_quote(self.settings.radar_sheet_name)}!A1:AB"
         (
             self.service.spreadsheets()
             .values()

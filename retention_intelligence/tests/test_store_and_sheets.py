@@ -1,4 +1,5 @@
 from datetime import date
+import sqlite3
 
 from retention_intelligence.classification import classify_member
 from retention_intelligence.models import MemberInput, UsageMetrics
@@ -45,6 +46,7 @@ def test_store_retains_completed_snapshot(tmp_path):
     assert summary["member_count"] == 1
     assert store.latest_summary()["status"] == "complete"
     assert store.latest_radar()[0]["email"] == "member@example.com"
+    assert store.latest_radar()[0]["class_bookings_28d"] == 0
 
 
 def test_sheet_payload_has_current_member_and_kpi():
@@ -56,6 +58,7 @@ def test_sheet_payload_has_current_member_and_kpi():
     )
     assert kpi[0] == "2026-07-20"
     assert kpi[1] == 1
+    assert "Class attendance proxy 28d" in radar[0]
 
 
 def test_store_uses_psycopg3_for_railway_postgres(monkeypatch):
@@ -74,3 +77,32 @@ def test_store_uses_psycopg3_for_railway_postgres(monkeypatch):
     RetentionStore("postgresql://user:secret@host:5432/database")
 
     assert captured["url"].startswith("postgresql+psycopg://")
+
+
+def test_store_migrates_existing_snapshot_table(tmp_path):
+    database = tmp_path / "existing.db"
+    connection = sqlite3.connect(database)
+    connection.execute(
+        """
+        CREATE TABLE retention_member_snapshots (
+            run_id VARCHAR(64) NOT NULL,
+            trainerize_user_id INTEGER NOT NULL,
+            PRIMARY KEY (run_id, trainerize_user_id)
+        )
+        """
+    )
+    connection.commit()
+    connection.close()
+
+    RetentionStore(f"sqlite:///{database}")
+
+    connection = sqlite3.connect(database)
+    columns = {
+        row[1]
+        for row in connection.execute(
+            "PRAGMA table_info(retention_member_snapshots)"
+        )
+    }
+    connection.close()
+    assert "class_bookings_28d" in columns
+    assert "engagement_source" in columns

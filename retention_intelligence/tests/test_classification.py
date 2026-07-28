@@ -71,6 +71,44 @@ def test_fit_and_flexible_is_not_falsely_labelled_at_risk():
     assert result.data_confidence == "Low"
 
 
+def test_fit_and_flexible_uses_retained_class_bookings():
+    result = classify_member(
+        member(
+            service="Fit & Flexible",
+            usage=UsageMetrics(
+                class_bookings_7d=2,
+                class_bookings_28d=10,
+                class_bookings_90d=28,
+                baseline_class_bookings=24,
+                last_class_booking_date="2026-07-25",
+                days_since_last_class_booking=1,
+            ),
+        ),
+        today=TODAY,
+    )
+    assert result.status == "Thriving"
+    assert result.engagement_source == "retained_class_booking"
+    assert "retained class attendance" in result.reason
+
+
+def test_class_bookings_fill_sparse_workout_baseline():
+    result = classify_member(
+        member(
+            usage=UsageMetrics(
+                workouts_28d=0,
+                baseline_workouts=2,
+                class_bookings_28d=8,
+                baseline_class_bookings=24,
+                last_class_booking_date="2026-07-25",
+                days_since_last_class_booking=1,
+            ),
+        ),
+        today=TODAY,
+    )
+    assert result.status == "Stable"
+    assert result.engagement_source == "retained_class_booking"
+
+
 def test_staff_is_excluded():
     result = classify_member(
         member(account_classification="staff"),

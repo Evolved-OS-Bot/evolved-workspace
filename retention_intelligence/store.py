@@ -20,8 +20,10 @@ from sqlalchemy import (
     create_engine,
     delete,
     func,
+    inspect,
     insert,
     select,
+    text,
     update,
 )
 from sqlalchemy.engine import make_url
@@ -70,6 +72,15 @@ snapshots = Table(
     Column("change_percent", Float),
     Column("last_workout_date", String(20)),
     Column("days_since_last_workout", Integer),
+    Column("engagement_source", String(40), nullable=False),
+    Column("class_bookings_7d", Integer, nullable=False),
+    Column("class_bookings_28d", Integer, nullable=False),
+    Column("class_bookings_90d", Integer, nullable=False),
+    Column("class_baseline_weekly_rate", Float, nullable=False),
+    Column("class_recent_weekly_rate", Float, nullable=False),
+    Column("class_change_percent", Float),
+    Column("last_class_booking_date", String(20)),
+    Column("days_since_last_class_booking", Integer),
     Column("classifier_version", String(40), nullable=False),
     Column("included_in_kpi", Boolean, nullable=False),
     Column("captured_at", DateTime(timezone=True), nullable=False),
@@ -97,6 +108,38 @@ class RetentionStore:
         )
         self.engine = create_engine(database_url, pool_pre_ping=True, connect_args=connect_args)
         metadata.create_all(self.engine)
+        if hasattr(self.engine, "dialect"):
+            self._migrate_snapshot_columns()
+
+    def _migrate_snapshot_columns(self) -> None:
+        existing = {
+            item["name"]
+            for item in inspect(self.engine).get_columns(
+                "retention_member_snapshots"
+            )
+        }
+        additions = {
+            "engagement_source": (
+                "VARCHAR(40) NOT NULL DEFAULT 'tracked_workout'"
+            ),
+            "class_bookings_7d": "INTEGER NOT NULL DEFAULT 0",
+            "class_bookings_28d": "INTEGER NOT NULL DEFAULT 0",
+            "class_bookings_90d": "INTEGER NOT NULL DEFAULT 0",
+            "class_baseline_weekly_rate": "FLOAT NOT NULL DEFAULT 0",
+            "class_recent_weekly_rate": "FLOAT NOT NULL DEFAULT 0",
+            "class_change_percent": "FLOAT",
+            "last_class_booking_date": "VARCHAR(20)",
+            "days_since_last_class_booking": "INTEGER",
+        }
+        with self.engine.begin() as connection:
+            for name, definition in additions.items():
+                if name not in existing:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE retention_member_snapshots "
+                            f"ADD COLUMN {name} {definition}"
+                        )
+                    )
 
     def start_run(self) -> str:
         run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:8]
