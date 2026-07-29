@@ -20,7 +20,8 @@ Cancellation logic:
 import os
 import logging
 import hashlib
-from datetime import datetime, timedelta, timezone
+import math
+from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from flask import Flask, request, jsonify
 import requests
@@ -97,6 +98,49 @@ def get_interval_days(subscription):
     count = plan.get("interval_count", 1)
     mapping = {"day": 1, "week": 7, "month": 30, "year": 365}
     return mapping.get(interval, 7) * count
+
+
+def calculate_cancellation_boundary(subscription, notice_end_date):
+    """Return the first paid-period boundary on/after the final access boundary.
+
+    GHL notice dates are Brisbane calendar dates and are inclusive. Stripe
+    periods are exact UTC timestamps. Keeping the Stripe timestamp avoids a
+    same-day timezone shift that can otherwise create one more invoice.
+    """
+    plan = subscription["items"]["data"][0]["plan"]
+    interval = plan.get("interval", "week")
+    interval_count = int(plan.get("interval_count", 1))
+    interval_seconds = {
+        "day": 24 * 60 * 60,
+        "week": 7 * 24 * 60 * 60,
+    }.get(interval)
+    if interval_seconds is None:
+        raise ValueError(
+            f"Unsupported cancellation interval '{interval}'; manual review required"
+        )
+    interval_seconds *= interval_count
+
+    final_access_boundary = datetime.combine(
+        notice_end_date + timedelta(days=1),
+        time.min,
+        tzinfo=BRISBANE_TZ,
+    )
+    final_access_boundary_ts = int(final_access_boundary.timestamp())
+    current_period_end_ts = int(subscription["current_period_end"])
+
+    if current_period_end_ts >= final_access_boundary_ts:
+        cancel_at_ts = current_period_end_ts
+    else:
+        periods_to_advance = math.ceil(
+            (final_access_boundary_ts - current_period_end_ts)
+            / interval_seconds
+        )
+        cancel_at_ts = current_period_end_ts + (
+            periods_to_advance * interval_seconds
+        )
+
+    last_payment_ts = cancel_at_ts - interval_seconds
+    return cancel_at_ts, last_payment_ts
 
 
 class GHLStatusError(RuntimeError):
@@ -451,7 +495,7 @@ def pause_hold():
 
         # 3. Get active subscription
         subscriptions = stripe.Subscription.list(
-            customer=customer_id, status="active", limit=1
+            customer=customer_id, status="active", limit=100
         )
         if not subscriptions.data:
             message = "No active Stripe subscription; manual pause required"
@@ -611,28 +655,32 @@ def cancel_membership():
             )
             record_exception(contact_id, "cancellation", message)
             return jsonify({"status": "exception", "error": message}), 422
+        if len(subscriptions.data) != 1:
+            message = (
+                "Multiple active Stripe subscriptions; manual selection required"
+            )
+            log.error(
+                "ADMIN ALERT — %s: %s (%s) | Cancellation type: %s",
+                message,
+                contact_name,
+                email,
+                cancellation_type,
+            )
+            record_exception(contact_id, "cancellation", message)
+            return jsonify({"status": "exception", "error": message}), 422
 
         subscription = subscriptions.data[0]
         sub_id = subscription["id"]
 
         # 4. Calculate cancel_at
-        period_start_ts = subscription["current_period_start"]
-        current_period_start = datetime.fromtimestamp(
-            period_start_ts, tz=timezone.utc
-        ).date()
-        interval_days = get_interval_days(subscription)
-
-        days_elapsed = (notice_end_date - current_period_start).days
-        num_periods = max(0, days_elapsed // interval_days)
-        last_payment_date = current_period_start + timedelta(
-            days=num_periods * interval_days
+        cancel_at_ts, last_payment_ts = calculate_cancellation_boundary(
+            subscription, notice_end_date
         )
-        cancel_date = last_payment_date + timedelta(days=interval_days)
-
-        cancel_at_ts = int(
-            datetime.combine(cancel_date, datetime.min.time())
-            .replace(tzinfo=timezone.utc)
-            .timestamp()
+        cancel_at_local = datetime.fromtimestamp(
+            cancel_at_ts, tz=BRISBANE_TZ
+        )
+        last_payment_local = datetime.fromtimestamp(
+            last_payment_ts, tz=BRISBANE_TZ
         )
 
         # 5. Schedule cancellation
@@ -646,8 +694,9 @@ def cancel_membership():
         )
 
         result = (
-            f"Scheduled subscription {sub_id} to cancel on {cancel_date}; "
-            f"notice end {notice_end_date}; last payment {last_payment_date}"
+            f"Scheduled subscription {sub_id} to cancel at "
+            f"{cancel_at_local.isoformat()}; notice end {notice_end_date}; "
+            f"last payment boundary {last_payment_local.isoformat()}"
         )
         update_ghl_status(
             contact_id, "cancellation", "Succeeded", result=result
@@ -660,11 +709,13 @@ def cancel_membership():
             email,
             sub_id,
             notice_end_date,
-            last_payment_date,
-            cancel_date,
+            last_payment_local.isoformat(),
+            cancel_at_local.isoformat(),
             cancellation_type,
         )
-        return jsonify({"status": "ok", "cancel_at": str(cancel_date)}), 200
+        return jsonify(
+            {"status": "ok", "cancel_at": cancel_at_local.isoformat()}
+        ), 200
     except GHLStatusError as exc:
         log.error("Billing succeeded but GHL acknowledgement failed: %s", exc)
         return jsonify({"status": "exception", "error": "GHL acknowledgement failed"}), 502
