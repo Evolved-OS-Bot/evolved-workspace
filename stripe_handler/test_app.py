@@ -175,10 +175,11 @@ class BillingOSTest(unittest.TestCase):
         update_status.assert_called_once()
         self.assertEqual(update_status.call_args.args[:3], ("contact_1", "hold", "Succeeded"))
 
+    @patch.object(billing, "stop_failed_cancellation")
     @patch.object(billing, "record_exception")
     @patch.object(billing.stripe.Customer, "list")
     def test_cancellation_no_customer_is_exception(
-        self, customer_list, record_exception
+        self, customer_list, record_exception, stop_workflow
     ):
         customer_list.return_value = SimpleNamespace(data=[])
         response = self.client.post(
@@ -193,12 +194,19 @@ class BillingOSTest(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json()["status"], "exception")
         record_exception.assert_called_once()
+        stop_workflow.assert_called_once_with("contact_1", "Membership")
+        self.assertTrue(response.get_json()["workflow_stopped"])
 
+    @patch.object(billing, "stop_failed_cancellation")
     @patch.object(billing, "record_exception")
     @patch.object(billing.stripe.Subscription, "list")
     @patch.object(billing.stripe.Customer, "list")
     def test_cancellation_multiple_subscriptions_fails_closed(
-        self, customer_list, subscription_list, record_exception
+        self,
+        customer_list,
+        subscription_list,
+        record_exception,
+        stop_workflow,
     ):
         customer_list.return_value = SimpleNamespace(
             data=[SimpleNamespace(id="cus_test")]
@@ -218,6 +226,42 @@ class BillingOSTest(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertIn("Multiple active", response.get_json()["error"])
         record_exception.assert_called_once()
+        stop_workflow.assert_called_once_with("contact_1", "PT")
+
+    @patch.object(billing.requests, "get")
+    def test_cancellation_resolves_contact_by_exact_email(self, request_get):
+        request_get.return_value = MagicMock(
+            ok=True,
+            json=lambda: {
+                "contacts": [
+                    {
+                        "id": "contact_1",
+                        "email": "member@example.com",
+                    }
+                ]
+            },
+        )
+
+        contact_id = billing.resolve_contact_id(
+            {}, "member@example.com"
+        )
+
+        self.assertEqual(contact_id, "contact_1")
+
+    @patch.object(billing.requests, "delete")
+    def test_failed_pt_cancellation_removes_contact_from_pt_workflow(
+        self, request_delete
+    ):
+        request_delete.return_value = MagicMock(ok=True)
+
+        billing.stop_failed_cancellation(
+            "contact_1", "Personal Training"
+        )
+
+        self.assertIn(
+            billing.CANCELLATION_WORKFLOW_IDS["pt"],
+            request_delete.call_args.args[0],
+        )
 
     @patch.object(billing, "update_ghl_status")
     @patch.object(billing.stripe.Subscription, "modify")
