@@ -304,6 +304,73 @@ class BillingOSTest(unittest.TestCase):
             ("contact_1", "cancellation", "Succeeded"),
         )
 
+    @patch.object(billing, "update_ghl_status")
+    @patch.object(billing.stripe.Subscription, "modify")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Customer, "list")
+    def test_existing_exact_cancellation_is_acknowledged_without_mutation(
+        self, customer_list, subscription_list, modify, update_status
+    ):
+        customer_list.return_value = SimpleNamespace(
+            data=[SimpleNamespace(id="cus_test")]
+        )
+        sub = subscription()
+        cancel_at, _ = billing.calculate_cancellation_boundary(
+            sub, billing.parse_date("2026-08-03")
+        )
+        sub["cancel_at"] = cancel_at
+        sub["schedule"] = "sub_sched_test"
+        subscription_list.return_value = SimpleNamespace(data=[sub])
+
+        response = self.client.post(
+            "/stripe/cancel",
+            json={
+                "contact_id": "contact_1",
+                "email": "member@example.com",
+                "notice_end_date": "2026-08-03",
+                "contact_name": "Test Member",
+                "cancellation_type": "Membership",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        modify.assert_not_called()
+        update_status.assert_called_once()
+        self.assertEqual(
+            update_status.call_args.args[:3],
+            ("contact_1", "cancellation", "Succeeded"),
+        )
+
+    @patch.object(billing, "stop_failed_cancellation")
+    @patch.object(billing, "record_exception")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Customer, "list")
+    def test_schedule_managed_cancellation_fails_closed_when_not_aligned(
+        self, customer_list, subscription_list, record_exception, stop_workflow
+    ):
+        customer_list.return_value = SimpleNamespace(
+            data=[SimpleNamespace(id="cus_test")]
+        )
+        sub = subscription()
+        sub["schedule"] = "sub_sched_test"
+        subscription_list.return_value = SimpleNamespace(data=[sub])
+        record_exception.return_value = True
+
+        response = self.client.post(
+            "/stripe/cancel",
+            json={
+                "contact_id": "contact_1",
+                "email": "member@example.com",
+                "notice_end_date": "2026-08-28",
+                "contact_name": "Test Member",
+                "cancellation_type": "Membership",
+            },
+        )
+
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("schedule-managed", response.get_json()["error"])
+        stop_workflow.assert_called_once()
+
     @patch.object(billing, "snapshot_hold_request")
     @patch.object(billing, "get_ghl_contact_fields")
     def test_hold_intake_accepts_and_snapshots_first_request(
