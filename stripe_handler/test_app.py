@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 os.environ.setdefault("STRIPE_API_KEY", "sk_test_unit")
 os.environ.setdefault("GHL_API_KEY", "ghl_test_unit")
 os.environ.setdefault("GHL_LOCATION_ID", "location_test")
+os.environ.setdefault("GHL_ADMIN_EVE_USER_ID", "admin_eve_test")
 
 if "app" in sys.modules:
     billing = importlib.reload(sys.modules["app"])
@@ -93,6 +94,64 @@ class BillingOSTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "manual review"):
             billing.calculate_cancellation_boundary(sub, date(2026, 8, 28))
+
+    @patch.object(billing.requests, "post")
+    @patch.object(billing.requests, "get")
+    def test_exception_task_is_assigned_to_admin_eve_and_due_same_day(
+        self, request_get, request_post
+    ):
+        request_get.return_value = MagicMock(
+            ok=True,
+            json=lambda: {"tasks": []},
+        )
+        request_post.return_value = MagicMock(status_code=201)
+
+        created = billing.create_admin_exception_task(
+            "contact_1",
+            "hold",
+            "Stripe customer not found",
+            contact_name="Test Member",
+            requested_action="Membership hold from 2026-08-10 to 2026-08-31",
+        )
+
+        self.assertTrue(created)
+        payload = request_post.call_args.kwargs["json"]
+        self.assertEqual(payload["assignedTo"], "admin_eve_test")
+        self.assertIn("Test Member", payload["body"])
+        self.assertIn("Stripe customer not found", payload["body"])
+        due_date = datetime.fromisoformat(
+            payload["dueDate"].replace("Z", "+00:00")
+        ).astimezone(billing.BRISBANE_TZ)
+        self.assertEqual(due_date.date(), datetime.now(billing.BRISBANE_TZ).date())
+
+    @patch.object(billing.requests, "post")
+    @patch.object(billing.requests, "get")
+    def test_exception_task_deduplicates_an_existing_open_task(
+        self, request_get, request_post
+    ):
+        key = billing.billing_exception_key(
+            "contact_1", "cancellation", "Stripe customer not found"
+        )
+        request_get.return_value = MagicMock(
+            ok=True,
+            json=lambda: {
+                "tasks": [
+                    {
+                        "body": f"Billing OS exception key: {key}",
+                        "completed": False,
+                    }
+                ]
+            },
+        )
+
+        created = billing.create_admin_exception_task(
+            "contact_1",
+            "cancellation",
+            "Stripe customer not found",
+        )
+
+        self.assertTrue(created)
+        request_post.assert_not_called()
 
     @patch.object(billing, "record_exception")
     def test_hold_requires_contact_id_and_all_dates(self, record_exception):

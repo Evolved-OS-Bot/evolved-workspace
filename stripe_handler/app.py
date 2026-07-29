@@ -31,6 +31,7 @@ stripe.api_key = os.environ["STRIPE_API_KEY"]
 
 GHL_API_KEY = os.environ.get("GHL_API_KEY", "")
 GHL_LOCATION_ID = os.environ.get("GHL_LOCATION_ID", "")
+GHL_ADMIN_EVE_USER_ID = os.environ.get("GHL_ADMIN_EVE_USER_ID", "")
 GHL_BASE_URL = "https://services.leadconnectorhq.com"
 GHL_FIELD_NAMES = {
     "hold_status": "Billing OS: Hold Action Status",
@@ -211,6 +212,116 @@ def update_ghl_status(contact_id, action, status, error="", result=""):
         },
         field_ids=field_ids,
     )
+
+
+def billing_exception_key(contact_id, action, message):
+    raw = "|".join(
+        [
+            str(contact_id or "").strip(),
+            str(action or "").strip().lower(),
+            str(message or "").strip(),
+        ]
+    )
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
+def same_day_admin_due_date():
+    """Return 5:00 pm Brisbane today, or now if the exception occurs later."""
+    now = datetime.now(BRISBANE_TZ)
+    due_local = datetime.combine(
+        now.date(),
+        time(hour=17),
+        tzinfo=BRISBANE_TZ,
+    )
+    if now > due_local:
+        due_local = now
+    return (
+        due_local.astimezone(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def create_admin_exception_task(
+    contact_id,
+    action,
+    message,
+    contact_name="Unknown",
+    requested_action="",
+):
+    """Create one open same-day Billing OS exception task for Admin Eve."""
+    if not contact_id:
+        log.error("ADMIN TASK FAILED: contact_id is required")
+        return False
+    if not GHL_ADMIN_EVE_USER_ID:
+        log.error("ADMIN TASK FAILED: GHL_ADMIN_EVE_USER_ID is required")
+        return False
+
+    action_label = str(action or "billing").strip().title()
+    exception_key = billing_exception_key(contact_id, action, message)
+    marker = f"Billing OS exception key: {exception_key}"
+    requested = requested_action or f"Manually complete the {action_label.lower()}"
+
+    try:
+        existing_response = requests.get(
+            f"{GHL_BASE_URL}/contacts/{contact_id}/tasks",
+            headers=_ghl_headers(),
+            timeout=20,
+        )
+        if not existing_response.ok:
+            raise GHLStatusError(
+                "Unable to check existing Billing OS tasks: "
+                f"HTTP {existing_response.status_code}"
+            )
+        for task in existing_response.json().get("tasks", []):
+            if marker in str(task.get("body", "")) and not task.get("completed"):
+                log.info(
+                    "ADMIN TASK ALREADY OPEN: contact=%s | action=%s | key=%s",
+                    contact_id,
+                    action,
+                    exception_key,
+                )
+                return True
+
+        title = f"BILLING EXCEPTION: {action_label} - Manual action required"
+        body = (
+            f"Billing OS could not complete this {action_label.lower()}.\n\n"
+            f"Contact: {contact_name or 'Unknown'}\n"
+            f"Requested action: {requested}\n"
+            f"Error: {message}\n\n"
+            "Action required today: manually complete or reconcile the action "
+            "in Stripe, verify the GHL billing status and dates, then complete "
+            "this task.\n\n"
+            f"{marker}"
+        )
+        create_response = requests.post(
+            f"{GHL_BASE_URL}/contacts/{contact_id}/tasks",
+            headers=_ghl_headers(),
+            json={
+                "title": title,
+                "body": body,
+                "dueDate": same_day_admin_due_date(),
+                "completed": False,
+                "assignedTo": GHL_ADMIN_EVE_USER_ID,
+            },
+            timeout=20,
+        )
+        if create_response.status_code != 201:
+            raise GHLStatusError(
+                "Unable to create Billing OS exception task: "
+                f"HTTP {create_response.status_code}"
+            )
+        log.info(
+            "ADMIN TASK CREATED: contact=%s | action=%s | key=%s",
+            contact_id,
+            action,
+            exception_key,
+        )
+        return True
+    except (requests.RequestException, GHLStatusError) as exc:
+        log.error("ADMIN TASK FAILED: %s", exc)
+        return False
 
 
 def update_ghl_fields(contact_id, values, field_ids=None):
@@ -412,14 +523,28 @@ def hold_intake():
         ), 502
 
 
-def record_exception(contact_id, action, message):
-    """Best-effort exception acknowledgement; returns whether GHL was updated."""
+def record_exception(
+    contact_id,
+    action,
+    message,
+    contact_name="Unknown",
+    requested_action="",
+):
+    """Record an exception and create the owned Admin Eve handoff."""
+    status_written = False
     try:
         update_ghl_status(contact_id, action, "Exception", error=message)
-        return True
+        status_written = True
     except GHLStatusError as exc:
         log.error("GHL STATUS WRITE FAILED: %s", exc)
-        return False
+    create_admin_exception_task(
+        contact_id,
+        action,
+        message,
+        contact_name=contact_name,
+        requested_action=requested_action,
+    )
+    return status_written
 
 
 def resolve_contact_id(data, email=""):
@@ -494,10 +619,31 @@ def stop_failed_cancellation(contact_id, cancellation_type):
         )
 
 
-def fail_cancellation(contact_id, cancellation_type, message, status_code):
+def fail_cancellation(
+    contact_id,
+    cancellation_type,
+    message,
+    status_code,
+    contact_name="Unknown",
+    notice_end_date="",
+):
     """Write the exception and fail closed before any member confirmation."""
+    requested_action = (
+        f"{cancellation_type or 'Membership'} cancellation"
+        + (
+            f" with notice ending {notice_end_date}"
+            if notice_end_date
+            else ""
+        )
+    )
     status_written = bool(
-        record_exception(contact_id, "cancellation", message)
+        record_exception(
+            contact_id,
+            "cancellation",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
     )
     stopped = False
     try:
@@ -531,6 +677,10 @@ def pause_hold():
     pre_return_str = data.get("pre_return_date", "").strip()
     contact_name = data.get("contact_name", "Unknown")
     hold_type = data.get("hold_type", "")
+    requested_action = (
+        f"{hold_type or 'Membership'} hold from "
+        f"{hold_start_str or 'unknown'} to {hold_end_str or 'unknown'}"
+    )
 
     if (
         not contact_id
@@ -541,7 +691,13 @@ def pause_hold():
     ):
         message = "Missing required hold fields"
         log.warning("%s — contact=%s", message, contact_id or "unknown")
-        record_exception(contact_id, "hold", message)
+        record_exception(
+            contact_id,
+            "hold",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
@@ -550,13 +706,25 @@ def pause_hold():
         pre_return_date = parse_date(pre_return_str)
     except ValueError as e:
         log.warning("Date parse error: %s — contact=%s", e, contact_id)
-        record_exception(contact_id, "hold", str(e))
+        record_exception(
+            contact_id,
+            "hold",
+            str(e),
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify({"error": str(e)}), 400
 
     if hold_end_date <= hold_start_date:
         message = "Hold End Date must be after Hold Start Date"
         log.warning("%s — contact=%s", message, contact_id)
-        record_exception(contact_id, "hold", message)
+        record_exception(
+            contact_id,
+            "hold",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify({"error": message}), 422
 
     expected_pre_return = hold_end_date - timedelta(days=7)
@@ -566,7 +734,13 @@ def pause_hold():
             f"({expected_pre_return})"
         )
         log.warning("%s — contact=%s", message, contact_id)
-        record_exception(contact_id, "hold", message)
+        record_exception(
+            contact_id,
+            "hold",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify({"error": message}), 422
 
     try:
@@ -583,7 +757,13 @@ def pause_hold():
                 hold_start_date,
                 hold_end_date,
             )
-            record_exception(contact_id, "hold", message)
+            record_exception(
+                contact_id,
+                "hold",
+                message,
+                contact_name=contact_name,
+                requested_action=requested_action,
+            )
             return jsonify({"status": "exception", "error": message}), 422
 
         customer = customers.data[0]
@@ -604,7 +784,13 @@ def pause_hold():
                 hold_start_date,
                 hold_end_date,
             )
-            record_exception(contact_id, "hold", message)
+            record_exception(
+                contact_id,
+                "hold",
+                message,
+                contact_name=contact_name,
+                requested_action=requested_action,
+            )
             return jsonify({"status": "exception", "error": message}), 422
 
         subscription = subscriptions.data[0]
@@ -684,13 +870,26 @@ def pause_hold():
         return jsonify({"status": "ok"}), 200
     except GHLStatusError as exc:
         log.error("Billing succeeded but GHL acknowledgement failed: %s", exc)
+        create_admin_exception_task(
+            contact_id,
+            "hold",
+            "GHL acknowledgement failed after Stripe hold",
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify(
             {"status": "exception", "error": "GHL acknowledgement failed"}
         ), 502
     except Exception:
         message = "Stripe hold operation failed; manual review required"
         log.exception("%s — contact=%s", message, contact_id)
-        record_exception(contact_id, "hold", message)
+        record_exception(
+            contact_id,
+            "hold",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
         return jsonify({"status": "exception", "error": message}), 502
 
 
@@ -709,7 +908,12 @@ def cancel_membership():
         message = "Missing required cancellation fields"
         log.warning("%s — contact=%s", message, contact_id or "unknown")
         return fail_cancellation(
-            contact_id, cancellation_type, message, 400
+            contact_id,
+            cancellation_type,
+            message,
+            400,
+            contact_name=contact_name,
+            notice_end_date=notice_end_str,
         )
 
     try:
@@ -717,7 +921,12 @@ def cancel_membership():
     except ValueError as e:
         log.warning("Date parse error: %s — contact=%s", e, contact_id)
         return fail_cancellation(
-            contact_id, cancellation_type, str(e), 400
+            contact_id,
+            cancellation_type,
+            str(e),
+            400,
+            contact_name=contact_name,
+            notice_end_date=notice_end_str,
         )
 
     try:
@@ -735,7 +944,12 @@ def cancel_membership():
                 notice_end_date,
             )
             return fail_cancellation(
-                contact_id, cancellation_type, message, 422
+                contact_id,
+                cancellation_type,
+                message,
+                422,
+                contact_name=contact_name,
+                notice_end_date=notice_end_date,
             )
 
         customer = customers.data[0]
@@ -755,7 +969,12 @@ def cancel_membership():
                 cancellation_type,
             )
             return fail_cancellation(
-                contact_id, cancellation_type, message, 422
+                contact_id,
+                cancellation_type,
+                message,
+                422,
+                contact_name=contact_name,
+                notice_end_date=notice_end_date,
             )
         if len(subscriptions.data) != 1:
             message = (
@@ -769,7 +988,12 @@ def cancel_membership():
                 cancellation_type,
             )
             return fail_cancellation(
-                contact_id, cancellation_type, message, 422
+                contact_id,
+                cancellation_type,
+                message,
+                422,
+                contact_name=contact_name,
+                notice_end_date=notice_end_date,
             )
 
         subscription = subscriptions.data[0]
@@ -807,7 +1031,12 @@ def cancel_membership():
                     subscription.get("schedule"),
                 )
                 return fail_cancellation(
-                    contact_id, cancellation_type, message, 422
+                    contact_id,
+                    cancellation_type,
+                    message,
+                    422,
+                    contact_name=contact_name,
+                    notice_end_date=notice_end_date,
                 )
             idempotency_key = stripe_idempotency_key(
                 "cancel", contact_id, notice_end_date, sub_id, cancel_at_ts
@@ -848,12 +1077,19 @@ def cancel_membership():
             cancellation_type,
             "GHL acknowledgement failed after Stripe cancellation",
             502,
+            contact_name=contact_name,
+            notice_end_date=notice_end_date,
         )
     except Exception:
         message = "Stripe cancellation operation failed; manual review required"
         log.exception("%s — contact=%s", message, contact_id)
         return fail_cancellation(
-            contact_id, cancellation_type, message, 502
+            contact_id,
+            cancellation_type,
+            message,
+            502,
+            contact_name=contact_name,
+            notice_end_date=notice_end_date,
         )
 
 
