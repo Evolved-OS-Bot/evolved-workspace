@@ -2,7 +2,7 @@ import importlib
 import os
 import sys
 import unittest
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -47,6 +47,52 @@ class BillingOSTest(unittest.TestCase):
     def setUp(self):
         self.client = billing.app.test_client()
         billing._ghl_field_ids.clear()
+
+    def test_cancellation_boundary_uses_brisbane_final_access_day(self):
+        sub = subscription()
+        sub["current_period_start"] = int(
+            datetime(2026, 7, 22, 14, tzinfo=timezone.utc).timestamp()
+        )
+        sub["current_period_end"] = int(
+            datetime(2026, 7, 29, 14, tzinfo=timezone.utc).timestamp()
+        )
+
+        cancel_at, last_payment = billing.calculate_cancellation_boundary(
+            sub, date(2026, 7, 29)
+        )
+
+        self.assertEqual(
+            datetime.fromtimestamp(cancel_at, billing.BRISBANE_TZ).isoformat(),
+            "2026-07-30T00:00:00+10:00",
+        )
+        self.assertEqual(
+            datetime.fromtimestamp(
+                last_payment, billing.BRISBANE_TZ
+            ).isoformat(),
+            "2026-07-23T00:00:00+10:00",
+        )
+
+    def test_cancellation_boundary_advances_by_exact_weekly_periods(self):
+        sub = subscription()
+        sub["current_period_end"] = int(
+            datetime(2026, 8, 3, 0, tzinfo=timezone.utc).timestamp()
+        )
+
+        cancel_at, _ = billing.calculate_cancellation_boundary(
+            sub, date(2026, 8, 28)
+        )
+
+        self.assertEqual(
+            datetime.fromtimestamp(cancel_at, timezone.utc).isoformat(),
+            "2026-08-31T00:00:00+00:00",
+        )
+
+    def test_cancellation_boundary_rejects_approximate_months(self):
+        sub = subscription()
+        sub["items"]["data"][0]["plan"]["interval"] = "month"
+
+        with self.assertRaisesRegex(ValueError, "manual review"):
+            billing.calculate_cancellation_boundary(sub, date(2026, 8, 28))
 
     @patch.object(billing, "record_exception")
     def test_hold_requires_contact_id_and_all_dates(self, record_exception):
@@ -129,10 +175,11 @@ class BillingOSTest(unittest.TestCase):
         update_status.assert_called_once()
         self.assertEqual(update_status.call_args.args[:3], ("contact_1", "hold", "Succeeded"))
 
+    @patch.object(billing, "stop_failed_cancellation")
     @patch.object(billing, "record_exception")
     @patch.object(billing.stripe.Customer, "list")
     def test_cancellation_no_customer_is_exception(
-        self, customer_list, record_exception
+        self, customer_list, record_exception, stop_workflow
     ):
         customer_list.return_value = SimpleNamespace(data=[])
         response = self.client.post(
@@ -147,6 +194,74 @@ class BillingOSTest(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json()["status"], "exception")
         record_exception.assert_called_once()
+        stop_workflow.assert_called_once_with("contact_1", "Membership")
+        self.assertTrue(response.get_json()["workflow_stopped"])
+
+    @patch.object(billing, "stop_failed_cancellation")
+    @patch.object(billing, "record_exception")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Customer, "list")
+    def test_cancellation_multiple_subscriptions_fails_closed(
+        self,
+        customer_list,
+        subscription_list,
+        record_exception,
+        stop_workflow,
+    ):
+        customer_list.return_value = SimpleNamespace(
+            data=[SimpleNamespace(id="cus_test")]
+        )
+        subscription_list.return_value = SimpleNamespace(
+            data=[subscription(), subscription()]
+        )
+        response = self.client.post(
+            "/stripe/cancel",
+            json={
+                "contact_id": "contact_1",
+                "email": "member@example.com",
+                "notice_end_date": "2026-08-28",
+                "cancellation_type": "PT",
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Multiple active", response.get_json()["error"])
+        record_exception.assert_called_once()
+        stop_workflow.assert_called_once_with("contact_1", "PT")
+
+    @patch.object(billing.requests, "get")
+    def test_cancellation_resolves_contact_by_exact_email(self, request_get):
+        request_get.return_value = MagicMock(
+            ok=True,
+            json=lambda: {
+                "contacts": [
+                    {
+                        "id": "contact_1",
+                        "email": "member@example.com",
+                    }
+                ]
+            },
+        )
+
+        contact_id = billing.resolve_contact_id(
+            {}, "member@example.com"
+        )
+
+        self.assertEqual(contact_id, "contact_1")
+
+    @patch.object(billing.requests, "delete")
+    def test_failed_pt_cancellation_removes_contact_from_pt_workflow(
+        self, request_delete
+    ):
+        request_delete.return_value = MagicMock(ok=True)
+
+        billing.stop_failed_cancellation(
+            "contact_1", "Personal Training"
+        )
+
+        self.assertIn(
+            billing.CANCELLATION_WORKFLOW_IDS["pt"],
+            request_delete.call_args.args[0],
+        )
 
     @patch.object(billing, "update_ghl_status")
     @patch.object(billing.stripe.Subscription, "modify")

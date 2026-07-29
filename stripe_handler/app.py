@@ -20,7 +20,8 @@ Cancellation logic:
 import os
 import logging
 import hashlib
-from datetime import datetime, timedelta, timezone
+import math
+from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from flask import Flask, request, jsonify
 import requests
@@ -70,6 +71,10 @@ HOLD_FORM_KINDS = {
     "extended_membership": "extended",
     "extended_pt": "extended",
 }
+CANCELLATION_WORKFLOW_IDS = {
+    "membership": "73345f90-6ca8-444c-a694-8d1b25cdfdc6",
+    "pt": "bdd09a42-d00d-43ba-9201-d6cd0057e3ae",
+}
 
 app = Flask(__name__)
 
@@ -97,6 +102,49 @@ def get_interval_days(subscription):
     count = plan.get("interval_count", 1)
     mapping = {"day": 1, "week": 7, "month": 30, "year": 365}
     return mapping.get(interval, 7) * count
+
+
+def calculate_cancellation_boundary(subscription, notice_end_date):
+    """Return the first paid-period boundary on/after the final access boundary.
+
+    GHL notice dates are Brisbane calendar dates and are inclusive. Stripe
+    periods are exact UTC timestamps. Keeping the Stripe timestamp avoids a
+    same-day timezone shift that can otherwise create one more invoice.
+    """
+    plan = subscription["items"]["data"][0]["plan"]
+    interval = plan.get("interval", "week")
+    interval_count = int(plan.get("interval_count", 1))
+    interval_seconds = {
+        "day": 24 * 60 * 60,
+        "week": 7 * 24 * 60 * 60,
+    }.get(interval)
+    if interval_seconds is None:
+        raise ValueError(
+            f"Unsupported cancellation interval '{interval}'; manual review required"
+        )
+    interval_seconds *= interval_count
+
+    final_access_boundary = datetime.combine(
+        notice_end_date + timedelta(days=1),
+        time.min,
+        tzinfo=BRISBANE_TZ,
+    )
+    final_access_boundary_ts = int(final_access_boundary.timestamp())
+    current_period_end_ts = int(subscription["current_period_end"])
+
+    if current_period_end_ts >= final_access_boundary_ts:
+        cancel_at_ts = current_period_end_ts
+    else:
+        periods_to_advance = math.ceil(
+            (final_access_boundary_ts - current_period_end_ts)
+            / interval_seconds
+        )
+        cancel_at_ts = current_period_end_ts + (
+            periods_to_advance * interval_seconds
+        )
+
+    last_payment_ts = cancel_at_ts - interval_seconds
+    return cancel_at_ts, last_payment_ts
 
 
 class GHLStatusError(RuntimeError):
@@ -374,6 +422,98 @@ def record_exception(contact_id, action, message):
         return False
 
 
+def resolve_contact_id(data, email=""):
+    """Resolve the GHL contact from standard or custom webhook payload data."""
+    nested_contact = data.get("contact")
+    candidates = [
+        data.get("contact_id"),
+        data.get("contactId"),
+        nested_contact.get("id") if isinstance(nested_contact, dict) else "",
+    ]
+    for candidate in candidates:
+        if candidate:
+            return str(candidate).strip()
+
+    if not email:
+        return ""
+    try:
+        response = requests.get(
+            f"{GHL_BASE_URL}/contacts/",
+            headers=_ghl_headers(),
+            params={
+                "locationId": GHL_LOCATION_ID,
+                "query": email,
+                "limit": 20,
+            },
+            timeout=20,
+        )
+        if not response.ok:
+            raise GHLStatusError(
+                f"Unable to search GHL contacts: HTTP {response.status_code}"
+            )
+        contacts = response.json().get("contacts", [])
+        exact = [
+            contact
+            for contact in contacts
+            if str(contact.get("email", "")).strip().lower() == email.lower()
+        ]
+        if len(exact) == 1:
+            return str(exact[0].get("id", "")).strip()
+        if len(exact) > 1:
+            raise GHLStatusError(
+                "Multiple GHL contacts share the cancellation email"
+            )
+    except (requests.RequestException, GHLStatusError) as exc:
+        log.error("GHL CONTACT RESOLUTION FAILED: %s", exc)
+    return ""
+
+
+def cancellation_workflow_id(cancellation_type):
+    normalized = str(cancellation_type or "").strip().lower()
+    if normalized in {"pt", "personal training"} or "personal training" in normalized:
+        return CANCELLATION_WORKFLOW_IDS["pt"]
+    return CANCELLATION_WORKFLOW_IDS["membership"]
+
+
+def stop_failed_cancellation(contact_id, cancellation_type):
+    """Remove a failed cancellation from its workflow before confirmations run."""
+    if not contact_id:
+        raise GHLStatusError(
+            "Cannot stop cancellation workflow without a contact_id"
+        )
+    workflow_id = cancellation_workflow_id(cancellation_type)
+    response = requests.delete(
+        f"{GHL_BASE_URL}/contacts/{contact_id}/workflow/{workflow_id}",
+        headers=_ghl_headers(),
+        timeout=20,
+    )
+    if not response.ok:
+        raise GHLStatusError(
+            "Unable to stop failed cancellation workflow: "
+            f"HTTP {response.status_code}"
+        )
+
+
+def fail_cancellation(contact_id, cancellation_type, message, status_code):
+    """Write the exception and fail closed before any member confirmation."""
+    status_written = bool(
+        record_exception(contact_id, "cancellation", message)
+    )
+    stopped = False
+    try:
+        stop_failed_cancellation(contact_id, cancellation_type)
+        stopped = True
+    except GHLStatusError as exc:
+        log.error("CANCELLATION WORKFLOW STOP FAILED: %s", exc)
+    payload = {
+        "status": "exception",
+        "error": message,
+        "workflow_stopped": stopped,
+        "status_written": status_written,
+    }
+    return jsonify(payload), status_code
+
+
 def stripe_idempotency_key(action, contact_id, *parts):
     raw = "|".join([action, contact_id, *[str(part) for part in parts]])
     return f"billing-os-{action}-{hashlib.sha256(raw.encode()).hexdigest()[:32]}"
@@ -451,7 +591,7 @@ def pause_hold():
 
         # 3. Get active subscription
         subscriptions = stripe.Subscription.list(
-            customer=customer_id, status="active", limit=1
+            customer=customer_id, status="active", limit=100
         )
         if not subscriptions.data:
             message = "No active Stripe subscription; manual pause required"
@@ -544,7 +684,9 @@ def pause_hold():
         return jsonify({"status": "ok"}), 200
     except GHLStatusError as exc:
         log.error("Billing succeeded but GHL acknowledgement failed: %s", exc)
-        return jsonify({"status": "exception", "error": "GHL acknowledgement failed"}), 502
+        return jsonify(
+            {"status": "exception", "error": "GHL acknowledgement failed"}
+        ), 502
     except Exception:
         message = "Stripe hold operation failed; manual review required"
         log.exception("%s — contact=%s", message, contact_id)
@@ -557,8 +699,8 @@ def cancel_membership():
     data = request.get_json(silent=True) or {}
 
     # 1. Validate payload
-    contact_id = data.get("contact_id", "").strip()
     email = data.get("email", "").strip()
+    contact_id = resolve_contact_id(data, email)
     notice_end_str = data.get("notice_end_date", "").strip()
     contact_name = data.get("contact_name", "Unknown")
     cancellation_type = data.get("cancellation_type", "")
@@ -566,15 +708,17 @@ def cancel_membership():
     if not contact_id or not email or not notice_end_str:
         message = "Missing required cancellation fields"
         log.warning("%s — contact=%s", message, contact_id or "unknown")
-        record_exception(contact_id, "cancellation", message)
-        return jsonify({"error": "Missing required fields"}), 400
+        return fail_cancellation(
+            contact_id, cancellation_type, message, 400
+        )
 
     try:
         notice_end_date = parse_date(notice_end_str)
     except ValueError as e:
         log.warning("Date parse error: %s — contact=%s", e, contact_id)
-        record_exception(contact_id, "cancellation", str(e))
-        return jsonify({"error": str(e)}), 400
+        return fail_cancellation(
+            contact_id, cancellation_type, str(e), 400
+        )
 
     try:
         # 2. Look up Stripe customer by email
@@ -590,8 +734,9 @@ def cancel_membership():
                 cancellation_type,
                 notice_end_date,
             )
-            record_exception(contact_id, "cancellation", message)
-            return jsonify({"status": "exception", "error": message}), 422
+            return fail_cancellation(
+                contact_id, cancellation_type, message, 422
+            )
 
         customer = customers.data[0]
         customer_id = customer.id
@@ -609,30 +754,36 @@ def cancel_membership():
                 email,
                 cancellation_type,
             )
-            record_exception(contact_id, "cancellation", message)
-            return jsonify({"status": "exception", "error": message}), 422
+            return fail_cancellation(
+                contact_id, cancellation_type, message, 422
+            )
+        if len(subscriptions.data) != 1:
+            message = (
+                "Multiple active Stripe subscriptions; manual selection required"
+            )
+            log.error(
+                "ADMIN ALERT — %s: %s (%s) | Cancellation type: %s",
+                message,
+                contact_name,
+                email,
+                cancellation_type,
+            )
+            return fail_cancellation(
+                contact_id, cancellation_type, message, 422
+            )
 
         subscription = subscriptions.data[0]
         sub_id = subscription["id"]
 
         # 4. Calculate cancel_at
-        period_start_ts = subscription["current_period_start"]
-        current_period_start = datetime.fromtimestamp(
-            period_start_ts, tz=timezone.utc
-        ).date()
-        interval_days = get_interval_days(subscription)
-
-        days_elapsed = (notice_end_date - current_period_start).days
-        num_periods = max(0, days_elapsed // interval_days)
-        last_payment_date = current_period_start + timedelta(
-            days=num_periods * interval_days
+        cancel_at_ts, last_payment_ts = calculate_cancellation_boundary(
+            subscription, notice_end_date
         )
-        cancel_date = last_payment_date + timedelta(days=interval_days)
-
-        cancel_at_ts = int(
-            datetime.combine(cancel_date, datetime.min.time())
-            .replace(tzinfo=timezone.utc)
-            .timestamp()
+        cancel_at_local = datetime.fromtimestamp(
+            cancel_at_ts, tz=BRISBANE_TZ
+        )
+        last_payment_local = datetime.fromtimestamp(
+            last_payment_ts, tz=BRISBANE_TZ
         )
 
         # 5. Schedule cancellation
@@ -646,8 +797,9 @@ def cancel_membership():
         )
 
         result = (
-            f"Scheduled subscription {sub_id} to cancel on {cancel_date}; "
-            f"notice end {notice_end_date}; last payment {last_payment_date}"
+            f"Scheduled subscription {sub_id} to cancel at "
+            f"{cancel_at_local.isoformat()}; notice end {notice_end_date}; "
+            f"last payment boundary {last_payment_local.isoformat()}"
         )
         update_ghl_status(
             contact_id, "cancellation", "Succeeded", result=result
@@ -660,19 +812,27 @@ def cancel_membership():
             email,
             sub_id,
             notice_end_date,
-            last_payment_date,
-            cancel_date,
+            last_payment_local.isoformat(),
+            cancel_at_local.isoformat(),
             cancellation_type,
         )
-        return jsonify({"status": "ok", "cancel_at": str(cancel_date)}), 200
+        return jsonify(
+            {"status": "ok", "cancel_at": cancel_at_local.isoformat()}
+        ), 200
     except GHLStatusError as exc:
         log.error("Billing succeeded but GHL acknowledgement failed: %s", exc)
-        return jsonify({"status": "exception", "error": "GHL acknowledgement failed"}), 502
+        return fail_cancellation(
+            contact_id,
+            cancellation_type,
+            "GHL acknowledgement failed after Stripe cancellation",
+            502,
+        )
     except Exception:
         message = "Stripe cancellation operation failed; manual review required"
         log.exception("%s — contact=%s", message, contact_id)
-        record_exception(contact_id, "cancellation", message)
-        return jsonify({"status": "exception", "error": message}), 502
+        return fail_cancellation(
+            contact_id, cancellation_type, message, 502
+        )
 
 
 @app.route("/health", methods=["GET"])
