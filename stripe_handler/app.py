@@ -183,7 +183,7 @@ def update_ghl_fields(contact_id, values, field_ids=None):
         headers=_ghl_headers(),
         json={
             "customFields": [
-                {"id": field_id, "field_value": value}
+                {"id": field_id, "fieldValue": value}
                 for field_id, value in payload_values.items()
             ]
         },
