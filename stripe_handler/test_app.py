@@ -288,6 +288,16 @@ class BillingOSTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("idempotency_key", modify.call_args.kwargs)
+        self.assertEqual(
+            modify.call_args.kwargs["idempotency_key"],
+            billing.stripe_idempotency_key(
+                "cancel",
+                "contact_1",
+                billing.parse_date("2026-08-28"),
+                "sub_test",
+                modify.call_args.kwargs["cancel_at"],
+            ),
+        )
         update_status.assert_called_once()
         self.assertEqual(
             update_status.call_args.args[:3],

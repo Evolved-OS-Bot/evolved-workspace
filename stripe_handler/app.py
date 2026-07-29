@@ -788,7 +788,7 @@ def cancel_membership():
 
         # 5. Schedule cancellation
         idempotency_key = stripe_idempotency_key(
-            "cancel", contact_id, notice_end_date, sub_id
+            "cancel", contact_id, notice_end_date, sub_id, cancel_at_ts
         )
         stripe.Subscription.modify(
             sub_id,
