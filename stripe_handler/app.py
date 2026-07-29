@@ -786,15 +786,37 @@ def cancel_membership():
             last_payment_ts, tz=BRISBANE_TZ
         )
 
-        # 5. Schedule cancellation
-        idempotency_key = stripe_idempotency_key(
-            "cancel", contact_id, notice_end_date, sub_id, cancel_at_ts
-        )
-        stripe.Subscription.modify(
-            sub_id,
-            cancel_at=cancel_at_ts,
-            idempotency_key=idempotency_key,
-        )
+        # 5. Schedule cancellation. Subscription schedules own their
+        # cancellation state and reject direct subscription updates. An exact
+        # existing cancel_at is already authoritative, so treat it as an
+        # idempotent success; otherwise route a schedule-managed case to manual
+        # review instead of attempting a mutation Stripe will reject.
+        existing_cancel_at = int(subscription.get("cancel_at") or 0)
+        if existing_cancel_at != cancel_at_ts:
+            if subscription.get("schedule"):
+                message = (
+                    "Stripe subscription is schedule-managed; manual schedule "
+                    "update required"
+                )
+                log.error(
+                    "ADMIN ALERT — %s: %s (%s) | sub=%s | schedule=%s",
+                    message,
+                    contact_name,
+                    email,
+                    sub_id,
+                    subscription.get("schedule"),
+                )
+                return fail_cancellation(
+                    contact_id, cancellation_type, message, 422
+                )
+            idempotency_key = stripe_idempotency_key(
+                "cancel", contact_id, notice_end_date, sub_id, cancel_at_ts
+            )
+            stripe.Subscription.modify(
+                sub_id,
+                cancel_at=cancel_at_ts,
+                idempotency_key=idempotency_key,
+            )
 
         result = (
             f"Scheduled subscription {sub_id} to cancel at "
