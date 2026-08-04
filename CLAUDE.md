@@ -211,6 +211,23 @@ When in doubt: if it's a lookup table, it belongs in a reference file with a poi
 
 ---
 
+## Cross-Workspace Governance
+
+<!-- workspace-governance-standard-v1 -->
+
+Before material work, read `.workspace-governance.json` and the Peter-owned standard at `/Users/peterbrown/peter-workspace/operating-system/workspace-governance-standard-v1.md`.
+
+1. Classify the request as idea, research, proposal, approved implementation, live operation or status review.
+2. Keep unapproved ideas in `context/idea-register.md`; they cannot change canonical references, the roadmap or a live system.
+3. Record material owner rule decisions in `context/decision-log.md` and detailed domain evidence in the applicable plan or build record.
+4. Complete the canonical-to-derivative-to-live cascade and domain validation before reporting completion.
+5. Update `context/control-plane-status.md` after a material status change using only aggregate, share-safe information permitted by the manifest.
+6. Run `python3 /Users/peterbrown/peter-workspace/tools/check-workspace-governance.py` after changing the manifest, instruction hook or registered status paths.
+
+The Peter control plane coordinates attention and decisions. It does not own Evolved identities, payment, entitlement, lifecycle or metric calculations.
+
+---
+
 ## Website Architecture
 
 **Domain map:**
