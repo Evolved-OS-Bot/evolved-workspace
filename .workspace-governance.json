@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "workspace_id": "evolved",
+  "mission": "Operate The Evolved Gym and its governed business systems.",
+  "governance_standard": {
+    "version": "1.0",
+    "path": "/Users/peterbrown/peter-workspace/operating-system/workspace-governance-standard-v1.md"
+  },
+  "canonical_instruction": "CLAUDE.md",
+  "idea_surface": "context/idea-register.md",
+  "active_work_surface": "context/roadmap.md",
+  "decision_surface": "context/decision-log.md",
+  "control_plane_status": "context/control-plane-status.md",
+  "canonical_sources": [
+    "reference/evolved-manual",
+    "reference/sops",
+    "outputs/systems/reporting-control-plane.md",
+    "outputs/systems/website-v2-release-manifest.md"
+  ],
+  "cascade_controls": [
+    "outputs/systems/evolved-standards-cascade-register.json",
+    "outputs/systems/workflow-extension-registry.md",
+    "scripts/check_evolved_standards_cascade.py",
+    "scripts/check_agent_instruction_drift.py",
+    "scripts/check_website_v2_drift.py"
+  ],
+  "live_surfaces": [
+    "GoHighLevel",
+    "Trainerize",
+    "Stripe",
+    "Railway/Postgres",
+    "WordPress"
+  ],
+  "validation_commands": [
+    "python3 scripts/check_agent_instruction_drift.py",
+    "python3 scripts/check_evolved_standards_cascade.py",
+    "python3 scripts/audit_trainer_portal.py",
+    "python3 scripts/check_website_v2_drift.py"
+  ],
+  "control_plane_export": {
+    "allowed": [
+      "aggregate status and metrics",
+      "freshness",
+      "material exceptions",
+      "decisions required",
+      "cross-workspace dependencies",
+      "links to canonical evidence"
+    ],
+    "prohibited": [
+      "identified member or lead data",
+      "payment or entitlement row-level records",
+      "credentials, tokens or private keys",
+      "copied Evolved metric logic"
+    ]
+  }
+}
