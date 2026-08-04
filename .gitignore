@@ -1,6 +1,15 @@
 scripts/.env
 discord_bot/.env
+.env
+**/.env
+**/.env.*
+!**/.env.example
 scripts/google_credentials.json
+*credentials*.json
+*.key
+*.pem
+*.p12
+*.pfx
 context/current-data.md
 __pycache__/
 *.pyc
