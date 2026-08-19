@@ -1,0 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "reporting_control/Dockerfile.public-proof"
+
+[deploy]
+cronSchedule = "45 7 * * 1"
+restartPolicyType = "NEVER"

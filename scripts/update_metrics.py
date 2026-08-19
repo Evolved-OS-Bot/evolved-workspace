@@ -16,6 +16,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import requests
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -156,6 +157,27 @@ def atomic_write_text(path, content):
     temporary.replace(path)
 
 
+def load_governed_attendance():
+    hub_url = os.getenv("OPERATING_DATA_HUB_URL", "").rstrip("/")
+    hub_secret = os.getenv("HUB_WEBHOOK_SECRET", "")
+    if not hub_url or not hub_secret:
+        return None
+    response = requests.get(
+        f"{hub_url}/api/v1/sa-attendance/summary",
+        headers={"X-Hub-Secret": hub_secret},
+        timeout=20,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    return {
+        "definition_version": payload.get("definition_version"),
+        **(payload.get("summary") or {}),
+        "source_observed_at": (
+            (payload.get("source") or {}).get("observed_at")
+        ),
+    }
+
+
 def main():
     print(f"Reading sheet: {SHEET_NAME}")
     rows = read_sheet(SHEET_NAME, "A1:BF140")
@@ -168,6 +190,20 @@ def main():
     print(f"Current week: {week_date} (col index {col_idx})")
     period = ReportingPeriod.from_kpi_posting_date(week_date)
     limitations = []
+    try:
+        governed_attendance = load_governed_attendance()
+    except Exception as exc:
+        governed_attendance = None
+        limitations.append(
+            "Governed Strength Assessment attendance is unavailable because "
+            f"the hub summary could not be read: {type(exc).__name__}."
+        )
+    if governed_attendance is None:
+        limitations.append(
+            "Strength Assessment attendance remains in shadow setup. Sheet "
+            "show-rate cells are legacy column-K outputs and are not treated "
+            "as governed attendance."
+        )
 
     def g(key):
         return get_cell(rows, ROWS[key], col_idx)
@@ -286,6 +322,22 @@ def main():
             "show_rate_ads": number(g("show_rate_ads")),
             "show_rate_no_ads": number(g("show_rate_no_ads")),
             "show_rate_total": number(g("show_rate_total")),
+            "governed_attendance": governed_attendance,
+            "attendance_definition_version": (
+                governed_attendance.get("definition_version")
+                if governed_attendance
+                else "sa-attendance-v1"
+            ),
+            "attendance_publication_state": (
+                "provisional"
+                if governed_attendance
+                and governed_attendance.get("show_rate_provisional")
+                else (
+                    "governed"
+                    if governed_attendance
+                    else "shadow-unavailable"
+                )
+            ),
             "sales_conversion_rate": number(g("conversion_rate_total")),
         },
         "sales": {
@@ -389,9 +441,15 @@ exact phone and owner-approved email aliases only; names are never matched.
 | Bookings via Ads | {fmt(g("bookings_via_ads"))} |
 | Bookings w/o Ads | {fmt(g("bookings_no_ads"))} |
 | Studio Bookings Attended | {fmt(g("bookings_attended"))} |
-| Show Rate (Ads) | {fmt(g("show_rate_ads"), pct=True)} |
-| Show Rate (No Ads) | {fmt(g("show_rate_no_ads"), pct=True)} |
-| Show Rate (Total) | {fmt(g("show_rate_total"), pct=True)} |
+| Legacy Column-K Show Rate (Ads) | {fmt(g("show_rate_ads"), pct=True)} |
+| Legacy Column-K Show Rate (No Ads) | {fmt(g("show_rate_no_ads"), pct=True)} |
+| Legacy Column-K Show Rate (Total) | {fmt(g("show_rate_total"), pct=True)} |
+| Governed Showed | {fmt(governed_attendance.get("showed") if governed_attendance else None)} |
+| Governed No Show | {fmt(governed_attendance.get("no_show") if governed_attendance else None)} |
+| Governed Cancelled | {fmt(governed_attendance.get("cancelled") if governed_attendance else None)} |
+| Governed Unresolved | {fmt(governed_attendance.get("unresolved") if governed_attendance else None)} |
+| Governed Show Rate | {fmt(governed_attendance.get("show_rate") if governed_attendance else None, pct=True)} |
+| Attendance Definition | {governed_attendance.get("definition_version") if governed_attendance else "sa-attendance-v1 (shadow unavailable)"} |
 | Sales Conversion Rate | {fmt(g("conversion_rate_total"), pct=True)} |
 
 ---

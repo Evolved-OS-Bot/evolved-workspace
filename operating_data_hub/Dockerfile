@@ -13,6 +13,13 @@ COPY operating_data_hub /app/operating_data_hub
 COPY reporting_control /app/reporting_control
 COPY scripts/sheets_client.py /app/scripts/sheets_client.py
 COPY scripts/update_metrics.py /app/scripts/update_metrics.py
+COPY scripts/run_quarterly_evidence_surveillance.py /app/scripts/run_quarterly_evidence_surveillance.py
+COPY reference/educational-intelligence/quarterly-surveillance-config.json /app/reference/educational-intelligence/quarterly-surveillance-config.json
+COPY reference/educational-intelligence/approved-studies-bank.md /app/reference/educational-intelligence/approved-studies-bank.md
+COPY reference/educational-intelligence/emerging-science-horizon-watchlist.md /app/reference/educational-intelligence/emerging-science-horizon-watchlist.md
+COPY reference/educational-intelligence/strength-training-doctrine.md /app/reference/educational-intelligence/strength-training-doctrine.md
+COPY reference/educational-intelligence/nutrition-doctrine.md /app/reference/educational-intelligence/nutrition-doctrine.md
+COPY reference/educational-intelligence/sleep-recovery-doctrine.md /app/reference/educational-intelligence/sleep-recovery-doctrine.md
+COPY reference/educational-intelligence/mindset-behaviour-doctrine.md /app/reference/educational-intelligence/mindset-behaviour-doctrine.md
 
 CMD ["sh", "-c", "gunicorn --workers 1 --threads 4 --timeout 900 --bind 0.0.0.0:${PORT:-8080} operating_data_hub.app:app"]
-

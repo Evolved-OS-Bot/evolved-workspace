@@ -85,15 +85,33 @@ def test_report_registry_is_complete_and_dependency_safe():
     root = Path(__file__).resolve().parents[2]
     registry = load_registry(root / "reporting_control" / "report_registry.json")
 
-    assert len(registry["reports"]) == 7
-    assert {report["id"] for report in registry["reports"]} >= {
+    report_ids = {report["id"] for report in registry["reports"]}
+    assert len(report_ids) == len(registry["reports"])
+    assert report_ids >= {
         "current-business-metrics",
         "retention-intelligence",
         "pt-booking-continuity",
         "revenue-control",
         "conversation-triage",
         "trainerize-performance",
+        "sgpt-delivery-v2",
+        "strength-assessment-attendance",
+        "ghl-prequalification-completion-event",
+        "monthly-staff-bonus",
     }
+    clearance = next(
+        report
+        for report in registry["reports"]
+        if report["id"] == "conversation-triage"
+    )
+    assert clearance["definition_version"] == (
+        "conversation-clearance-v1-shadow"
+    )
+    assert clearance["share_safe_artifact"] == (
+        "/api/v2/reporting/conversation-clearance"
+    )
+    assert set(clearance["write_gates"].values()) == {False}
+    assert clearance["secondary_task_creation"] == "prohibited"
 
 
 def test_executive_brief_is_aggregate_and_contains_no_identity_fields():

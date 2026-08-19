@@ -100,6 +100,11 @@ def build_executive_brief(
             "members": kpi.get("members"),
             "revenue": kpi.get("revenue"),
             "acquisition": kpi.get("acquisition"),
+            "strength_assessment_attendance": (
+                (kpi.get("acquisition") or {}).get(
+                    "governed_attendance"
+                )
+            ),
             "sales": kpi.get("sales"),
             "retention": kpi.get("retention"),
             "pt_utilisation": kpi.get("pt_utilisation"),
@@ -112,6 +117,14 @@ def build_executive_brief(
             / "latest-performance-summary.md"
         ),
         "architecture_alerts": [
+            {
+                "severity": "high",
+                "report_id": "strength-assessment-attendance",
+                "message": (
+                    "Strength Assessment attendance is in shadow validation. "
+                    "Do not use Appointments column K as a governed show rate."
+                ),
+            },
             {
                 "severity": "high",
                 "report_id": "railway-only-scheduling",
@@ -157,6 +170,7 @@ def render_markdown(brief: dict[str, Any]) -> str:
     members = business.get("members") or {}
     revenue = business.get("revenue") or {}
     performance = brief.get("trainerize_performance") or {}
+    attendance = business.get("strength_assessment_attendance") or {}
     rows = [
         "# Evolved Executive Reporting Brief",
         "",
@@ -192,6 +206,18 @@ def render_markdown(brief: dict[str, Any]) -> str:
         (
             "| Trainerize reassessments due or missing | "
             f"{performance.get('reassessment_due', 'Unavailable')} |"
+        ),
+        (
+            "| Strength Assessment showed | "
+            f"{attendance.get('showed', 'Unavailable')} |"
+        ),
+        (
+            "| Strength Assessment no show | "
+            f"{attendance.get('no_show', 'Unavailable')} |"
+        ),
+        (
+            "| Strength Assessment unresolved | "
+            f"{attendance.get('unresolved', 'Unavailable')} |"
         ),
         "",
         "## Report Control",

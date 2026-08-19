@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "owner": "Peter Brown",
+  "cadence": {
+    "timezone": "Australia/Brisbane",
+    "quarter_months": [1, 4, 7, 10],
+    "lookback_days": 120
+  },
+  "limits": {
+    "pubmed_results_per_query": 30,
+    "clinical_trials_results_per_query": 20,
+    "http_timeout_seconds": 30
+  },
+  "promotion_policy": {
+    "automatic_approved_bank_write": false,
+    "automatic_horizon_write": false,
+    "automatic_doctrine_write": false,
+    "automatic_downstream_cascade": false,
+    "human_appraisal_required": true,
+    "owner_acceptance_required_for_material_doctrine_change": true
+  },
+  "pubmed_queries": [
+    {
+      "id": "STR-STRENGTH-FUNCTION",
+      "lane": "strength",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (resistance training[Title/Abstract] OR strength training[Title/Abstract]) AND (strength[Title/Abstract] OR muscle[Title/Abstract] OR power[Title/Abstract] OR physical function[Title/Abstract])"
+    },
+    {
+      "id": "STR-BONE-LONGEVITY-COGNITION",
+      "lane": "strength",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (resistance exercise[Title/Abstract] OR muscle strength[Title/Abstract]) AND (bone[Title/Abstract] OR falls[Title/Abstract] OR longevity[Title/Abstract] OR cognition[Title/Abstract] OR dementia[Title/Abstract])"
+    },
+    {
+      "id": "STR-PAIN-INJURY-RETURN",
+      "lane": "strength",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (exercise[Title/Abstract] OR resistance training[Title/Abstract]) AND (injury[Title/Abstract] OR pain[Title/Abstract] OR tendinopathy[Title/Abstract] OR return to sport[Title/Abstract])"
+    },
+    {
+      "id": "NUT-ADEQUACY-PROTEIN-LIFESTAGE",
+      "lane": "nutrition",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (protein intake[Title/Abstract] OR energy availability[Title/Abstract] OR dietary adequacy[Title/Abstract]) AND (muscle[Title/Abstract] OR ageing[Title/Abstract] OR menopause[Title/Abstract] OR pregnancy[Title/Abstract] OR postpartum[Title/Abstract])"
+    },
+    {
+      "id": "NUT-PATTERN-METABOLIC",
+      "lane": "nutrition",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (dietary pattern[Title/Abstract] OR fibre[Title/Abstract] OR ultra-processed[Title/Abstract] OR hydration[Title/Abstract]) AND (metabolic health[Title/Abstract] OR body composition[Title/Abstract] OR cardiovascular[Title/Abstract])"
+    },
+    {
+      "id": "SLP-SLEEP-CIRCADIAN-RECOVERY",
+      "lane": "sleep_recovery",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (sleep[Title/Abstract] OR circadian[Title/Abstract] OR shift work[Title/Abstract]) AND (exercise[Title/Abstract] OR recovery[Title/Abstract] OR performance[Title/Abstract] OR menopause[Title/Abstract])"
+    },
+    {
+      "id": "SLP-THERMAL-RECOVERY-MYTHS",
+      "lane": "sleep_recovery",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (cold water immersion[Title/Abstract] OR sauna[Title/Abstract] OR heat therapy[Title/Abstract] OR recovery modality[Title/Abstract])"
+    },
+    {
+      "id": "MND-ADHERENCE-AUTONOMY",
+      "lane": "mindset_behaviour",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (exercise adherence[Title/Abstract] OR behaviour change[Title/Abstract] OR self efficacy[Title/Abstract] OR autonomy support[Title/Abstract] OR habit[Title/Abstract])"
+    },
+    {
+      "id": "MND-BODY-IMAGE-STIGMA",
+      "lane": "mindset_behaviour",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (body image[Title/Abstract] OR weight stigma[Title/Abstract] OR exercise identity[Title/Abstract] OR eating behaviour[Title/Abstract])"
+    },
+    {
+      "id": "XPL-SUPPLEMENT-FRONTIER",
+      "lane": "cross_pillar",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract]) AND (creatine[Title/Abstract] OR omega-3[Title/Abstract] OR vitamin D[Title/Abstract] OR iron[Title/Abstract] OR probiotic[Title/Abstract]) AND (randomized[Title/Abstract] OR systematic review[Title/Abstract] OR meta-analysis[Publication Type])"
+    },
+    {
+      "id": "XPL-HORMONE-GLP1-FRONTIER",
+      "lane": "cross_pillar",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract] OR obesity[Title/Abstract]) AND (menopausal hormone therapy[Title/Abstract] OR testosterone[Title/Abstract] OR GLP-1[Title/Abstract] OR semaglutide[Title/Abstract] OR tirzepatide[Title/Abstract] OR retatrutide[Title/Abstract]) AND (muscle[Title/Abstract] OR function[Title/Abstract] OR cognition[Title/Abstract] OR safety[Title/Abstract] OR adverse[Title/Abstract])"
+    },
+    {
+      "id": "XPL-PREGNANCY-POSTPARTUM",
+      "lane": "cross_pillar",
+      "query": "(pregnancy[Title/Abstract] OR postpartum[Title/Abstract]) AND women[Title/Abstract] AND (resistance training[Title/Abstract] OR nutrition[Title/Abstract] OR sleep[Title/Abstract] OR behaviour[Title/Abstract])"
+    },
+    {
+      "id": "XPL-ADJUNCT-BODY-CONTOUR",
+      "lane": "cross_pillar",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract] OR postmenopausal[Title/Abstract]) AND (cryolipolysis[Title/Abstract] OR fat freezing[Title/Abstract] OR body contouring[Title/Abstract] OR cellulite[Title/Abstract] OR radiofrequency[Title/Abstract]) AND (systematic review[Title/Abstract] OR randomized[Title/Abstract] OR adverse event[Title/Abstract] OR meta-analysis[Publication Type])"
+    },
+    {
+      "id": "XPL-ADJUNCT-LYMPH-COMPRESSION",
+      "lane": "cross_pillar",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract] OR breast cancer[Title/Abstract]) AND (manual lymphatic drainage[Title/Abstract] OR lymphoedema[Title/Abstract] OR lymphedema[Title/Abstract] OR lipedema[Title/Abstract] OR pneumatic compression[Title/Abstract]) AND (randomized[Title/Abstract] OR systematic review[Title/Abstract] OR meta-analysis[Publication Type])"
+    },
+    {
+      "id": "XPL-ADJUNCT-WELLNESS-PELVIC",
+      "lane": "cross_pillar",
+      "query": "(women[Title/Abstract] OR female[Title/Abstract] OR menopause[Title/Abstract]) AND (vaginal laser[Title/Abstract] OR pelvic floor magnetic[Title/Abstract] OR yoni egg[Title/Abstract] OR jade egg[Title/Abstract] OR vaginal cone[Title/Abstract] OR colon cleansing[Title/Abstract] OR hyperbaric oxygen[Title/Abstract] OR floatation REST[Title/Abstract] OR intravenous vitamin[Title/Abstract]) AND (randomized[Title/Abstract] OR systematic review[Title/Abstract] OR safety[Title/Abstract] OR adverse event[Title/Abstract])"
+    }
+  ],
+  "clinical_trials_queries": [
+    {
+      "id": "HZN-FEMALE-PERFORMANCE",
+      "lane": "strength",
+      "query": "women resistance training muscle strength cognition performance"
+    },
+    {
+      "id": "HZN-FEMALE-LIFESTAGE",
+      "lane": "cross_pillar",
+      "query": "women pregnancy postpartum perimenopause menopause exercise nutrition sleep"
+    },
+    {
+      "id": "HZN-SUPPLEMENT-BIOLOGICAL",
+      "lane": "cross_pillar",
+      "query": "women creatine omega-3 vitamin D probiotic microbiota peptide"
+    },
+    {
+      "id": "HZN-GLP1-MUSCLE-FUNCTION",
+      "lane": "cross_pillar",
+      "query": "GLP-1 semaglutide tirzepatide retatrutide muscle strength body composition function"
+    }
+  ],
+  "manual_refresh_families": [
+    "Australian clinical guidelines and product information",
+    "major professional position statements",
+    "supplement contamination and product-integrity alerts",
+    "retractions, corrections and expressions of concern",
+    "public claims or services proposed since the previous run"
+  ]
+}
