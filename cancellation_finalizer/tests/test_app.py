@@ -29,8 +29,6 @@ class AppTest(unittest.TestCase):
             trainerize_api_token="",
             trainerize_api_base_url="https://api.trainerize.com/v03",
             trainerize_location_id=None,
-            trainerize_deactivate_webhook_url="",
-            trainerize_deactivate_webhook_secret="",
             hub_base_url="",
             hub_api_key="",
             worker_enabled=False,
@@ -76,6 +74,9 @@ class AppTest(unittest.TestCase):
         payload = response.get_json()
         self.assertFalse(payload["writeEnabled"])
         self.assertIn("GHL_API_KEY", payload["missingLiveConfiguration"])
+        self.assertNotIn(
+            "TRAINERIZE_DEACTIVATE_WEBHOOK_URL", payload["missingLiveConfiguration"]
+        )
 
 
 if __name__ == "__main__":

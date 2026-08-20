@@ -36,9 +36,9 @@ Active Online relationship continues.
 - Sheets: `GOOGLE_SPREADSHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_JSON`
 - Trainerize reads: `TRAINERIZE_GROUP_ID`, `TRAINERIZE_API_TOKEN`,
   `TRAINERIZE_LOCATION_ID`, optional API base URL
-- Trainerize write: `TRAINERIZE_DEACTIVATE_WEBHOOK_URL` and
-  `TRAINERIZE_DEACTIVATE_WEBHOOK_SECRET`; the receiver must invoke the official
-  Trainerize Deactivate Client action and accept the stable idempotency key
+- Trainerize write: the same guarded ABC Trainerize API connection invokes
+  `user/setStatus` with sign-in and messaging disabled, then proves the exact
+  account moved from the active roster to the deactivated roster
 - Hub: `OPERATING_DATA_HUB_URL`, `OPERATING_DATA_HUB_API_KEY`
 
 The health endpoint lists missing variable names but never values. Writes stay

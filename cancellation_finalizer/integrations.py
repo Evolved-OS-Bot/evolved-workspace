@@ -262,23 +262,22 @@ class ProductionIntegrations:
             raise FinalizationError("full closure requires one exact active Trainerize account")
         self._require_writes()
         user_id = int(active[0]["id"])
-        response = self.session.post(
-            self.settings.trainerize_deactivate_webhook_url,
-            headers={
-                "Authorization": f"Bearer {self.settings.trainerize_deactivate_webhook_secret}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "trainerize_user_id": user_id,
-                "email": email,
-                "idempotency_key": context["idempotency_key"] + ":trainerize",
-            },
-            timeout=30,
-        )
-        if not response.ok:
-            raise FinalizationError(
-                f"Trainerize Deactivate Client hook failed with HTTP {response.status_code}"
+        try:
+            self.session.post(
+                f"{self.settings.trainerize_api_base_url}/user/setStatus",
+                auth=(self.settings.trainerize_group_id, self.settings.trainerize_api_token),
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
+                json={
+                    "userID": user_id,
+                    "accountStatus": "deactivated",
+                    "enableSignin": False,
+                    "enableMessage": False,
+                },
+                timeout=30,
             )
+        except requests.RequestException:
+            # The exact active/deactivated roster read-back below is authoritative.
+            pass
         for _ in range(5):
             time.sleep(2)
             active_after = self._email_matches(self._trainerize_rows("activeClient"), email)

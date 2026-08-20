@@ -26,8 +26,6 @@ class Settings:
     trainerize_api_token: str
     trainerize_api_base_url: str
     trainerize_location_id: int | None
-    trainerize_deactivate_webhook_url: str
-    trainerize_deactivate_webhook_secret: str
     hub_base_url: str
     hub_api_key: str
     worker_enabled: bool
@@ -54,12 +52,6 @@ class Settings:
                 "TRAINERIZE_API_BASE_URL", "https://api.trainerize.com/v03"
             ).rstrip("/"),
             trainerize_location_id=int(location) if location.isdigit() else None,
-            trainerize_deactivate_webhook_url=os.getenv(
-                "TRAINERIZE_DEACTIVATE_WEBHOOK_URL", ""
-            ).strip(),
-            trainerize_deactivate_webhook_secret=os.getenv(
-                "TRAINERIZE_DEACTIVATE_WEBHOOK_SECRET", ""
-            ).strip(),
             hub_base_url=os.getenv("OPERATING_DATA_HUB_URL", "").rstrip("/"),
             hub_api_key=os.getenv("OPERATING_DATA_HUB_API_KEY", "").strip(),
             worker_enabled=_bool("CANCELLATION_FINALIZER_WORKER_ENABLED", True),
@@ -77,10 +69,7 @@ class Settings:
             "TRAINERIZE_GROUP_ID": self.trainerize_group_id,
             "TRAINERIZE_API_TOKEN": self.trainerize_api_token,
             "TRAINERIZE_LOCATION_ID": self.trainerize_location_id,
-            "TRAINERIZE_DEACTIVATE_WEBHOOK_URL": self.trainerize_deactivate_webhook_url,
-            "TRAINERIZE_DEACTIVATE_WEBHOOK_SECRET": self.trainerize_deactivate_webhook_secret,
             "OPERATING_DATA_HUB_URL": self.hub_base_url,
             "OPERATING_DATA_HUB_API_KEY": self.hub_api_key,
         }
         return [name for name, value in required.items() if not value]
-
