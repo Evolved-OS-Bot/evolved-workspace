@@ -11,10 +11,21 @@ def _bool(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _positive_int(name: str, default: int) -> int:
+    value = os.getenv(name, str(default)).strip()
+    if not value.isdigit() or int(value) < 1:
+        raise ValueError(f"{name} must be a positive integer")
+    return int(value)
+
+
 @dataclass(frozen=True)
 class Settings:
     database_url: str
-    api_secret: str
+    webhook_signing_secret: str
+    admin_secret: str
+    signature_tolerance_seconds: int
+    webhook_rate_limit_per_minute: int
+    admin_rate_limit_per_minute: int
     write_enabled: bool
     ghl_api_key: str
     ghl_location_id: str
@@ -35,7 +46,19 @@ class Settings:
         location = os.getenv("TRAINERIZE_LOCATION_ID", "").strip()
         return cls(
             database_url=os.getenv("DATABASE_URL", "sqlite:///cancellation-finalizer.db"),
-            api_secret=os.getenv("CANCELLATION_FINALIZER_SECRET", "").strip(),
+            webhook_signing_secret=os.getenv(
+                "CANCELLATION_WEBHOOK_SIGNING_SECRET", ""
+            ).strip(),
+            admin_secret=os.getenv("CANCELLATION_ADMIN_SECRET", "").strip(),
+            signature_tolerance_seconds=_positive_int(
+                "CANCELLATION_SIGNATURE_TOLERANCE_SECONDS", 300
+            ),
+            webhook_rate_limit_per_minute=_positive_int(
+                "CANCELLATION_WEBHOOK_RATE_LIMIT_PER_MINUTE", 30
+            ),
+            admin_rate_limit_per_minute=_positive_int(
+                "CANCELLATION_ADMIN_RATE_LIMIT_PER_MINUTE", 60
+            ),
             write_enabled=_bool("CANCELLATION_FINALIZER_WRITE_ENABLED"),
             ghl_api_key=os.getenv("GHL_API_KEY", "").strip(),
             ghl_location_id=os.getenv("GHL_LOCATION_ID", "").strip(),
@@ -59,7 +82,8 @@ class Settings:
 
     def missing_live_configuration(self) -> list[str]:
         required = {
-            "CANCELLATION_FINALIZER_SECRET": self.api_secret,
+            "CANCELLATION_WEBHOOK_SIGNING_SECRET": self.webhook_signing_secret,
+            "CANCELLATION_ADMIN_SECRET": self.admin_secret,
             "GHL_API_KEY": self.ghl_api_key,
             "GHL_LOCATION_ID": self.ghl_location_id,
             "GHL_ADMIN_EVE_USER_ID": self.ghl_admin_eve_user_id,

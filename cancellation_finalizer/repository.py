@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+import hashlib
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text, create_engine, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, create_engine, delete, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 
@@ -50,6 +52,16 @@ class FinalizationCase(Base):
         }
 
 
+class WebhookNonce(Base):
+    __tablename__ = "cancellation_webhook_nonces"
+
+    nonce_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    request_hash: Mapped[str] = mapped_column(String(64))
+    signed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class Repository:
     def __init__(self, database_url: str):
         if database_url.startswith("postgres://"):
@@ -90,6 +102,35 @@ class Repository:
         with self.sessions() as db:
             return db.get(FinalizationCase, key)
 
+    def claim_webhook_nonce(
+        self,
+        *,
+        nonce: str,
+        body: bytes,
+        signed_at: datetime,
+        now: datetime,
+        tolerance_seconds: int,
+    ) -> bool:
+        nonce_hash = hashlib.sha256(nonce.encode("utf-8")).hexdigest()
+        request_hash = hashlib.sha256(body).hexdigest()
+        try:
+            with self.sessions.begin() as db:
+                db.execute(delete(WebhookNonce).where(WebhookNonce.expires_at <= now))
+                if db.get(WebhookNonce, nonce_hash) is not None:
+                    return False
+                db.add(
+                    WebhookNonce(
+                        nonce_hash=nonce_hash,
+                        request_hash=request_hash,
+                        signed_at=signed_at,
+                        expires_at=now + timedelta(seconds=tolerance_seconds * 2),
+                        created_at=now,
+                    )
+                )
+            return True
+        except IntegrityError:
+            return False
+
     def due(self, now: datetime, limit: int = 25) -> list[str]:
         with self.sessions() as db:
             return list(
@@ -114,4 +155,3 @@ class Repository:
             for name, value in values.items():
                 setattr(case, name, value)
         return case
-

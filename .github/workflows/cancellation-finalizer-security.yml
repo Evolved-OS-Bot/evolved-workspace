@@ -1,0 +1,73 @@
+name: Cancellation Finalizer Security
+
+on:
+  push:
+    branches:
+      - codex/cancellation-finalizer
+    paths:
+      - cancellation_finalizer/**
+      - .github/workflows/cancellation-finalizer-security.yml
+  pull_request:
+    paths:
+      - cancellation_finalizer/**
+      - .github/workflows/cancellation-finalizer-security.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cancellation-finalizer-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: cancellation_finalizer/requirements.txt
+
+      - name: Install application and security tooling
+        run: |
+          python -m pip install --disable-pip-version-check \
+            -r cancellation_finalizer/requirements.txt \
+            bandit==1.9.4 pip-audit==2.10.1
+
+      - name: Run unit and security-contract tests
+        run: python -m unittest discover -s cancellation_finalizer/tests -t . -v
+
+      - name: Run Python static security analysis
+        run: bandit -q -r cancellation_finalizer -x cancellation_finalizer/tests -lll
+
+      - name: Audit Python dependencies
+        run: pip-audit --requirement cancellation_finalizer/requirements.txt
+
+      - name: Scan repository files for secrets and misconfiguration
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace:ro" \
+            ghcr.io/aquasecurity/trivy:0.73.0 \
+            fs --scanners secret,misconfig --exit-code 1 \
+            /workspace/cancellation_finalizer
+
+      - name: Build production image
+        run: |
+          docker build \
+            --file cancellation_finalizer/Dockerfile \
+            --tag cancellation-finalizer:security-check \
+            cancellation_finalizer
+
+      - name: Scan production image for critical vulnerabilities
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            ghcr.io/aquasecurity/trivy:0.73.0 \
+            image --severity CRITICAL --ignore-unfixed --exit-code 1 \
+            cancellation-finalizer:security-check

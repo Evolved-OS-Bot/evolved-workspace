@@ -7,8 +7,16 @@ verified receipt.
 
 ## Request
 
-`POST /api/v1/cancellations/finalize` with header
-`X-Cancellation-Secret` and JSON:
+`POST /api/v1/cancellations/finalize` accepts JSON only when all three request
+headers are valid:
+
+- `X-Cancellation-Timestamp`: current Unix seconds
+- `X-Cancellation-Nonce`: a unique 16-128 character URL-safe value
+- `X-Cancellation-Signature`: `sha256=<hex HMAC>` over the exact bytes
+  `<timestamp>.<nonce>.<request-body>`
+
+The signature may be no more than five minutes old. A nonce is claimed once in
+Postgres and a replay is rejected before any case is processed.
 
 ```json
 {
@@ -29,7 +37,8 @@ Active Online relationship continues.
 ## Required production configuration
 
 - `DATABASE_URL`
-- `CANCELLATION_FINALIZER_SECRET`
+- `CANCELLATION_WEBHOOK_SIGNING_SECRET`
+- `CANCELLATION_ADMIN_SECRET`
 - `CANCELLATION_FINALIZER_WRITE_ENABLED=true`
 - GHL: `GHL_API_KEY`, `GHL_LOCATION_ID`, `GHL_ADMIN_EVE_USER_ID`
 - Stripe: `STRIPE_RESTRICTED_KEY`
@@ -41,9 +50,19 @@ Active Online relationship continues.
   account moved from the active roster to the deactivated roster
 - Hub: `OPERATING_DATA_HUB_URL`, `OPERATING_DATA_HUB_API_KEY`
 
-The health endpoint lists missing variable names but never values. Writes stay
-disabled unless the explicit write flag and every required connector are
-present.
+The public health endpoint returns only `{"status":"ok"}`. Authenticated
+readiness, case status and due-job controls live under `/api/v1/admin/` and use
+the separate admin secret. Writes stay disabled unless the explicit write flag
+and every required connector are present.
+
+All responses disable caching and add restrictive browser security headers.
+Authentication events log only a random request ID, a one-way network
+fingerprint, the outcome and a non-sensitive reason. Member identifiers,
+payloads, credentials and request headers are not written to security logs.
+
+The production image runs one non-root Gunicorn worker with four threads. The
+single worker also makes the in-process rate limiter deterministic; durable
+Postgres nonce claims remain authoritative across restarts.
 
 ## Processing order
 
