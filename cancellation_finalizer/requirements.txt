@@ -1,0 +1,9 @@
+APScheduler==3.11.0
+Flask==3.0.3
+SQLAlchemy==2.0.36
+google-api-python-client==2.154.0
+google-auth==2.36.0
+psycopg[binary]==3.2.3
+requests==2.32.3
+stripe==10.5.0
+
