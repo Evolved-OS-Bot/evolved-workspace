@@ -13,6 +13,7 @@ from revenue_gap_control.models import (
     CLEAN_COLLECTING,
     FAST_TRACK_ALLOCATION_MISMATCH,
     FAST_TRACK_PAIR_MISSING,
+    LIFECYCLE_EXCEPTION,
     PAYMENT_CURRENT_NO_BOOKING,
     PIF_PACK_IN_DELIVERY,
     AuditInputs,
@@ -33,6 +34,8 @@ def roster(
     product="Bronze",
     notes="",
     row=2,
+    sessions_per_week=None,
+    session_cost=None,
 ):
     return RosterRecord(
         service=service,
@@ -47,8 +50,16 @@ def roster(
         product=product,
         trainer="Piper Mae" if service == "PT" else "",
         session_length="30 mins" if service == "PT" else "",
-        sessions_per_week="1" if service == "PT" else "",
-        session_cost=Decimal("50.00") if service == "PT" else None,
+        sessions_per_week=(
+            sessions_per_week
+            if sessions_per_week is not None
+            else ("1" if service == "PT" else "")
+        ),
+        session_cost=(
+            session_cost
+            if session_cost is not None
+            else (Decimal("50.00") if service == "PT" else None)
+        ),
         notes=notes,
     )
 
@@ -104,6 +115,14 @@ def test_pause_with_hold_is_excluded_from_current_and_kept_in_scheduled():
     assert result.bridge.approved_pauses == Decimal("99.00")
     assert result.bridge.confirmed_current_income == Decimal("0")
     assert result.bridge.scheduled_run_rate == Decimal("99.00")
+
+
+def test_completed_hold_does_not_create_an_approved_pause():
+    item = roster()
+    source = evidence(pause_collection=True, hold_status="Completed")
+    result = AuditEngine().run(inputs([item], [source]))
+    assert result.assessments[0].classification == LIFECYCLE_EXCEPTION
+    assert result.bridge.approved_pauses == Decimal("0")
 
 
 def test_arrears_status_excludes_allocation_from_confirmed_income():
@@ -216,6 +235,26 @@ def test_fast_track_allocation_mismatch_is_reported_without_double_counting():
     result = AuditEngine().run(inputs([sgpt, pt], [evidence()]))
     assert result.bridge.combined_numeric_allocation == Decimal("159.00")
     assert any(
+        item.classification == FAST_TRACK_ALLOCATION_MISMATCH
+        for item in result.exceptions
+    )
+
+
+def test_fast_track_pt_add_on_uses_recorded_session_count_and_rate():
+    sgpt = roster(product="Fast Track", amount=Decimal("99"), row=2)
+    pt = roster(
+        service="PT",
+        amount=Decimal("100"),
+        marker="$100",
+        product="Fast Track",
+        notes="Fast Track + weekly PT add-on",
+        sessions_per_week="2",
+        session_cost=Decimal("50"),
+        row=3,
+    )
+    result = AuditEngine().run(inputs([sgpt, pt], [evidence()]))
+    assert result.bridge.combined_numeric_allocation == Decimal("199.00")
+    assert not any(
         item.classification == FAST_TRACK_ALLOCATION_MISMATCH
         for item in result.exceptions
     )

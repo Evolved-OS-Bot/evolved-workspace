@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+  "recorded_at": "2026-08-04T20:46:32+10:00",
+  "technical_qa": {
+    "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v11/qa-report.json",
+    "sha256": "397bac2f118cd79b26589fc498d792e85be5c553d2bf97a34ca328135d56f4f6",
+    "result": "pass"
+  },
+  "human_approval": {
+    "record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v11-EDITABLE-SOURCE-2026-08-04-01",
+    "path": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-layered-source-v11-editable-source-approval-2026-08-04.json",
+    "sha256": "c04da4c8cc342910182aa6f94fad37ef991fb343ec35d52d80411b5dcd1752ba",
+    "result": "pass",
+    "visual_result": "approved_corrected_editable_layered_source_and_animation_identity_base"
+  },
+  "approved_artifact": {
+    "source_package_record_sha256": "674c384f591f249c400b73e0c105a50605a799e50c38b0a4db59039e64414c76",
+    "layer_manifest_sha256": "b6c76d06bb4656683b4d9dbaaea7af5849fbbfa425cf625267f44d5c75e5e58f",
+    "openraster_sha256": "10dc97f922a9932507b2bd12850ffc91fca2b7a60b20d280d7f85928d890bc42",
+    "neutral_recomposite_sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536",
+    "layer_count": 29,
+    "intentional_shoe_opacity_correction_pixels": 4755
+  },
+  "promotion": {
+    "status": "approved_for_use_as_motion_rig_source",
+    "approved_copy_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v11",
+    "source_package_preserved": true,
+    "approved_copy_byte_identical_to_source_package": true
+  },
+  "supersession": {
+    "superseded_artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "superseded_approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+    "historical_approved_snapshot_preserved": true
+  },
+  "scope_exclusions": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ],
+  "mandatory_next_gate": "Peter Brown approval of the editable Apple Motion rig built from v11 after technical QA, including final pivots and resolved leg-root cover behavior."
+}

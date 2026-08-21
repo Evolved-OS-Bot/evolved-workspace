@@ -164,19 +164,40 @@ def reconcile_contact(
         finding.patterns = [slot.label for slot in pattern.slots]
         return finding
 
-    expected: list[tuple[datetime, int, str]] = []
+    expected_all: list[tuple[datetime, int, str]] = []
     for slot in pattern.slots:
         start = _next_occurrence(now, slot.weekday, slot.local_time)
         for week in range(horizon_weeks):
-            expected.append(
+            expected_all.append(
                 (start + timedelta(weeks=week), slot.duration_minutes, slot.calendar_id)
             )
-    expected.sort()
+    expected_all.sort()
+
+    hold_excluded: list[datetime] = []
+    expected: list[tuple[datetime, int, str]] = []
+    for item in expected_all:
+        expected_start = item[0]
+        if (
+            contact.hold_start
+            and contact.hold_end
+            and contact.hold_start <= expected_start.date() <= contact.hold_end
+        ):
+            hold_excluded.append(expected_start)
+            continue
+        expected.append(item)
 
     unmatched = future.copy()
-    missing: list[datetime] = []
+    unmatched_expected: list[tuple[datetime, int, str]] = []
     matched_dates: list[datetime] = []
     expected_duration_by_start: dict[datetime, int] = {}
+    cross_calendar_exact_matches: list[dict[str, str]] = []
+
+    # Protect every appointment that exactly matches its own canonical slot
+    # before considering broader same-week reschedules. Prefer the canonical
+    # calendar, but treat the same contact, start and duration in any other
+    # approved PT calendar as exact coverage. This captures trainer cover and
+    # calendar reassignment without turning a calendar-specific absence into a
+    # client-level gap.
     for expected_start, expected_duration, expected_calendar in expected:
         expected_duration_by_start[expected_start] = expected_duration
         exact = next(
@@ -189,11 +210,39 @@ def reconcile_contact(
             ),
             None,
         )
+        if exact is None:
+            exact = next(
+                (
+                    event
+                    for event in unmatched
+                    if abs((event.start - expected_start).total_seconds()) <= 60
+                    and abs(event.duration_minutes - expected_duration) <= 1
+                ),
+                None,
+            )
+            if exact is not None:
+                expected_record = calendars[expected_calendar]
+                actual_record = calendars[exact.calendar_id]
+                cross_calendar_exact_matches.append(
+                    {
+                        "expected_start": expected_start.isoformat(),
+                        "actual_appointment_id": exact.id,
+                        "expected_calendar_id": expected_calendar,
+                        "actual_calendar_id": exact.calendar_id,
+                        "expected_trainer": expected_record.trainer,
+                        "actual_trainer": actual_record.trainer,
+                    }
+                )
         if exact:
             unmatched.remove(exact)
             matched_dates.append(expected_start)
             continue
+        unmatched_expected.append(
+            (expected_start, expected_duration, expected_calendar)
+        )
 
+    missing: list[datetime] = []
+    for expected_start, expected_duration, _expected_calendar in unmatched_expected:
         same_week = next(
             (
                 event
@@ -243,9 +292,11 @@ def reconcile_contact(
     booked_through = max(matched_dates) if matched_dates else None
     last_future = future[-1].start
     coverage_weeks = 0
+    first_week = _week_start(now)
     for week in range(horizon_weeks):
-        week_expected = expected[
-            week * len(pattern.slots) : (week + 1) * len(pattern.slots)
+        target_week = first_week + timedelta(weeks=week)
+        week_expected = [
+            item for item in expected if _week_start(item[0]) == target_week
         ]
         if all(item[0] in matched_dates for item in week_expected):
             coverage_weeks += 1
@@ -262,6 +313,11 @@ def reconcile_contact(
             reason += (
                 f" {len(carry_over_matches)} session(s) are covered by an "
                 "adjacent-week make-up."
+            )
+        if hold_excluded:
+            reason += (
+                f" {len(hold_excluded)} occurrence(s) inside an approved or "
+                "requested hold window were excluded."
             )
     elif first_missing and first_missing < last_future:
         category = "GAP_INSIDE_SERIES"
@@ -288,7 +344,11 @@ def reconcile_contact(
             "matched_occurrences": len(matched_dates),
             "expected_occurrences": len(expected),
             "unmatched_future_events": len(unmatched),
+            "cross_calendar_exact_matches": cross_calendar_exact_matches,
             "adjacent_week_make_ups": carry_over_matches,
+            "hold_excluded_occurrences": [
+                item.isoformat() for item in hold_excluded
+            ],
         }
     )
     return finding

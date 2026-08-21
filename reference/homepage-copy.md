@@ -1,8 +1,14 @@
 # Homepage Copy — The Evolved
 **Version:** 1.0
 **Created:** 2026-04-30
-**Status:** Draft — Pending approval before implementation
+**Status:** Historical pre-V2 draft; superseded
 **URL:** theevolvedgym.com.au (post-migration)
+
+> This draft is preserved as implementation history. It is not the current
+> homepage or CTA authority. Website V2 is built and live with a waitlist
+> journey. Use `outputs/systems/website-v2-release-manifest.md`,
+> `reference/conversion-funnel.md` and the mirrored post-165 source at
+> `wordpress/website-v2/source/homepage-post/post-165.html`.
 
 ---
 

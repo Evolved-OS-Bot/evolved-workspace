@@ -70,11 +70,8 @@ FORMULAS = {
     # ── Studio Bookings — counted by Appointment Date (col H) ────────────
     52: "=COUNTIFS(Appointments!$H:$H,\">=\"&F$1-7,Appointments!$H:$H,\"<\"&F$1)",
     55: "=F53+F54",
-    # Rows 57-59 (Attended by source) are owned by patch_booking_rows.py
-    60: "=COUNTIFS(Appointments!$H:$H,\">=\"&F$1-7,Appointments!$H:$H,\"<\"&F$1,Appointments!$K:$K,\"Y\")",
-    61: "=IFERROR((F57+F58)/F53,\"—\")",
-    62: "=IFERROR(F59/F54,\"—\")",
-    63: "=IFERROR(F60/F52,\"—\")",
+    # Rows 57-63 are provider-owned attendance outputs. They are published
+    # from the governed hub only after the Sheet write gate is approved.
 
     # ── SGPT Sales (rows 64–70) ───────────────────────────────────────────
     # Row 64: SGPT Via Meta Ads
@@ -203,7 +200,11 @@ def get_all_weekly_cols(service):
 
 
 # Rows protected in the sheet — skip to avoid 400 errors
-PROTECTED_ROWS = {17, 25, 35, 41, 42, 52, 55, 60, 61, 62, 63, 70, 77, 78, 79, 80, 94, 95}
+PROTECTED_ROWS = {
+    17, 25, 35, 41, 42, 52, 55,
+    57, 58, 59, 60, 61, 62, 63,
+    70, 77, 78, 79, 80, 94, 95,
+}
 
 
 def build_requests_for_col(sheet_id, col_idx):

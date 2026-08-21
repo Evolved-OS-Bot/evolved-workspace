@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "canonical_source": "reference/evolved-manual/03b-standards-framework.md",
+  "canonical_table_rows": 20,
+  "canonical_standards_fingerprint": "fae55e3aeaffd8546e968c06a38e46b3050a61fe0798ca76b489686e320802c1",
+  "required_local_surfaces": [
+    "outputs/fast-track-20/full-standards-assessment-and-training-plan-worksheet.md",
+    "outputs/fast-track-20/full-standards-assessment-coach-guide.md",
+    "outputs/fast-track-20/fast-track-upgrade-system-2026-08-03.md",
+    "outputs/fast-track-20/assessment-led-release-design-2026-08-03.md",
+    "outputs/trainer-portal/06-sculpt-and-strength.md",
+    "outputs/trainer-portal/html/06-sculpt-and-strength.html",
+    "outputs/trainer-portal/11-member-care.md",
+    "outputs/trainer-portal/html/11-member-care.html"
+  ],
+  "quiz_audit_surfaces": [
+    "outputs/trainer-portal/quiz-csvs/06-sculpt-and-strength.csv",
+    "outputs/trainer-portal/quiz-csvs/11-member-care.csv"
+  ],
+  "manual_live_surfaces": [
+    {
+      "system": "Trainerize",
+      "asset": "Women's Full Evolved Standards Assessment",
+      "asset_id": "226418512",
+      "verification_record": "outputs/systems/trainerize-product-automation-audit.md",
+      "last_verified_date": "2026-08-03",
+      "canonical_standard_count": 20,
+      "trainerize_exercise_entry_count": 23,
+      "unassigned": true
+    },
+    {
+      "system": "GoHighLevel",
+      "asset": "Trainer course 6 and course 11 standards lessons",
+      "verification_record": "outputs/systems/trainerize-product-automation-audit.md"
+    }
+  ],
+  "governed_cascade_items": [
+    "worksheet",
+    "coach guide",
+    "Fast Track Upgrade System",
+    "assessment-led release design",
+    "trainer-course Markdown",
+    "trainer-course HTML",
+    "affected trainer-course quizzes",
+    "live Trainerize assessment",
+    "live GHL course when source parity changes",
+    "context roadmap",
+    "Trainerize build record"
+  ]
+}

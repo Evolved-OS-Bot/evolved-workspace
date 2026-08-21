@@ -19,6 +19,7 @@ PRIORITY = {
     "NO_FUTURE_BOOKINGS": 2,
     "DUPLICATE_APPOINTMENT": 3,
     "GAP_INSIDE_SERIES": 4,
+    "GHL_ONLY_PT_RECORD_REVIEW": 3,
     "PATTERN_CONFIRMATION_REQUIRED": 5,
     "FREQUENCY_MISMATCH": 6,
     "FORMER_PT_WITH_FUTURE_BOOKINGS": 7,
@@ -39,6 +40,17 @@ HIGH_RISK = {
     "NO_FUTURE_BOOKINGS",
     "DUPLICATE_APPOINTMENT",
 }
+
+SUPPRESSED_REPORT_CATEGORIES = {"FORMER_PT"}
+
+
+def _reportable(findings: list[Finding]) -> list[Finding]:
+    """Hide routine former-client evidence while retaining actionable exceptions."""
+    return [
+        item
+        for item in findings
+        if item.category not in SUPPRESSED_REPORT_CATEGORIES
+    ]
 
 
 def _contact_url(location_id: str, contact_id: str) -> str:
@@ -67,7 +79,7 @@ def build_csv(findings: list[Finding], location_id: str, run_id: str) -> bytes:
     ]
     writer = csv.DictWriter(output, fieldnames=columns)
     writer.writeheader()
-    for item in findings:
+    for item in _reportable(findings):
         writer.writerow(
             {
                 "run_id": run_id,
@@ -93,9 +105,11 @@ def build_csv(findings: list[Finding], location_id: str, run_id: str) -> bytes:
 
 def build_html(findings: list[Finding], location_id: str, run_id: str) -> str:
     now = datetime.now(BRISBANE_TZ)
-    counts = Counter(item.category for item in findings)
+    reportable = _reportable(findings)
+    counts = Counter(item.category for item in reportable)
     sorted_items = sorted(
-        findings, key=lambda item: (PRIORITY.get(item.category, 50), item.contact_name.lower())
+        reportable,
+        key=lambda item: (PRIORITY.get(item.category, 50), item.contact_name.lower()),
     )
     action_items = [item for item in sorted_items if item.category != "HEALTHY"]
     healthy = counts.get("HEALTHY", 0)
@@ -139,8 +153,8 @@ def build_html(findings: list[Finding], location_id: str, run_id: str) -> str:
       </div>
       <h2>PT Booking Continuity · {now.strftime('%A, %-d %B %Y')}</h2>
       <p>Run {html.escape(run_id)} ·
-         {len({item.contact_id for item in findings if item.contact_id != 'system'})}
-         PT contact(s) audited ·
+         {len({item.contact_id for item in reportable if item.contact_id != 'system'})}
+         reportable contact result(s) ·
          {len(action_items)} exception(s) · {healthy} healthy.</p>
       <table style="border-collapse:collapse;min-width:360px;">
         {count_rows}

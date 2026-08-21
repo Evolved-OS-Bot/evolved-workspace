@@ -1,0 +1,185 @@
+{
+  "architecture_alerts": [
+    {
+      "message": "KPI refresh and Discord delivery still run as local compatibility processes. Railway replacements have not yet passed parity, so the Railway-only target is not complete.",
+      "report_id": "railway-only-scheduling",
+      "severity": "high"
+    },
+    {
+      "message": "Performance reporting is restored as a snapshot-only consumer; automated transfer of the latest aggregate Railway reconciliation state is still pending.",
+      "report_id": "trainerize-performance",
+      "severity": "medium"
+    },
+    {
+      "message": "External Railway run state is not yet synchronised into this local share-safe brief.",
+      "report_id": "railway-control-plane",
+      "severity": "medium"
+    },
+    {
+      "message": "Revenue and PT share protected identity evidence, but Retention Intelligence has not yet migrated to the same PostgreSQL-backed control repository.",
+      "report_id": "shared-identity-controls",
+      "severity": "medium"
+    }
+  ],
+  "business_metrics": {
+    "acquisition": {
+      "bookings_via_ads": 0,
+      "bookings_without_ads": 5,
+      "google_ad_spend": 0.0,
+      "google_leads": 0,
+      "meta_ad_spend": 0.0,
+      "meta_leads": 0,
+      "organic_leads": 4,
+      "organic_subscribes": 9,
+      "paid_leads": 0,
+      "paid_subscribes": 0,
+      "sales_conversion_rate": 1.0,
+      "show_rate_ads": null,
+      "show_rate_no_ads": 0.4,
+      "show_rate_total": 0.4,
+      "studio_bookings": 5,
+      "studio_bookings_attended": 2,
+      "total_ad_spend": 0.0,
+      "total_leads": 4,
+      "total_subscribes": 9
+    },
+    "limitations": [],
+    "members": {
+      "active_pt_service_relationships": 44,
+      "active_service_roster_rows": 138,
+      "active_sgpt_service_relationships": 94,
+      "active_suspensions": null,
+      "cross_service_overlaps": 11,
+      "unique_active_roster_clients": 127,
+      "unique_client_definition": "Unique people on the supplied active service rosters, matched only by exact normalised email, exact normalised phone or an owner-approved email alias. Names are never used."
+    },
+    "period": {
+      "label": "20\u201326 Jul 2026",
+      "posting_date": "2026-07-27",
+      "service_end": "2026-07-26",
+      "service_start": "2026-07-20",
+      "stock_as_of": "2026-07-27"
+    },
+    "pt_utilisation": {
+      "booked_hours": 32.0,
+      "bookings": 54
+    },
+    "retention": {
+      "pt_cancels": 2,
+      "pt_net": -2,
+      "sgpt_cancels": 1,
+      "sgpt_net": 1
+    },
+    "revenue": {
+      "blended_weekly_revenue_per_unique_client": 86.0412598425197,
+      "cash_collected": 10927.240000000002,
+      "estimated_annual_revenue": 568216.4800000001,
+      "new_cash_collected": 798.0,
+      "new_cash_google": 0.0,
+      "new_cash_meta": 0.0,
+      "new_cash_organic": 798.0,
+      "new_cash_via_ads": 0.0,
+      "year_to_date_cash_collected": 538890.02
+    },
+    "sales": {
+      "pt_google": 0,
+      "pt_meta": 0,
+      "pt_organic": 0,
+      "pt_total": 0,
+      "sgpt_google": 0,
+      "sgpt_meta": 0,
+      "sgpt_organic": 2,
+      "sgpt_total": 2,
+      "total": 2,
+      "via_ads": 0,
+      "without_ads": 2
+    }
+  },
+  "generated_at": "2026-07-27T02:34:19+00:00",
+  "privacy": "aggregate-share-safe",
+  "report_id": "evolved-executive-brief",
+  "report_status_counts": {
+    "external-not-synchronised": 5,
+    "fresh": 2
+  },
+  "reports": [
+    {
+      "age_hours": 0.0,
+      "artifact": "context/current-data.json",
+      "configured_state": "local-compatibility-only",
+      "owner": "Peter Brown",
+      "report_id": "current-business-metrics",
+      "runtime": "local-compatibility",
+      "schedule": "daily 06:00; Railway migration pending",
+      "status": "fresh"
+    },
+    {
+      "age_hours": null,
+      "artifact": null,
+      "configured_state": "local-compatibility-only",
+      "owner": "Peter Brown",
+      "report_id": "daily-operations-brief",
+      "runtime": "local-compatibility",
+      "schedule": "daily with catch-up; Railway migration pending",
+      "status": "external-not-synchronised"
+    },
+    {
+      "age_hours": null,
+      "artifact": null,
+      "configured_state": "live-external",
+      "owner": "Peter Brown",
+      "report_id": "retention-intelligence",
+      "runtime": "railway-retention-intelligence",
+      "schedule": "daily 05:45",
+      "status": "external-not-synchronised"
+    },
+    {
+      "age_hours": null,
+      "artifact": null,
+      "configured_state": "live-external",
+      "owner": "Admin Eve",
+      "report_id": "pt-booking-continuity",
+      "runtime": "railway-pt-booking-shadow",
+      "schedule": "Monday 05:30",
+      "status": "external-not-synchronised"
+    },
+    {
+      "age_hours": null,
+      "artifact": null,
+      "configured_state": "live-external",
+      "owner": "Peter Brown",
+      "report_id": "revenue-control",
+      "runtime": "railway-pt-booking-shadow",
+      "schedule": "Monday 06:30 and Friday 16:30",
+      "status": "external-not-synchronised"
+    },
+    {
+      "age_hours": null,
+      "artifact": null,
+      "configured_state": "live-external",
+      "owner": "Admin Eve",
+      "report_id": "conversation-triage",
+      "runtime": "railway-cron",
+      "schedule": "daily 06:00",
+      "status": "external-not-synchronised"
+    },
+    {
+      "age_hours": 0.7,
+      "artifact": "outputs/trainerize-reporting-reconciliation/latest-performance-summary.md",
+      "configured_state": "migration-required",
+      "owner": "Peter Brown",
+      "report_id": "trainerize-performance",
+      "runtime": "local-artifact-only",
+      "schedule": "unscheduled; Railway migration pending",
+      "status": "fresh"
+    }
+  ],
+  "schema_version": 1,
+  "trainerize_performance": {
+    "active_roster": 149,
+    "detailed_workout_source_through": "2026-07-21",
+    "reassessment_due": 100,
+    "remarkable_candidates": 68,
+    "workout_coverage": 147
+  }
+}

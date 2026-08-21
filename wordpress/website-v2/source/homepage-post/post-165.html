@@ -1,0 +1,1166 @@
+<style>
+@media (max-width: 768px) {
+  .card-row {
+    flex-direction: column !important;
+    overflow-x: visible !important;
+    padding: 0 16px !important;
+  }
+  .card-row > div {
+    min-width: 0 !important;
+    width: 100% !important;
+    flex: none !important;
+  }
+  .card-row .journey-card img,
+  .card-row .membership-card img { height: auto !important; aspect-ratio: 1/1 !important; width: 100% !important; }
+  .carousel-card img { height: auto !important; aspect-ratio: 1/1 !important; width: 100% !important; object-fit: cover !important; }
+  .carousel-card { flex: 0 0 85% !important; min-width: 0 !important; }
+  .photo-card { flex: 0 0 85% !important; min-width: 0 !important; }
+  .video-card { flex: 0 0 85% !important; min-width: 0 !important; }
+  .muscle-grid { grid-template-columns: 1fr !important; }
+  .muscle-charts { order: -1; }
+  .muscle-text { order: 1; }
+  .decade-cards-flex { flex-direction: column !important; }
+  #ageSlider::-webkit-slider-thumb { -webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#e43388;cursor:pointer;border:2px solid #111;box-shadow:0 0 0 3px rgba(228,51,136,0.25); }
+  #ageSlider::-moz-range-thumb { width:24px;height:24px;border-radius:50%;background:#e43388;cursor:pointer;border:2px solid #111;box-shadow:0 0 0 3px rgba(228,51,136,0.25); }
+  .steps-connector { display: none !important; }
+  .steps-flow { flex-direction: column !important; align-items: center !important; }
+  .steps-flow > div { width: 100% !important; max-width: 400px !important; padding: 0 0 40px !important; border-bottom: 1px solid #1e1e1e !important; }
+  .steps-flow > div:last-child { border-bottom: none !important; padding-bottom: 0 !important; }
+  /* Profile bar — mobile */
+  #profile-bar {
+    padding: 8px 16px !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 8px !important;
+  }
+  #profile-bar-text { font-size: 0.72rem !important; }
+  #profile-bar a { padding: 7px 14px !important; font-size: 0.72rem !important; }
+  /* Pillar grid — single column, order still works so leading pillar tops the stack */
+  #pillar-programming, #pillar-nutrition, #pillar-behaviour { width: 100%; }
+  /* PYJ mobile */
+  .pyj-stage-btn img { height: 260px !important; }
+  #pyj-goal-step button { font-size: 0.8rem !important; padding: 10px 14px !important; }
+  #pyj-confirm { padding: 24px 16px !important; }
+  #pyj-confirm-h3 { font-size: 1rem !important; }
+}
+/* Results curve sliders */
+input[type=range].rc-slider::-webkit-slider-thumb,
+#rc-slider-strength::-webkit-slider-thumb,
+#rc-slider-hiit::-webkit-slider-thumb,
+#rc-slider-pilates::-webkit-slider-thumb,
+#rc-slider-hyrox::-webkit-slider-thumb {
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:#e43388;cursor:pointer;border:2px solid #0a0a0a;margin-top:-6px;
+}
+#rc-slider-strength::-moz-range-thumb,
+#rc-slider-hiit::-moz-range-thumb,
+#rc-slider-pilates::-moz-range-thumb,
+#rc-slider-hyrox::-moz-range-thumb {
+  width:16px;height:16px;border-radius:50%;
+  background:#e43388;cursor:pointer;border:2px solid #0a0a0a;
+}
+#rc-slider-strength::-webkit-slider-runnable-track,
+#rc-slider-hiit::-webkit-slider-runnable-track,
+#rc-slider-pilates::-webkit-slider-runnable-track,
+#rc-slider-hyrox::-webkit-slider-runnable-track { height:4px;border-radius:2px; }
+</style>
+
+<!-- HERO -->
+<section class="hero" style="position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:#0a0a0a;overflow:hidden;">
+<video autoplay muted loop playsinline preload="auto" poster="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684c8bb93317f88217c00cc2.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;">
+<source src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/hero-video.mp4" type="video/mp4">
+</video>
+<div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1;"></div>
+<div style="position:relative;z-index:2;max-width:740px;padding:32px 24px;">
+<p class="hero-eyebrow">Women-Only Strength Gym &#183; Brisbane</p>
+<h1 class="hero-headline" style="font-family:'PT Serif Caption',serif;font-size:clamp(2rem,5vw,3.5rem);color:#f5f0eb;line-height:1.15;margin-bottom:16px;">Brisbane's Leading Women-Only Gym</h1>
+<p class="hero-sub" style="font-size:1.1rem;color:#ccc;margin-bottom:40px;line-height:1.7;max-width:600px;margin-left:auto;margin-right:auto;">Whether you're navigating perimenopause, rebuilding after pregnancy, or just sick of fads and fluff &#8212; we'll show you how real strength training transforms your body, energy, and mindset.</p>
+<p style="display:inline-block;background:rgba(228,51,136,0.12);border:1px solid rgba(228,51,136,0.4);color:#e43388;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:20px;">Currently at capacity &mdash; waitlist open</p>
+<br>
+<a class="hero-cta primary-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.03em;text-decoration:none;">Join the Waitlist</a>
+<p class="hero-disclaimer" style="font-size:0.85rem;color:#666;margin-top:16px;">Select your life stage below &mdash; takes 30 seconds.</p>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:860px;margin:0 auto;text-align:center;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;margin-bottom:24px;">The Evolved All Female Gym is more than just a gym &#8212; it's a results-driven community designed for women.</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;font-size:1rem;line-height:1.8;max-width:680px;margin:0 auto 16px;">Our expert coaches specialise in <strong style="color:#f5f0eb;">strength training</strong>, <strong style="color:#f5f0eb;">fat loss</strong>, and improving <strong style="color:#f5f0eb;">mobility</strong> &#8212; helping women feel stronger, leaner, and pain-free.</p>
+<p data-reveal="fade-up" data-reveal-delay="0.15" style="color:#aaa;font-size:1rem;line-height:1.8;max-width:680px;margin:0 auto 16px;">Whether you're a <strong style="color:#f5f0eb;">busy professional</strong>, <strong style="color:#f5f0eb;">super-mum</strong>, or navigating <strong style="color:#f5f0eb;">peri/post-menopause</strong> &#8212; you'll be surrounded by like-minded women all working toward the same goal: becoming their strongest, healthiest selves.</p>
+<p data-reveal="fade-up" data-reveal-delay="0.2" style="color:#aaa;font-size:0.9rem;margin-top:8px;">Located in the heart of <strong style="color:#f5f0eb;">West End, Brisbane QLD</strong></p>
+<div data-reveal-stagger data-reveal-stagger="0.15" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px;margin-top:56px;border-top:1px solid #1e1e1e;padding-top:48px;">
+<div data-reveal-child style="text-align:center;">
+<span class="stat-number" data-count="500" data-count-suffix="+">0</span>
+<span class="stat-label">Women Coached</span>
+</div>
+<div data-reveal-child style="text-align:center;">
+<span class="stat-number" data-count="8" data-count-suffix=" Yrs">0</span>
+<span class="stat-label">In Brisbane</span>
+</div>
+<div data-reveal-child style="text-align:center;">
+<span class="stat-number" data-count="5" data-count-suffix="&#9733;">0</span>
+<span class="stat-label">Google Rating</span>
+</div>
+</div>
+</div>
+</section>
+
+
+
+<!-- STAGE SELECTOR BRIDGE -->
+<div style="background:#0a0a0a;border-bottom:1px solid #1a1a1a;padding:36px 24px;text-align:center;">
+<h2 style="font-family:'PT Serif Caption',serif;font-size:clamp(1.3rem,2.5vw,1.8rem);color:#f5f0eb;margin-bottom:10px;">Choose the stage you&#8217;re in &amp; we&#8217;ll guide you from there.</h2>
+<p style="color:#aaa;font-size:0.9rem;max-width:560px;margin:0 auto;">Our programs are designed for women and built on research, not random workouts. <strong style="color:#e43388;">No fads. No contracts.</strong> <em><strong>Just real results.</strong></em></p>
+</div>
+
+<!-- PICK YOUR JOURNEY -->
+<section id="pyj-section" style="background:#0a0a0a;padding:80px 0;">
+<div style="max-width:960px;margin:0 auto;padding:0 24px;">
+<p style="color:#555;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;text-align:center;">Step 1 — Which stage are you in?</p>
+<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;">
+
+<div class="pyj-stage-btn" data-stage="teenager" onclick="pyjSelectLifeStage('teenager')" style="position:relative;flex:1 1 0;min-width:160px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border 0.25s,transform 0.25s;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684f94e224f68255bceeddb4.png" alt="Teenager strength training at The Evolved Brisbane" style="width:100%;height:360px;object-fit:cover;display:block;">
+<div style="background:#e43388;padding:12px 16px;text-align:center;"><strong style="color:#fff;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;">Teenager</strong></div>
+<div style="background:#f4c2d8;padding:10px 16px;text-align:center;"><span style="color:#6b0030;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Start Smart &amp; Strong</span></div>
+<div class="pyj-check" style="display:none;position:absolute;top:10px;right:10px;background:#e43388;color:#fff;border-radius:50%;width:24px;height:24px;font-size:0.9rem;line-height:24px;text-align:center;">&#10003;</div>
+</div>
+
+<div class="pyj-stage-btn" data-stage="20s30s" onclick="pyjSelectLifeStage('20s30s')" style="position:relative;flex:1 1 0;min-width:160px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border 0.25s,transform 0.25s;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684f94e2653a2c0a48193159.png" alt="Women in their 20s and 30s strength training at The Evolved" style="width:100%;height:360px;object-fit:cover;display:block;">
+<div style="background:#e43388;padding:12px 16px;text-align:center;"><strong style="color:#fff;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;">20&#8211;30&#8217;s</strong></div>
+<div style="background:#f4c2d8;padding:10px 16px;text-align:center;"><span style="color:#6b0030;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Look Fit &amp; Feel Strong</span></div>
+<div class="pyj-check" style="display:none;position:absolute;top:10px;right:10px;background:#e43388;color:#fff;border-radius:50%;width:24px;height:24px;font-size:0.9rem;line-height:24px;text-align:center;">&#10003;</div>
+</div>
+
+<div class="pyj-stage-btn" data-stage="pregnancy" onclick="pyjSelectLifeStage('pregnancy')" style="position:relative;flex:1 1 0;min-width:160px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border 0.25s,transform 0.25s;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684f94e255f965da3724b416.png" alt="Pregnant woman strength training safely at The Evolved Brisbane" style="width:100%;height:360px;object-fit:cover;display:block;">
+<div style="background:#e43388;padding:12px 16px;text-align:center;"><strong style="color:#fff;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;">Pregnancy</strong></div>
+<div style="background:#f4c2d8;padding:10px 16px;text-align:center;"><span style="color:#6b0030;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Train for Motherhood</span></div>
+<div class="pyj-check" style="display:none;position:absolute;top:10px;right:10px;background:#e43388;color:#fff;border-radius:50%;width:24px;height:24px;font-size:0.9rem;line-height:24px;text-align:center;">&#10003;</div>
+</div>
+
+<div class="pyj-stage-btn" data-stage="perimenopause" onclick="pyjSelectLifeStage('perimenopause')" style="position:relative;flex:1 1 0;min-width:160px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border 0.25s,transform 0.25s;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684f94e2bb12536fee9bb3bd.png" alt="Perimenopause woman strength training at Brisbane women's gym" style="width:100%;height:360px;object-fit:cover;display:block;">
+<div style="background:#e43388;padding:12px 16px;text-align:center;"><strong style="color:#fff;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;">Peri-Menopause</strong></div>
+<div style="background:#f4c2d8;padding:10px 16px;text-align:center;"><span style="color:#6b0030;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Balance Body &amp; Build Strength</span></div>
+<div class="pyj-check" style="display:none;position:absolute;top:10px;right:10px;background:#e43388;color:#fff;border-radius:50%;width:24px;height:24px;font-size:0.9rem;line-height:24px;text-align:center;">&#10003;</div>
+</div>
+
+<div class="pyj-stage-btn" data-stage="postmenopause" onclick="pyjSelectLifeStage('postmenopause')" style="position:relative;flex:1 1 0;min-width:160px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border 0.25s,transform 0.25s;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684f94e2bb12535c329bb3be.png" alt="Postmenopausal woman strength training at The Evolved Brisbane" style="width:100%;height:360px;object-fit:cover;display:block;">
+<div style="background:#e43388;padding:12px 16px;text-align:center;"><strong style="color:#fff;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;">Post-Menopause</strong></div>
+<div style="background:#f4c2d8;padding:10px 16px;text-align:center;"><span style="color:#6b0030;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Feel Younger Again</span></div>
+<div class="pyj-check" style="display:none;position:absolute;top:10px;right:10px;background:#e43388;color:#fff;border-radius:50%;width:24px;height:24px;font-size:0.9rem;line-height:24px;text-align:center;">&#10003;</div>
+</div>
+
+</div>
+
+<div id="pyj-goal-step" style="display:none;margin-top:40px;">
+<p style="color:#555;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;text-align:center;">Step 2 — What's your primary goal?</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+<button class="pyj-goal-btn" data-goal="recomp"       onclick="pyjSelectGoal('recomp')"       style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Lose Fat &amp; Gain Muscle</button>
+<button class="pyj-goal-btn" data-goal="gain-muscle"  onclick="pyjSelectGoal('gain-muscle')"  style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Gain Muscle</button>
+<button class="pyj-goal-btn" data-goal="get-stronger" onclick="pyjSelectGoal('get-stronger')" style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Get Stronger</button>
+<button class="pyj-goal-btn" data-goal="bone-density" onclick="pyjSelectGoal('bone-density')" style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Stronger Bones</button>
+<button class="pyj-goal-btn" data-goal="hyrox"        onclick="pyjSelectGoal('hyrox')"        style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Train for HYROX</button>
+<button class="pyj-goal-btn" data-goal="lose-weight"  onclick="pyjSelectGoal('lose-weight')"  style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Lose Weight</button>
+</div>
+</div>
+
+<div id="pyj-exp-step" style="display:none;margin-top:40px;">
+<p style="color:#555;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;text-align:center;">Step 3 — How much experience do you have?</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+<button class="pyj-exp-btn" data-exp="new"        onclick="pyjSelectExperience('new')"        style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">New to strength</button>
+<button class="pyj-exp-btn" data-exp="some"       onclick="pyjSelectExperience('some')"       style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Some experience</button>
+<button class="pyj-exp-btn" data-exp="experienced" onclick="pyjSelectExperience('experienced')" style="background:transparent;color:#f5f0eb;border:2px solid #333;border-radius:4px;padding:12px 20px;font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;">Experienced</button>
+</div>
+</div>
+
+<div id="pyj-confirm" style="display:none;margin-top:40px;background:#0d0d0d;border:1px solid #222;border-radius:8px;padding:32px;">
+<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+<img id="pyj-confirm-photo" src="" alt="" style="display:none;width:120px;height:120px;object-fit:cover;object-position:top;border-radius:6px;flex-shrink:0;">
+<div style="flex:1;min-width:200px;">
+<h3 id="pyj-confirm-h3" style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.2rem;margin-bottom:12px;"></h3>
+<p id="pyj-confirm-sub" style="color:#aaa;font-size:0.88rem;line-height:1.7;margin-bottom:28px;"></p>
+<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+<a id="pyj-confirm-cta" href="#" style="background:#e43388;color:#fff;padding:14px 28px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">JOIN THE WAIT LIST</a>
+<span id="pyj-scroll-hint" style="color:#555;font-size:0.8rem;opacity:0;">or keep scrolling to see what&#8217;s possible &#8595;</span>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- OLD WAY VS EVOLVED WAY -->
+<section style="background:#0a0a0a;padding:80px 24px;">
+<div style="max-width:860px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.4rem,3vw,2rem);color:#f5f0eb;text-align:center;margin-bottom:16px;">Tired of Programs That Leave You Burnt Out &#8212; Or Worse, Injured?</h2>
+<h3 data-reveal="fade-up" data-reveal-delay="0.1" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.1rem,2vw,1.5rem);color:#aaa;text-align:center;margin-bottom:48px;font-weight:400;">Start Building Strength That Lasts</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+<div data-reveal="fade-right" style="border:1px solid #2a2a2a;border-radius:8px;padding:32px 24px;">
+<h3 style="color:#555;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">The Old Way</h3>
+<ul style="color:#666;font-size:0.9rem;line-height:2.2;list-style:none;padding:0;margin:0;">
+<li>&#10007; &nbsp;Burn calories at all costs</li>
+<li>&#10007; &nbsp;Ignores stress, sleep, hormones</li>
+<li>&#10007; &nbsp;Short-term weight loss, long-term plateaus</li>
+<li>&#10007; &nbsp;High injury &amp; dropout rates</li>
+</ul>
+</div>
+<div data-reveal="fade-left" style="border:1px solid #e43388;border-radius:8px;padding:32px 24px;">
+<h3 style="color:#e43388;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">The Evolved Way</h3>
+<ul style="color:#f5f0eb;font-size:0.9rem;line-height:2.2;list-style:none;padding:0;margin:0;">
+<li>&#10003; &nbsp;Science-backed muscle building</li>
+<li>&#10003; &nbsp;Protects hormones, metabolism, and mental clarity</li>
+<li>&#10003; &nbsp;Built for women at every stage of life</li>
+<li>&#10003; &nbsp;Designed to make you look &amp; feel great</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+
+
+<!-- REAL RESULTS — CAROUSEL -->
+<section style="background:#111;padding:80px 0;">
+<div style="max-width:960px;margin:0 auto;padding:0 24px;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:12px;">Real Women. Real Results.</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:48px;">Here's what happens when women stop guessing and start training with structure.</p>
+</div>
+<div style="padding:0 24px;">
+<div class="carousel-viewport" style="overflow:hidden;position:relative;cursor:grab;user-select:none;">
+<div class="carousel-track" style="display:flex;flex-wrap:nowrap;gap:12px;will-change:transform;">
+
+<div class="carousel-card" data-goal="recomp" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/monique-20s-transformation.png" alt="Monique transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Monique, Uni Student</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Returning to the gym after years away, balancing uni and work, Monique wanted her strength back. Post-Japan, she locked in on training and nutrition &#8212; lost 12.8kg in 5 months and doubled her squat from 26kg to 63kg.</p>
+</div>
+
+<div class="carousel-card" data-goal="hyrox" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/7ud-x3UXcfM/hqdefault.jpg" alt="Jess transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Jess, Age 29</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Five years of gym-going with no real results &#8212; until she found progressive overload. Jess built visible muscle definition, got her first chin-up, and completed HYROX with her partner.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/katrina-20s-12m.png" alt="Katrina FIFO transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Katrina, FIFO Worker</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Working FIFO on-site, Katrina trained four days a week and said goodbye to takeaway &#8212; even from the mine site. She wanted to lose 20kg and be able to shop in the same stores as her friends. A quiet achiever who let her results do the talking. She did both.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="30s" data-stage="pregnancy" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/bec-postpartum-before-after.png" alt="Bec postpartum wedding transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Bec, New Mum</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Six months to lose the baby weight and fit into her wedding dress. Real food, realistic habits, and a transformation that outlasted the deadline.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="30s" data-stage="pregnancy" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/ruth-30s-12m.png" alt="Ruth transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Ruth, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">After her second child, Ruth was training 10 hours a week and burning out. She cut to 3, shifted focus to recovery and nutrition, dropped 4cm off her waist &#8212; and found her self worth again.</p>
+</div>
+
+<div class="carousel-card" data-goal="gain-muscle" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/megan-30s-12m.png" alt="Megan transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Megan, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Chronic exhaustion had Megan at breaking point. &#8220;Someone as healthy as me shouldn&#39;t feel this way.&#8221; The big unlock: she wasn&#39;t eating enough. Eating more and lifting heavy overhauled her physique, reclaimed her energy, and gave her the vitality she thought she&#39;d lost for good.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/charmaine-30s-12m.png" alt="Charmaine transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Charmaine, Defence</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">A remote-working defence force mum battling chronic back pain and a broken leg &#8212; Charmaine had every reason to quit. Instead she adapted, stayed consistent, and lost 10kg in 6 months. No excuses. Just progress.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/tash-40s-transformation.png" alt="Tash 20kg transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Tash, Night Shift Nurse</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Her doctor&#39;s warning was stark: lose weight or your heart condition deteriorates within five years. As a night-shift nurse addicted to Coca-Cola, Tash chose strength over cardio &#8212; and lost 20kg in 14 months without a single treadmill session. Her personal goal underneath it all: to finally be able to ride a roller coaster. She can now.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/tammy-40s-6m.png" alt="Tammy transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Tammy, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Tammy came in stressed and wanting to change how her body looked. She didn&#39;t realise the connection between her body composition and her adenomyosis. Through consistent strength training and eating well, her inflammation reduced, her painful periods disappeared entirely, and she dropped two dress sizes. A body goal led to a life-changing health discovery.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="40s" data-stage="pregnancy" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/kylie-40s-6m.png" alt="Kylie transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Kylie, 4 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Four kids and a habit of putting herself last &#8212; Kylie decided to do something just for herself for the first time. She came in wanting to get rid of persistent lower tummy bloat. The 5kg loss wasn&#39;t a defined goal, but that&#39;s when the bloat disappeared and she felt better than ever. Through the process she found a rhythm that made her a better mum, not a more absent one.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="30s" data-stage="pregnancy" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/kerrie-40s-12m.png" alt="Kerrie transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Kerrie, 3 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Kerrie&#39;s biggest fear was another premature birth. When gestational diabetes appeared, it became the moment everything changed. She committed through pregnancy &#8212; and it paid off. Two dress sizes in 12 months, controlled gestational diabetes, and a faster postnatal recovery. Her goal for Christmas: a size 10 swimsuit. She nailed it.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="50s" data-stage="postmenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/vicki-50s-6m.png" alt="Vicky transformation at The Evolved Brisbane aged 50" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Vicky, Age 50</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Vicky gave herself one goal for her 50th: a fitness photoshoot that showed exactly what she was capable of. She enrolled in Fast Track, committed completely, and in 7 weeks unlocked visible abs, a 60kg squat, and her first ever chin-up. The photoshoot happened. The photos are extraordinary.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="60s" data-stage="postmenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/helen-50s-transformation.png" alt="Helen transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Helen, Grandma</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Moving house, state rep hockey, full-time work, and volunteering &#8212; Helen&#39;s 12 weeks were anything but ideal. She showed up anyway, made progress every session, and lost 7kg. Life will always be busy. You can still put yourself first.</p>
+</div>
+
+<div class="carousel-card" data-goal="bone-density" data-decade="60s" data-stage="postmenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/eleni-60s-transformation.png" alt="Eleni transformation at The Evolved Brisbane aged 63" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Eleni, Osteoporosis</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Diagnosed with osteoporosis, Leni stepped up from Pilates to strength training. From the moment she walked into The Evolved it felt right &#8212; down-to-earth, no frills. Strength and mental wellbeing both transformed. Stronger at 63 than she was at 43.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/nikki-20s-18m.png" alt="Nikki transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Nikki, Bride</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Nikki&#39;s wedding prep became a quest for confidence, not just a dress size. She reached her goal weight, tackled social dining guilt-free, and ditched binge eating for good. She felt genuine joy on her wedding day &#8212; and found abs she didn&#39;t know she had.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/emma-20s-6m.png" alt="Emma transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Emma, Age 21</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Emma lost just 600g on the scales &#8212; but the real story was underneath. She burned 1.6kg of fat and built 1kg of muscle, reshaping her body in ways the scale could never show. Proof that body composition matters more than weight.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/kat-30s-6m.png" alt="Kat transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Kat, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Kat said she might never have joined a gym without The Evolved&#39;s influence. Starting with two sessions a week, she built confidence session by session until the weights felt like home. Gym newbie to gym confident &#8212; and it shows.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/katherine-30s-6m.png" alt="Katherine transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Katherine, Teacher</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Years of on-again-off-again training felt like failure. But each attempt made Katherine stronger. Then something clicked &#8212; she committed fully and lost 15kg in just 6 months. Every restart was a step closer. She just didn&#39;t know how close she was.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/karyn-40s-12m.png" alt="Karyn transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Karyn, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Surviving on 3-4 hours sleep, battling chronic fatigue and joint pain, Karyn ditched quick fixes and built sustainable habits instead. Lost 12kg, eliminated daily back pain, and created healthier family routines. Her advice: take that first step. The change will be more profound than you imagine.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/emma-30s-2kids.png" alt="Emma transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Emma, 2 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Emma believed eating less and training more was the answer &#8212; until exhaustion and stagnation proved otherwise. At The Evolved she discovered nourishing her body, training smart, and embracing self-kindness were the real catalysts. Now she stands stronger, healthier, and genuinely at peace with herself.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/simone-40s-4kids.png" alt="Simone transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Simone, 4 Kids</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Four kids, a nursing career, and a habit of putting herself last &#8212; Simone once felt lost and overwhelmed by self-doubt. Training became her sanctuary. It improved her sleep, reduced her anxiety, and reminded her she had the strength within all along.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/helen-new-gym.png" alt="Helen transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Helen, New to Gym</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Helen had never stepped foot in a gym before. She knew she wanted to get stronger but had no idea where to start. Six months later, she&#39;d lost 14.3kg and was confidently deadlifting 90kg. More than the weight she lifted, she gained belief in herself.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="50s" data-stage="postmenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/CsICP4wSMG0/hqdefault.jpg" alt="Belinda transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Belinda, 50s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Diagnosed with frozen shoulder, she could barely hold a glass of water in one hand. She started strength training for the first time in her 50s — and lifted 35kg. Now she moves tonnes of gravel on weekends without a second thought.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/WY01XSdmevk/hqdefault.jpg" alt="Orlagh transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Orlagh, 20s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Started from a baseline of nothing — no gym experience, no sports background, didn&#39;t know the lingo. Found a safe space to learn, grow, and push herself. Now confidently adding load every session.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/15q1XPdx1PU/hqdefault.jpg" alt="Peta transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Peta, 40s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">A friend recommended it. She came in for strength training. Nine months later she&#39;s there almost every day — it&#39;s become a daily ritual and a non-negotiable part of how she starts her morning.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/O-ToRNZwB1w/hqdefault.jpg" alt="Tess transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Tess, 30s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Went from no exercise to a 75kg deadlift and a 37.5kg bench. Then moved to Ipswich — and drove an hour each way for a year rather than stop. &ldquo;If they want to see their body change quickly: stop running and lift heavy weights.&rdquo;</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/G2vXxlVJ0nk/hqdefault.jpg" alt="Laura transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Laura, 20s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Eight years of martial arts — and she wanted more physicality in her training. Her strength doubled in 10 months, recovery time slashed, and her mental health improved. She leaves every single session better than she walked in.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="40s" data-stage="perimenopause" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://img.youtube.com/vi/ATNysZlwUvg/hqdefault.jpg" alt="Sophie transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Sophie, 40s</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Changed careers to landscaping in her 40s — and trained to make her body equal to the job. Farmers carries with 2&times;20kg. The luggage that once felt heavy became a training weight.</p>
+</div>
+
+<div class="carousel-card" data-goal="lose-weight" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/alana-20s-6m.png" alt="Alana transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Alana, London Bound</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Alana had a plan: move to London and live life on her terms. She knew that life required strength, confidence, and a body she was proud of. Six months, 10kg down, and a completely transformed version of herself. She moved to London. She&#39;s absolutely crushing it.</p>
+</div>
+
+<div class="carousel-card" data-goal="get-stronger" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/isabelle-20s-12m.png" alt="Isabelle transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Isabelle, Gym Newbie</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">Standing at a crossroads before starting full-time work, Isabelle looked at her before photo and chose the path she actually wanted &#8212; strong, confident, and in control. She&#39;d never set foot in a gym. But with a community of women behind her and consistency as her guide, she absolutely thrived.</p>
+</div>
+
+<div class="carousel-card" data-goal="recomp" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;text-align:center;">
+<img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/leisa-30s-transformation.png" alt="Leisa transformation at The Evolved Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;margin-bottom:16px;display:block;">
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Leisa, Personal Trainer</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:8px;">A fitness professional and former powerlifter, Leisa wanted what powerlifting couldn&#39;t give her &#8212; leaner, stronger, and full of energy. She immersed herself in The Evolved programme and small group training. Twelve months later she&#39;d decreased inflammation, transformed her body composition, and ran her first marathon.</p>
+</div>
+
+</div>
+</div>
+<div class="carousel-nav" style="display:flex;gap:12px;justify-content:center;margin-top:20px;">
+<button class="carousel-prev" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Previous">&#8249;</button>
+<button class="carousel-next" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Next">&#8250;</button>
+</div>
+</div>
+
+</div>
+</section>
+<div style="background:#0d0d0d;border-top:1px solid #1a1a1a;padding:40px 24px;text-align:center;">
+<p style="color:#aaa;font-size:0.88rem;margin-bottom:16px;">Limited spots available each month.</p>
+<a class="waitlist-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:14px 32px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">Choose your stage to join the waitlist &#8593;</a>
+</div>
+
+<!-- PERSONALISED RESULTS CURVE -->
+<section style="background:#0a0a0a;padding:80px 24px;">
+<div style="max-width:900px;margin:0 auto;">
+<div class="chart-canvas-wrap" id="results-curve-wrap">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;margin-bottom:12px;text-align:center;">Your Personalised 12-Month Results Curve</h2>
+<p style="color:#aaa;font-size:0.95rem;line-height:1.6;margin-bottom:28px;text-align:center;">Tell us your goal and training plan to see your projected results &#8212; based on published sports science research.</p>
+
+<!-- Step 1: Goal -->
+<p style="color:#f5f0eb;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">My goal is to&hellip;</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;" id="goal-selector">
+<button class="rc-goal-btn" data-goal="recomp"       style="background:#e43388;border:1px solid #e43388;color:#fff;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Lose Fat &amp; Gain Muscle</button>
+<button class="rc-goal-btn" data-goal="gain-muscle"  style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Gain Muscle</button>
+<button class="rc-goal-btn" data-goal="bone-density" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Stronger Bones</button>
+<button class="rc-goal-btn" data-goal="get-stronger" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Get Stronger</button>
+<button class="rc-goal-btn" data-goal="hyrox"        style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Train for HYROX</button>
+<button class="rc-goal-btn" data-goal="lose-weight"  style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Lose Weight</button>
+</div>
+
+<!-- Step 2: Decade -->
+<p style="color:#f5f0eb;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">I am in my&hellip;</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;" id="decade-selector">
+<button class="rc-decade-btn" data-decade="20s" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:7px 14px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;">20s</button>
+<button class="rc-decade-btn" data-decade="30s" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:7px 14px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;">30s</button>
+<button class="rc-decade-btn" data-decade="40s" style="background:#e43388;border:1px solid #e43388;color:#fff;padding:7px 14px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;">40s</button>
+<button class="rc-decade-btn" data-decade="50s" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:7px 14px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;">50s</button>
+<button class="rc-decade-btn" data-decade="60s" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:7px 14px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;">60s+</button>
+</div>
+
+<!-- Experience Level -->
+<p style="color:#f5f0eb;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">My experience with strength training&hellip;</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;" id="experience-selector">
+<button class="rc-exp-btn" data-exp="new"        style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">New to strength</button>
+<button class="rc-exp-btn" data-exp="some"       style="background:#e43388;border:1px solid #e43388;color:#fff;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Some experience</button>
+<button class="rc-exp-btn" data-exp="experienced" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 16px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;">Experienced</button>
+</div>
+
+<!-- Meal Plan Toggle (shown for weight/recomp goals only) -->
+<div id="meal-plan-row" style="display:none;margin-bottom:28px;">
+<p style="color:#f5f0eb;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Nutrition</p>
+<button id="meal-plan-toggle" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:9px 18px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;text-align:left;">&#43; I&#39;m following The Evolved Smart Meal Plan</button>
+</div>
+
+<!-- Step 3: Training Sliders -->
+<p style="color:#f5f0eb;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">My weekly training&hellip;</p>
+<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
+<div style="display:flex;align-items:center;gap:12px;">
+<span style="color:#aaa;font-size:0.8rem;min-width:140px;flex-shrink:0;">Strength &amp; Sculpt</span>
+<input type="range" id="rc-slider-strength" min="0" max="7" value="3" step="1" style="flex:1;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,#e43388 42.9%,#333 42.9%);-webkit-appearance:none;appearance:none;">
+<span id="rc-val-strength" style="color:#e43388;font-size:0.85rem;font-weight:700;min-width:40px;text-align:right;">3 /wk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;">
+<span style="color:#aaa;font-size:0.8rem;min-width:140px;flex-shrink:0;">HIIT / Metabolic</span>
+<input type="range" id="rc-slider-hiit" min="0" max="7" value="1" step="1" style="flex:1;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,#e43388 14.3%,#333 14.3%);-webkit-appearance:none;appearance:none;">
+<span id="rc-val-hiit" style="color:#e43388;font-size:0.85rem;font-weight:700;min-width:40px;text-align:right;">1 /wk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;">
+<span style="color:#aaa;font-size:0.8rem;min-width:140px;flex-shrink:0;">Pilates</span>
+<input type="range" id="rc-slider-pilates" min="0" max="7" value="1" step="1" style="flex:1;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,#e43388 14.3%,#333 14.3%);-webkit-appearance:none;appearance:none;">
+<span id="rc-val-pilates" style="color:#e43388;font-size:0.85rem;font-weight:700;min-width:40px;text-align:right;">1 /wk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;">
+<span style="color:#aaa;font-size:0.8rem;min-width:140px;flex-shrink:0;">HYROX Training</span>
+<input type="range" id="rc-slider-hyrox" min="0" max="7" value="0" step="1" style="flex:1;height:4px;border-radius:2px;outline:none;cursor:pointer;background:#333;-webkit-appearance:none;appearance:none;">
+<span id="rc-val-hyrox" style="color:#e43388;font-size:0.85rem;font-weight:700;min-width:40px;text-align:right;">0 /wk</span>
+</div>
+</div>
+
+<!-- Chart -->
+<canvas id="resultsChart" height="220"></canvas>
+
+<!-- Annotation -->
+<p id="resultsAnnotation" class="chart-annotation" style="margin-top:20px;min-height:4.5em;"></p>
+
+<!-- Profile story panel -->
+<div id="rc-profile-panel" style="display:none;margin-top:24px;background:#111;border:1px solid #222;border-left:3px solid #e43388;border-radius:6px;padding:20px 24px;">
+<div style="display:flex;gap:20px;align-items:flex-start;">
+<img id="rc-profile-photo" src="" alt="" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:6px;flex-shrink:0;border:2px solid #222;">
+<div style="flex:1;min-width:0;">
+<p style="color:#555;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Based on your profile</p>
+<p id="rc-profile-summary" style="color:#e43388;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;"></p>
+<p id="rc-profile-story" style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-bottom:14px;"></p>
+<a id="rc-profile-link" href="#" style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;text-decoration:none;"></a>
+</div>
+</div>
+</div>
+
+<!-- Disclaimer -->
+<p style="color:#444;font-size:0.72rem;line-height:1.6;margin-top:16px;text-align:center;">Individual results may vary. Projections based on published sports science research and are intended as a guide only.</p>
+</div>
+
+<div style="text-align:center;margin-top:48px;">
+<a class="primary-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">Join the Waitlist</a>
+</div>
+</div>
+</section>
+
+<!-- WHY MUSCLE MATTERS -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:900px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:16px;">Why Muscle Matters</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:48px;max-width:640px;margin-left:auto;margin-right:auto;">Whether you're 25 or 65 &#8212; it's not too early, and it's never too late.</p>
+
+<div class="muscle-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+<div class="muscle-text" data-reveal-stagger>
+<div id="decade-transform" style="display:none;margin-bottom:32px;">
+<img id="decade-transform-img" src="" alt="" style="width:100%;border-radius:6px;display:block;object-fit:cover;">
+<p id="decade-transform-caption" style="color:#555;font-size:0.75rem;margin-top:10px;text-align:center;letter-spacing:0.04em;"></p>
+</div>
+<div id="decade-quote" style="display:none;margin-bottom:32px;border-left:2px solid #e43388;padding:20px 24px;background:#0d0d0d;border-radius:0 6px 6px 0;">
+<p id="decade-quote-text" style="color:#f5f0eb;font-size:0.9rem;line-height:1.85;font-style:italic;margin-bottom:14px;"></p>
+<p id="decade-quote-name" style="color:#e43388;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;"></p>
+</div>
+<div data-reveal-child style="border-top:2px solid #e43388;padding-top:20px;margin-bottom:28px;">
+<h3 id="mp-1-h" style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:0.95rem;margin-bottom:10px;">Sarcopenia Starts Early</h3>
+<p id="mp-1-p" style="color:#aaa;font-size:0.9rem;line-height:1.7;">Women begin losing muscle around age 30 &#8212; up to 250g per year. Without strength training, this silent decline accelerates every decade. If you're not building it, you're losing it.</p>
+</div>
+<div data-reveal-child style="border-top:2px solid #e43388;padding-top:20px;margin-bottom:28px;">
+<h3 id="mp-2-h" style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:0.95rem;margin-bottom:10px;">Stress Hijacks Your Hormones</h3>
+<p id="mp-2-p" style="color:#aaa;font-size:0.9rem;line-height:1.7;">Chronic stress elevates cortisol &#8212; which, over time, drives fat storage, disrupts sleep, and accelerates muscle and bone loss. Strength training is one of the most effective tools for lowering chronic stress, regulating cortisol, and supporting healthy hormone balance across every decade of life.</p>
+</div>
+<div data-reveal-child style="border-top:2px solid #e43388;padding-top:20px;margin-bottom:28px;">
+<h3 id="mp-3-h" style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:0.95rem;margin-bottom:10px;">Joints Weaken Silently</h3>
+<p id="mp-3-p" style="color:#aaa;font-size:0.9rem;line-height:1.7;">Women who train consistently have stronger hips, knees, and ankles &#8212; and dramatically lower risk of injury and osteoporosis.</p>
+</div>
+<div data-reveal-child style="border-top:2px solid #e43388;padding-top:20px;">
+<h3 id="mp-4-h" style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:0.95rem;margin-bottom:10px;">Unseen Bone Loss Accelerates</h3>
+<p id="mp-4-p" style="color:#aaa;font-size:0.9rem;line-height:1.7;">Progressive strength training preserves bone density &#8212; one of the most effective long-term protections against osteoporosis.</p>
+</div>
+</div>
+
+<div class="muscle-charts">
+<!-- Sarcopenia Chart -->
+<div class="chart-canvas-wrap" style="margin-bottom:32px;">
+<p style="color:#f5f0eb;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;">Muscle Mass Over Time</p>
+<canvas id="sarcopeniaChart" height="220"></canvas>
+<div style="margin-top:20px;">
+<p style="color:#aaa;font-size:0.8rem;text-align:center;margin-bottom:14px;letter-spacing:0.06em;">&#8592;&nbsp;&nbsp;Drag to find your decade&nbsp;&nbsp;&#8594;</p>
+<input type="range" id="ageSlider" min="0" max="4" step="1" value="0" style="width:100%;cursor:pointer;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;outline:none;background:linear-gradient(to right,#e43388 0%,#333 0%);">
+<div style="display:flex;justify-content:space-between;margin-top:10px;padding:0 2px;">
+<span style="color:#555;font-size:0.72rem;">20s</span>
+<span style="color:#555;font-size:0.72rem;">30s</span>
+<span style="color:#555;font-size:0.72rem;">40s</span>
+<span style="color:#555;font-size:0.72rem;">50s</span>
+<span style="color:#555;font-size:0.72rem;">60s+</span>
+</div>
+</div>
+<p id="sarcopeniaAnnotation" class="chart-annotation">You are at or near peak muscle mass right now. The window to build your foundation is open &#8212; the habits you form now compound over decades.</p>
+<div style="text-align:center;margin-top:16px;">
+<a class="waitlist-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:14px 32px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">Choose your stage to join the waitlist &#8593;</a>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- Decade secondary transformations -->
+<div id="decade-cards-row" style="display:none;margin-top:48px;">
+<p style="color:#555;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;text-align:center;">More results from this decade</p>
+<div class="decade-cards-flex" style="display:flex;gap:16px;">
+<div id="dc-1" style="flex:1 1 0;min-width:0;display:none;">
+<img id="dc-1-img" src="" alt="" style="width:100%;border-radius:6px;object-fit:cover;aspect-ratio:1/1;display:block;">
+<p id="dc-1-cap" style="color:#555;font-size:0.72rem;margin-top:8px;text-align:center;letter-spacing:0.04em;"></p>
+</div>
+<div id="dc-2" style="flex:1 1 0;min-width:0;display:none;">
+<img id="dc-2-img" src="" alt="" style="width:100%;border-radius:6px;object-fit:cover;aspect-ratio:1/1;display:block;">
+<p id="dc-2-cap" style="color:#555;font-size:0.72rem;margin-top:8px;text-align:center;letter-spacing:0.04em;"></p>
+</div>
+<div id="dc-3" style="flex:1 1 0;min-width:0;display:none;">
+<img id="dc-3-img" src="" alt="" style="width:100%;border-radius:6px;object-fit:cover;aspect-ratio:1/1;display:block;">
+<p id="dc-3-cap" style="color:#555;font-size:0.72rem;margin-top:8px;text-align:center;letter-spacing:0.04em;"></p>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+<div style="background:#0d0d0d;border-top:1px solid #1a1a1a;padding:40px 24px;text-align:center;">
+<p style="color:#aaa;font-size:0.88rem;margin-bottom:16px;">Limited spots available each month.</p>
+<a class="waitlist-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:14px 32px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">Choose your stage to join the waitlist &#8593;</a>
+</div>
+
+<!-- GYM PHOTOS -->
+<section style="background:#0a0a0a;padding:80px 0;">
+<div style="max-width:960px;margin:0 auto;padding:0 24px;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:40px;">Inside The Evolved</h2>
+</div>
+<div style="padding:0 24px;">
+<div class="photo-viewport" style="overflow:hidden;position:relative;cursor:grab;user-select:none;">
+<div class="photo-track" style="display:flex;gap:12px;will-change:transform;">
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684fc679035d477281fe7659.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/67ec770013c4b62d571cf5c1.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/67e33c813f38fa001ef23cf7.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/6808267ea74bb5593fb39035.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/682d107ee7803d529f0cad8f.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/683f8582dc474419f2bbb8c5.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/67d0c780cbf30bdf1ab48d72.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/67b517fd145bb78f52261957.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/67ad2efec9187f5226e09ec9.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684fc60a035d47648cfe75f0.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684fc60a6a46a06c934591e6.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+<div class="photo-card" style="flex:0 0 calc(33.333% - 8px);min-width:200px;"><img src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/684fc60a10acfbdf42e3c99b.png" alt="The Evolved gym Brisbane" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;display:block;"></div>
+</div>
+</div>
+<div class="photo-nav" style="display:flex;gap:12px;justify-content:center;margin-top:20px;">
+<button class="photo-prev" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Previous">&#8249;</button>
+<button class="photo-next" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Next">&#8250;</button>
+</div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:#0d0d0d;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:64px 24px;">
+<div style="max-width:960px;margin:0 auto;">
+
+  <div style="text-align:center;margin-bottom:48px;">
+    <p style="color:#e43388;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;font-family:'Lato',sans-serif;">How It Works</p>
+    <h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.4rem,2.8vw,2rem);color:#f5f0eb;margin-bottom:20px;line-height:1.3;">Every session, a coach in your corner.</h2>
+    <p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;font-size:1rem;line-height:1.8;max-width:620px;margin:0 auto;">Every woman who trains at The Evolved trains with a coach &#8212; every session, every week. No unsupervised floor time. No wondering what to do next. Just guided, progressive training with someone who knows your name, your goals, and exactly where you&#8217;re headed.</p>
+  </div>
+
+  <div data-reveal-stagger style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
+
+    <!-- 1:1 PT -->
+    <div data-reveal-child style="background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:40px 32px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(228,51,136,0.1);border:1px solid rgba(228,51,136,0.3);display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e43388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:12px;">1:1 Personal Training</h3>
+      <p style="color:#aaa;font-size:0.9rem;line-height:1.8;margin-bottom:0;">One coach. One member. Every session is built entirely around you &#8212; your body, your goals, your schedule. The most personalised form of training we offer, with complete coach attention from the moment you walk in.</p>
+    </div>
+
+    <!-- SGPT -->
+    <div data-reveal-child style="background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:40px 32px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(228,51,136,0.1);border:1px solid rgba(228,51,136,0.3);display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e43388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><path d="M22 20c0-3-2.7-5-6-5"/><path d="M8 15c0-3 1.8-4 4-4s4 1 4 4"/>
+        </svg>
+      </div>
+      <h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:12px;">Small Group Personal Training</h3>
+      <p style="color:#aaa;font-size:0.9rem;line-height:1.8;margin-bottom:0;">Train alongside a small group of women at a similar stage &#8212; with a dedicated coach guiding every single session. You get the accountability of a community and the attentiveness of personal training. Most of our members train this way.</p>
+    </div>
+
+  </div>
+
+  <p data-reveal="fade-up" style="text-align:center;color:#555;font-size:0.85rem;margin-top:36px;line-height:1.7;">Whether you&#8217;ve never set foot in a gym or you&#8217;ve been training for years &#8212; every session is designed for where <em style="color:#aaa;">you</em> are right now.</p>
+
+</div>
+</section>
+
+<!-- WE DON'T GUESS. WE GUIDE. -->
+<section style="background:#0a0a0a;padding:80px 24px;">
+<div style="max-width:900px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:16px;">We Don't Guess. We Guide.</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:16px;max-width:680px;margin-left:auto;margin-right:auto;">Real results start with <strong style="color:#f5f0eb;">real science</strong>. Our programs are built on the principles of physiology, psychology, and performance &#8212; not fads or fluff.</p>
+<p data-reveal="fade-up" data-reveal-delay="0.15" style="color:#aaa;text-align:center;margin-bottom:56px;max-width:680px;margin-left:auto;margin-right:auto;">At The Evolved, we're not just another gym. We're a female-focused transformation studio that uses science-backed methods to help women thrive across every stage of life.</p>
+<div data-reveal-stagger style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px;">
+<div id="pillar-programming" data-reveal-child style="border-top:2px solid #e43388;padding-top:24px;">
+<h3 style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:1rem;margin-bottom:12px;">Evidence-Based, Female-Specific Programming</h3>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;">Strength training isn't just a workout &#8212; it's medicine for women in their 30s, 40s, 50s and beyond. Our programs are rooted in research on muscle loss (sarcopenia), bone density, and hormone stability. We adjust intensity, recovery, and protein targets for peri- and post-menopausal women to not just preserve, but rebuild strength.</p>
+</div>
+<div id="pillar-nutrition" data-reveal-child style="border-top:2px solid #e43388;padding-top:24px;">
+<h3 style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:1rem;margin-bottom:12px;">Nutrition That Supports Your Biology</h3>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;">We provide smart meal plans for every member because a balanced approach to exercise and nutrition is essential. Our foundational nutrition habits are built around protein-first strategies, hormonal shifts, and blood sugar stability. We help you fuel your body, not restrict. You're an athlete &#8212; we teach you to perform in everyday life.</p>
+</div>
+<div id="pillar-behaviour" data-reveal-child style="border-top:2px solid #e43388;padding-top:24px;">
+<h3 style="font-family:'PT Serif Caption',serif;color:#e43388;font-size:1rem;margin-bottom:12px;">Behaviour Science Meets Strength Training</h3>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;">We teach the science of breaking and building new habit cycles &#8212; using identity-based change strategies and emotional regulation to help you create lasting habits, not just short-term results. From breath work to boundaries, we train the mind as much as the muscle.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- VIDEO TESTIMONIALS -->
+<section style="background:#0a0a0a;padding:80px 0;">
+<div style="max-width:960px;margin:0 auto;padding:0 24px;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:12px;">In Their Own Words</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:48px;">Hit play and hear what our women say about The Evolved.</p>
+</div>
+<div style="padding:0 24px;">
+<div class="video-viewport" style="overflow:hidden;position:relative;cursor:grab;user-select:none;">
+<div class="video-track" style="display:flex;flex-wrap:nowrap;gap:12px;will-change:transform;">
+
+<div class="video-card" data-goal="bone-density" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="WwEcN-oV_XM" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/WwEcN-oV_XM/hqdefault.jpg" alt="Eleni testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Eleni</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Strength training at 63 and feeling 30 years younger. Eleni swapped Pilates for The Evolved &#8212; and hasn&#39;t looked back.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="50s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="CsICP4wSMG0" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/CsICP4wSMG0/hqdefault.jpg" alt="Belinda testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Belinda</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">From not being able to hold a glass of water to lifting 35kg &#8212; strength training gave Belinda back her independence, her energy, and her life.</p>
+</div>
+
+<div class="video-card" data-goal="recomp" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="yPJ2xlNtkxk" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/yPJ2xlNtkxk/hqdefault.jpg" alt="Rudra testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Rudra</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Moving to Brisbane, Rudra felt lost &#8212; until she found The Evolved. Six months on, her body&#39;s stronger, her mind&#39;s clearer, and she finally belongs.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="40s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="pHSmb9jTKoc" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/pHSmb9jTKoc/hqdefault.jpg" alt="Jules testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Jules</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Turned 40, had never touched a weight in her life &#8212; and fell completely in love with strength training and the all-female environment.</p>
+</div>
+
+<div class="video-card" data-goal="hyrox" data-decade="40s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="W6cDcI7I1zI" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/W6cDcI7I1zI/hqdefault.jpg" alt="Johanna testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Johanna</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Life-changing. Lifts over 100kg. Completed Hyrox in under 90 minutes. The community keeps her accountable every single week.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="WY01XSdmevk" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/WY01XSdmevk/hqdefault.jpg" alt="Orlagh testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Orlagh</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Started from zero &#8212; no gym knowledge, no sporting background. The women-only space was the drawcard. Now she feels confident and strong.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="W3_KlWQE5Gg" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/W3_KlWQE5Gg/hqdefault.jpg" alt="Michelle testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Michelle</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Used to only cycle &#8212; now trains 4 days a week and loves every session. The soreness that never went away? Gone.</p>
+</div>
+
+<div class="video-card" data-goal="recomp" data-decade="40s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="15q1XPdx1PU" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/15q1XPdx1PU/hqdefault.jpg" alt="Peta testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Peta</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">&#8220;I came for strength training, but I stayed for the people.&#8221; No ego. Just progress at your own pace, surrounded by good women.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="30s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="O-ToRNZwB1w" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/O-ToRNZwB1w/hqdefault.jpg" alt="Tess testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Tess</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Sedentary and feeling terrible &#8212; now benching 37.5kg and deadlifting 75kg. She drove from Ipswich every day. That&#39;s how good it is.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="G2vXxlVJ0nk" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/G2vXxlVJ0nk/hqdefault.jpg" alt="Laura testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Laura</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Joined to get stronger for martial arts. Left with better mental strength, cardiovascular health, and coaches who genuinely cheer for every PB.</p>
+</div>
+
+<div class="video-card" data-goal="bone-density" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="59YWpXOY2SQ" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/59YWpXOY2SQ/hqdefault.jpg" alt="Eleni update testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Eleni &#8212; 2 Years On</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Update: Eleni no longer has osteoporosis in her spine. She went from Pilates to doing things she never thought possible &#8212; including her first chin-up.</p>
+</div>
+
+<div class="video-card" data-goal="bone-density" data-decade="60s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="COIm1FmTYOc" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/COIm1FmTYOc/hqdefault.jpg" alt="Jennifer testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Jennifer, 64</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Chronic neck pain, headaches, and temporary deafness &#8212; gone. Her chiropractor told her to lift weights. Strength training did what years of treatment couldn&#39;t.</p>
+</div>
+
+<div class="video-card" data-goal="lose-weight" data-decade="20s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="5QkcZC8AE8s" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/5QkcZC8AE8s/hqdefault.jpg" alt="Alana testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Alana</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">12kg and two dress sizes in 5 months. Came in with back pain so bad she couldn&#39;t deadlift. Now lifting 55kg RDLs and doing her first chin-ups.</p>
+</div>
+
+<div class="video-card" data-goal="get-stronger" data-decade="40s" style="flex:0 0 calc(33.333% - 8px);min-width:200px;">
+<div class="video-facade" data-vid="ATNysZlwUvg" style="position:relative;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;">
+<img src="https://i.ytimg.com/vi/ATNysZlwUvg/hqdefault.jpg" alt="Sophie testimonial" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><div style="width:56px;height:56px;background:#e43388;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#fff;margin-left:4px;"><path d="M8 5v14l11-7z"/></svg></div></div>
+</div>
+<p style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:12px;">Sophie</p>
+<p style="color:#aaa;font-size:0.85rem;line-height:1.65;margin-top:6px;">Switching careers to landscaping in her late 40s meant getting strong wasn&#39;t optional. Watch what she can carry now.</p>
+</div>
+
+</div>
+</div>
+<div class="video-nav" style="display:flex;gap:12px;justify-content:center;margin-top:20px;">
+<button class="video-prev" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Previous">&#8249;</button>
+<button class="video-next" style="background:#1a1a1a;border:1px solid #333;color:#f5f0eb;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Next">&#8250;</button>
+</div>
+</div>
+</section>
+<div style="background:#0d0d0d;border-top:1px solid #1a1a1a;padding:40px 24px;text-align:center;">
+<p style="color:#aaa;font-size:0.88rem;margin-bottom:16px;">Limited spots available each month.</p>
+<a class="waitlist-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:14px 32px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">Choose your stage to join the waitlist &#8593;</a>
+</div>
+
+<!-- TIMETABLE -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:900px;margin:0 auto;text-align:center;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;margin-bottom:16px;">Find a Class That Fits Your Life</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;margin-bottom:40px;max-width:580px;margin-left:auto;margin-right:auto;">Whether you're an early riser, work full time, or juggle school drop-offs &#8212; there's a session for you.</p>
+<img data-reveal="fade-up" data-reveal-delay="0.15" src="https://blog.theevolvedgym.com.au/wp-content/uploads/2026/04/696425cff8a93b73acd4aac1.png" alt="Small group personal training timetable &#8212; The Evolved All Female Gym Brisbane" style="width:100%;max-width:800px;border-radius:8px;border:1px solid #222;">
+<div style="margin-top:40px;">
+<a class="primary-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">Join the Waitlist</a>
+</div>
+</div>
+</section>
+
+<!-- MEMBERSHIPS -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:1000px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:12px;">Not Sure Where To Start?</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:12px;max-width:640px;margin-left:auto;margin-right:auto;">These are our most popular programs, each one designed to fit a different lifestyle, goal, and starting point.</p>
+<p data-reveal="fade-up" data-reveal-delay="0.15" style="color:#aaa;text-align:center;margin-bottom:48px;font-size:0.9rem;">No guessing. No contracts. Just results.</p>
+<div class="card-row" style="display:flex;gap:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;">
+
+<div class="membership-card" data-mc="fitflex" style="position:relative;flex:1 1 0;min-width:220px;border-radius:8px;overflow:hidden;border:1px solid #222;background:#0a0a0a;transition:border 0.4s,box-shadow 0.4s;">
+<a href="https://theevolvedgym.com.au/memberships/fitflex" style="position:absolute;inset:0;z-index:2;" aria-label="Fit and Flexible membership"></a>
+<img src="https://assets.cdn.filesafe.space/6Ku1uU0Xc45zq0KlTikJ/media/684f98fb24f682e5beeee058.png" alt="Fit and Flexible membership at The Evolved Brisbane" style="width:100%;height:220px;object-fit:cover;display:block;">
+<div style="padding:20px;"><h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:8px;">Fit &amp; Flexible</h3><p style="color:#aaa;font-size:0.85rem;line-height:1.6;margin-bottom:16px;">Supportive movement for recovery, mobility, and resilience.</p><span style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">See What's Included &#8594;</span></div>
+</div>
+
+<div class="membership-card" data-mc="sculptstrength" style="position:relative;flex:1 1 0;min-width:220px;border-radius:8px;overflow:hidden;border:1px solid #222;background:#0a0a0a;transition:border 0.4s,box-shadow 0.4s;">
+<a href="https://theevolvedgym.com.au/memberships/sculptstrength" style="position:absolute;inset:0;z-index:2;" aria-label="Sculpt and Strength membership"></a>
+<img src="https://assets.cdn.filesafe.space/6Ku1uU0Xc45zq0KlTikJ/media/68520000cd964d13ef4a03e6.png" alt="Sculpt and Strength membership at The Evolved Brisbane" style="width:100%;height:220px;object-fit:cover;display:block;">
+<div style="padding:20px;"><h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:8px;">Sculpt &amp; Strength</h3><p style="color:#aaa;font-size:0.85rem;line-height:1.6;margin-bottom:16px;">Science-backed strength training to build a lean, powerful body.</p><span style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">See What's Included &#8594;</span></div>
+</div>
+
+<div class="membership-card" data-mc="fasttrack" style="position:relative;flex:1 1 0;min-width:220px;border-radius:8px;overflow:hidden;border:1px solid #222;background:#0a0a0a;transition:border 0.4s,box-shadow 0.4s;">
+<a href="https://theevolvedgym.com.au/memberships/fasttrack" style="position:absolute;inset:0;z-index:2;" aria-label="Fast Track membership"></a>
+<img src="https://assets.cdn.filesafe.space/6Ku1uU0Xc45zq0KlTikJ/media/684f98fb86b0e7252609345b.png" alt="Fast Track membership at The Evolved Brisbane" style="width:100%;height:220px;object-fit:cover;display:block;">
+<div style="padding:20px;"><h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:8px;">Fast Track</h3><p style="color:#aaa;font-size:0.85rem;line-height:1.6;margin-bottom:16px;">High-touch coaching tailored to your goals, schedule, and body.</p><span style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">See What's Included &#8594;</span></div>
+</div>
+
+<div class="membership-card" data-mc="gypsy" style="position:relative;flex:1 1 0;min-width:220px;border-radius:8px;overflow:hidden;border:1px solid #222;background:#0a0a0a;transition:border 0.4s,box-shadow 0.4s;">
+<a href="https://theevolvedgym.com.au/memberships/evolve-u-program" style="position:absolute;inset:0;z-index:2;" aria-label="Gypsy membership"></a>
+<img src="https://assets.cdn.filesafe.space/6Ku1uU0Xc45zq0KlTikJ/media/684f98fb55f9659b6924b7c5.png" alt="Gypsy membership at The Evolved Brisbane" style="width:100%;height:220px;object-fit:cover;display:block;">
+<div style="padding:20px;"><h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.1rem;margin-bottom:8px;">Gypsy</h3><p style="color:#aaa;font-size:0.85rem;line-height:1.6;margin-bottom:16px;">Your program, your pace, wherever you go.</p><span style="color:#e43388;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">See What's Included &#8594;</span></div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- HOW TO GET STARTED -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:900px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:16px;">How to Get Started</h2>
+<p data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;text-align:center;margin-bottom:56px;max-width:640px;margin-left:auto;margin-right:auto;">We open a small number of spots each month. Most women are training within 1&#8211;2 weeks of joining the list. Here&#8217;s how to be first in line.</p>
+
+<!-- Step flow -->
+<div class="steps-flow" data-reveal-stagger style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;">
+
+  <!-- Connecting line (desktop only) -->
+  <div class="steps-connector" style="position:absolute;top:77px;left:calc(16.5% + 44px);right:calc(16.5% + 44px);height:0;border-top:2px dashed rgba(228,51,136,0.35);pointer-events:none;"></div>
+
+  <!-- Step 1 -->
+  <div data-reveal-child style="flex:1;text-align:center;padding:0 12px;">
+    <p style="color:#e43388;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;font-family:'Lato',sans-serif;">Step 01</p>
+    <div style="width:88px;height:88px;border-radius:50%;border:2px solid #e43388;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;background:#111;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e43388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+      </svg>
+    </div>
+    <h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.05rem;margin-bottom:12px;">Join the Priority List</h3>
+    <p style="color:#aaa;font-size:0.9rem;line-height:1.75;">We open a small number of client spots each month. Priority goes to women on our email list who complete a Strength Assessment. You'll receive free access to our 30-day email series and get notified as soon as assessments open.</p>
+  </div>
+
+  <!-- Step 2 -->
+  <div data-reveal-child style="flex:1;text-align:center;padding:0 12px;">
+    <p style="color:#e43388;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;font-family:'Lato',sans-serif;">Step 02</p>
+    <div style="width:88px;height:88px;border-radius:50%;border:2px solid #e43388;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;background:#111;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e43388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8" y="2" width="8" height="4" rx="1"/>
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+        <path d="m9 14 2 2 4-4"/>
+      </svg>
+    </div>
+    <h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.05rem;margin-bottom:12px;">Book Your Strength Assessment</h3>
+    <p style="color:#aaa;font-size:0.9rem;line-height:1.75;">A guided session with one of our female coaches &#8212; not a sales pitch. We&#8217;ll assess where you&#8217;re starting, answer your training questions honestly, and give you a clear game plan for what&#8217;s possible. You&#8217;ll leave with a realistic picture of your body and your timeframe, whether you join or not. We offer 5 per week &#8212; spots are limited.</p>
+  </div>
+
+  <!-- Step 3 -->
+  <div data-reveal-child style="flex:1;text-align:center;padding:0 12px;">
+    <p style="color:#e43388;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;font-family:'Lato',sans-serif;">Step 03</p>
+    <div style="width:88px;height:88px;border-radius:50%;border:2px solid #e43388;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;background:#111;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e43388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+    <h3 style="font-family:'PT Serif Caption',serif;color:#f5f0eb;font-size:1.05rem;margin-bottom:12px;">Secure Your Spot</h3>
+    <p style="color:#aaa;font-size:0.9rem;line-height:1.75;">If a spot is available and we're the right fit, you'll receive a personalised start plan based on your goals and lifestyle. No contracts. No pressure. Just the truth about what's possible.</p>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:56px;">
+<p style="color:#aaa;font-size:0.95rem;margin-bottom:24px;font-style:italic;">We've helped hundreds of women feel strong again &#8212; and we don't rush it. We're here for quality, not volume.</p>
+<a class="primary-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">Join the Waitlist</a>
+</div>
+</div>
+</section>
+
+<!-- GOOGLE REVIEWS -->
+<section style="background:#111;padding:80px 24px;">
+<div style="max-width:960px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:40px;">What Our Members Say</h2>
+<iframe id="msgsndr_reviews" src="https://backend.leadconnectorhq.com/appengine/reviews/get_widget/6Ku1uU0Xc45zq0KlTikJ" frameborder="0" scrolling="no" style="width:100%;display:block;border:none;min-height:400px;" title="Google Reviews &#8212; The Evolved All Female Gym"></iframe>
+</div>
+</section>
+<div style="background:#0d0d0d;border-top:1px solid #1a1a1a;padding:40px 24px;text-align:center;">
+<p style="color:#aaa;font-size:0.88rem;margin-bottom:16px;">Limited spots available each month.</p>
+<a class="waitlist-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:14px 32px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;">Choose your stage to join the waitlist &#8593;</a>
+</div>
+<script>
+window.addEventListener('message', function(e) {
+  var eventName = e.data[0];
+  var data = e.data[1];
+  if (eventName === 'lc.setHeight' && data && data.id === 'lc_reviews_widget') {
+    var iframes = document.querySelectorAll('#msgsndr_reviews');
+    for (var i = 0; i < iframes.length; i++) {
+      try {
+        if (e.source === iframes[i].contentWindow) {
+          iframes[i].style.height = data.height + 'px';
+          iframes[i].style.minHeight = data.height + 'px';
+          break;
+        }
+      } catch(err) {}
+    }
+  }
+}, false);
+</script>
+
+<!-- FAQ -->
+<section style="background:#0a0a0a;padding:80px 24px;">
+<div style="max-width:800px;margin:0 auto;">
+<h2 data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#f5f0eb;text-align:center;margin-bottom:48px;">Frequently Asked Questions</h2>
+<div id="faq-list" style="display:flex;flex-direction:column;gap:0;">
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;" open>
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Can I come and see the gym before booking a Strength Assessment? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">We understand the desire to see a space before stepping into it &#8212; especially if gyms haven't always felt welcoming. We're a small, specialist facility that runs by appointment only, so we're not set up for casual drop-ins. But what we can offer you is something far more useful: a Strength Assessment where you walk away knowing exactly what your body needs and what's genuinely possible for you.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">Joining the waitlist is free, takes 30 seconds, and carries zero obligation. If a spot opens and the timing isn't right &#8212; no pressure at all. When you do come in, you'll leave with your exact starting point, a realistic picture of what's possible, and a clear timeframe to your goal &#8212; regardless of whether you join. That clarity alone is worth the visit.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">How much does it cost? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">We don't give prices before we understand what you need &#8212; that would be like a doctor writing a prescription before the consultation. Pricing depends on your goals, training history, any injuries or medical conditions, and what program will actually get you there.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">The Strength Assessment is where that conversation happens. You'll get a clear picture of your starting point, what we recommend, and what it costs &#8212; then you decide. No pressure, no obligation. For context: 1:1 personal training in Brisbane runs $100&#8211;$150 per hour. Our members train as many times as they like each week, across 24 timetable sessions, for less than a single 1:1 session.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">What is a Strength Assessment? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">It&#8217;s a short, guided session with one of our female coaches &#8212; not a gym tour, not a sales pitch. Four things happen:</p>
+<ul style="color:#aaa;font-size:0.9rem;line-height:1.85;margin-top:12px;padding-left:20px;">
+  <li><strong style="color:#f5f0eb;">Where are we starting?</strong> A guided strength and movement check-up. No pressure, no judgement.</li>
+  <li><strong style="color:#f5f0eb;">What is your next step?</strong> Personalised guidance on improving energy, posture, and physical confidence.</li>
+  <li><strong style="color:#f5f0eb;">Do you have concerns?</strong> Expert answers to your training or body-change questions &#8212; honestly, no spin.</li>
+  <li><strong style="color:#f5f0eb;">Can we fast-track this?</strong> A clear game plan for moving forward &#8212; whether you join or not.</li>
+</ul>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">We offer 5 of these per week. You&#8217;ll leave with your exact starting point, a realistic picture of what&#8217;s possible, and a clear timeframe &#8212; regardless of whether you join.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Are there any joining fees? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">None. No joining fees, no admin charges, no hidden costs of any kind. The price you're quoted at your Strength Assessment is the price you pay &#8212; for your training, and nothing else. What you see is what you get.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">I&#8217;m already training elsewhere. What makes this different? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Most gyms give you a workout. It's random every week, and you're left to figure out whether it's working. At The Evolved, you get a 12-month roadmap grounded in real science and built around the longevity markers that matter for women. We start with a 1-on-1 Strength Assessment so your program is safe, sustainable, and specific to you. Our training is periodised and phased &#8212; backed by the world's leading experts in women's strength and ageing. You'll never burn out, always make progress, and feel in full control of your body.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Are there any lock-in contracts? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">No lock-ins &#8212; just a 30-day cancellation notice across all services. This gives us space to plan your training properly and gives you room to push through the tough weeks without quitting on your goals too soon.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Is this like a regular gym? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Not at all. We're not a commercial gym with crowds, confusing equipment, or $10 swipe-and-sweat memberships. This is female-specific coaching designed for your body, stage of life, and long-term health. You'll train in small groups with expert guidance to ensure your form is perfect and you're safely pushing yourself. The atmosphere is supportive &#8212; trainers and fellow members pushing each other, not competing.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Am I too old to start strength training? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Our youngest member is 14. Our most experienced woman is 72. We cater to all women regardless of size, shape, fitness level, or age. The group who find it hardest to build lean muscle mass are women over 40 &#8212; and not coincidentally, this is the group who benefit most from properly structured strength training. Our entire system is designed around the unique needs of perimenopausal, postmenopausal, and ageing women. You'll feel stronger, move better, and stay independent &#8212; at any age.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">I haven&#8217;t exercised in 10+ years&#8230; is this too advanced for me? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Not at all. You'll begin with a Strength Assessment where we meet you exactly where you're at &#8212; no pressure, no expectations. Our beginner-friendly onboarding focuses on movement confidence, not performance. You'll feel safe, seen, and supported from Day 1. If it's been a while, we'll likely recommend our Fast Track membership, which includes one-on-one personal training each week &#8212; the best way to learn faster, adapt exercises to your body, and build confidence from scratch. You'll be working out with a group of women just like you.</p>
+</details>
+
+<details style="border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">I&#8217;ve had injuries or chronic pain&#8230; can I still join? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Yes &#8212; and in fact, that's one of the most common reasons women come to us. We specialise in form correction, injury prevention, and training around pain or limitations. Our coaches are experts in safe, intelligent strength training and work closely with physios and allied health professionals. Already have a treatment team? We're happy to collaborate. Low-impact strength training, focusing on form and gradual progression, can help strengthen the muscles around your joints and reduce pain over time.</p>
+</details>
+
+<!-- Goal-specific FAQs — shown/hidden by rcUpdateFAQ() based on goal selection -->
+
+<details data-faq-goal="lose-weight,recomp" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Will lifting weights make me bulky? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">This is one of the most common concerns we hear &#8212; and it's completely understandable. The short answer: no. Building the kind of muscle that looks "bulky" requires years of very specific training, very high calorie intake, and often hormonal support. Women's physiology simply doesn't work that way naturally. What strength training does build is a lean, toned, shapely body that gets stronger and more capable every week.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">In fact, the bigger risk for women as they age is losing muscle &#8212; which slows metabolism, affects posture, and reduces independence over time. Strength training is how you hold onto what matters most. The goal isn't to get bigger. It's to get stronger, leaner, and feel great in your body.</p>
+</details>
+
+<details data-faq-goal="lose-weight,recomp" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Do you offer nutrition and meal plan support? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Yes &#8212; and for most women, this is where the real shift happens. Training builds the foundation; nutrition is what accelerates your results and helps them last. As certified Metabolic Nutritionists, our coaches provide personalised guidance built around your training, your metabolism, and your life &#8212; not a generic plan.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">Nutrition support includes smart meal plans, a recipe library, macronutrient guidance, and ongoing coaching to keep you consistent. We accommodate all dietary preferences &#8212; vegan, vegetarian, gluten-free, paleo, and more. We also run nutrition workshops and check-ins throughout the year to keep things on track as your training evolves.</p>
+</details>
+
+<details data-faq-goal="recomp,lose-weight" data-faq-decade="40s,50s,60s" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Can strength training help with perimenopause and menopause symptoms? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">If you're in perimenopause or menopause and feeling like your body has changed in ways you don't fully recognise &#8212; you're not imagining it, and you're not alone. The hormonal shifts during this stage affect everything: weight distribution, energy, sleep, mood, and how your body responds to exercise. The good news is that strength training is one of the most powerful tools available for managing these changes.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">Regular strength training helps regulate hormones, maintain bone density, improve insulin sensitivity, reduce inflammation, and support healthy cortisol levels &#8212; all of which are disrupted during this transition. It also improves energy, mood, and sleep quality. Combined with a high-protein diet, it's the most evidence-based approach for managing your body composition as your hormones shift. Many of our members describe it as the first time they've felt genuinely in control of their bodies again.</p>
+</details>
+
+<details data-faq-goal="bone-density" data-faq-decade="40s,50s,60s" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">Is weightlifting safe if I have osteoporosis? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">We know this feels like a scary question to ask &#8212; but it might be one of the most important ones you've ever asked. With proper guidance, weightlifting isn't just safe for osteoporosis &#8212; it's one of the most effective interventions available for improving bone density directly. At The Evolved, we build customised strength programs for women with osteoporosis that are designed to strengthen both your bones and the muscle surrounding them, reducing fracture risk at the same time.</p>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:12px;">We focus on controlled movements, appropriate load progression, and balance work. Our coaches are experienced in this specific area and will work alongside your treating team if you have one. Strength training won't reverse osteoporosis overnight &#8212; but it can meaningfully slow its progression and significantly improve your quality of life.</p>
+</details>
+
+<details data-faq-goal="bone-density" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">What exercises are best for building bone density? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Weight-bearing exercises like squats, lunges, and deadlifts are the most effective for bone health &#8212; they promote bone density and reduce the risk of osteoporosis. Walking and bodyweight movements also contribute. At The Evolved, we specialise in bone health-focused programming that helps women safely build bone strength and prevent osteoporosis progression. Eleni started with us at 63 after an osteoporosis diagnosis &#8212; she's now stronger than she was at 43.</p>
+</details>
+
+<details data-faq-goal="get-stronger,hyrox" style="display:none;border-bottom:1px solid #1e1e1e;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">I&#8217;ve been training for years. Will The Evolved actually challenge me? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Yes. Our coaches are skilled at designing advanced-level programs that focus on building strength, refining technique, and pushing you to new heights. Whether you want to increase your lifting numbers, work on advanced strength techniques, or improve your athletic performance &#8212; we'll design a program that keeps you progressing. You'll be training alongside women equally dedicated to evolving their fitness, so expect to break through plateaus and reach your next level.</p>
+</details>
+
+<details data-faq-goal="get-stronger,hyrox" style="display:none;padding:20px 0;">
+<summary style="color:#f5f0eb;font-size:0.95rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">What does a typical session look like? <span style="color:#e43388;font-size:1.2rem;">&#43;</span></summary>
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-top:16px;">Sessions are structured as designated strength training, mobility, or conditioning blocks &#8212; each with a specific outcome. You'll train in small groups with expert coaching to ensure your form is precise and you're progressing safely. No random WODs, no guesswork. Every session is part of a 12-month periodised roadmap. The atmosphere is supportive and competitive in the best way &#8212; coaches and members pushing each other forward, not against each other.</p>
+</details>
+
+</div>
+<div style="text-align:center;margin-top:48px;">
+<a class="primary-cta-btn" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">Join the Waitlist</a>
+</div>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<section style="background:#111;padding:100px 24px;text-align:center;">
+<h2 id="final-cta-h2" data-reveal="fade-up" style="font-family:'PT Serif Caption',serif;font-size:clamp(1.6rem,3.5vw,2.4rem);color:#f5f0eb;margin-bottom:16px;">Your Strength Assessment is the starting point.</h2>
+<p id="final-cta-sub" data-reveal="fade-up" data-reveal-delay="0.1" style="color:#aaa;font-size:1rem;margin-bottom:40px;">One hour. A complete picture of where you are. A clear path forward.</p>
+<a class="primary-cta-btn" data-reveal="scale" data-reveal-delay="0.2" href="#pyj-section" style="display:inline-block;background:#e43388;color:#fff;padding:18px 40px;border-radius:4px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">Join the Waitlist</a>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#0a0a0a;border-top:1px solid #1a1a1a;">
+<div style="max-width:1000px;margin:0 auto;padding:60px 24px 40px;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+
+<div>
+<img src="https://theevolvedgym.com.au/logo.png" alt="The Evolved All Female Gym Logo" style="max-width:180px;margin-bottom:20px;display:block;" onerror="this.style.display='none'">
+<p style="color:#aaa;font-size:0.9rem;line-height:1.75;margin-bottom:20px;">Brisbane's leading women-only gym. Evidence-based strength training for real women at every stage of life.</p>
+<p style="color:#aaa;font-size:0.85rem;margin-bottom:6px;"><strong style="color:#f5f0eb;">Address:</strong> 7 Paris Street, West End QLD 4101</p>
+<p style="color:#aaa;font-size:0.85rem;margin-bottom:6px;"><strong style="color:#f5f0eb;">Phone:</strong> <a href="tel:0483968880" style="color:#aaa;text-decoration:none;">0483 968 880</a></p>
+<p style="color:#aaa;font-size:0.85rem;margin-bottom:20px;"><strong style="color:#f5f0eb;">Email:</strong> <a href="mailto:info@theevolvedgym.com.au" style="color:#aaa;text-decoration:none;">info@theevolvedgym.com.au</a></p>
+<p style="color:#555;font-size:0.8rem;line-height:1.6;">The Evolved Gym is Queensland's leading strength training gym for women. Specialised in menopause strength training, postnatal recovery, and women's fitness backed by science.</p>
+</div>
+
+<div>
+<iframe
+  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d227.85171657797738!2d153.007864!3d-27.48099!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b9150a212182a39%3A0xb51d2c6cb0d956a4!2sThe%20Evolved%20All%20Female%20Personal%20Training%20%26%20Gym!5e1!3m2!1sen!2sus!4v1750151566632!5m2!1sen!2sus"
+  width="100%"
+  height="300"
+  style="border:0;border-radius:8px;display:block;"
+  allowfullscreen=""
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+  title="The Evolved All Female Gym &#8212; West End Brisbane">
+</iframe>
+</div>
+
+</div>
+
+<div style="border-top:1px solid #1a1a1a;margin-top:40px;padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+<p style="color:#555;font-size:0.8rem;margin:0;">&#169; 2026 The Evolved All Female Gym. All rights reserved.</p>
+<div style="display:flex;gap:20px;">
+<a href="https://theevolvedgym.com.au/terms-of-use-and-privacy-policy" style="color:#555;font-size:0.8rem;text-decoration:none;">Terms &amp; Privacy</a>
+<a href="https://theevolvedgym.com.au/blog" style="color:#555;font-size:0.8rem;text-decoration:none;">Blog</a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- STICKY PROFILE BAR (shown after first results curve interaction) -->
+<div id="profile-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#0a0a0a;border-top:1px solid #e43388;padding:10px 24px;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 -4px 24px rgba(228,51,136,0.15);">
+<div style="display:flex;align-items:center;gap:10px;min-width:0;">
+<span style="color:#e43388;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;flex-shrink:0;">Your profile</span>
+<span id="profile-bar-text" style="color:#aaa;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+</div>
+<a class="primary-cta-btn" href="#pyj-section" style="flex-shrink:0;background:#e43388;color:#fff;padding:8px 18px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;text-decoration:none;white-space:nowrap;">Join the Waitlist &#8594;</a>
+</div>

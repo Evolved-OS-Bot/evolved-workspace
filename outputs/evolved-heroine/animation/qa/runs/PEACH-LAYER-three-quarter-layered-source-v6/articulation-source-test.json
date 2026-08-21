@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v6",
+  "test_type": "pre_rig_source_articulation_stress",
+  "status": "awaiting_human_visual_review",
+  "scope": "Tests concealed source coverage only; does not approve pivots, deformation, rig controls, or any reusable motion.",
+  "observations": [
+    {
+      "label": "Neutral exact source",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1077
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Arm roots: 20\u00b0 outward",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1077
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Arm bends: 20\u00b0",
+      "alpha_bbox": [
+        350,
+        104,
+        923,
+        1077
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Leg roots: 12\u00b0 outward",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1096
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Leg bends: 15\u00b0",
+      "alpha_bbox": [
+        371,
+        104,
+        920,
+        1055
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Leaves 8\u00b0 + stem 4\u00b0",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1077
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Pupils: upper-left safe test",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1077
+      ],
+      "canvas_clipped": false
+    },
+    {
+      "label": "Pupils: lower-right safe test",
+      "alpha_bbox": [
+        390,
+        104,
+        901,
+        1077
+      ],
+      "canvas_clipped": false
+    }
+  ],
+  "technical_result": "pass",
+  "review_sheet": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v6-articulation-stress-sheet.png",
+  "review_sheet_sha256": "135173c6e0be340d254ecb0523d2b6e39b0b128ec45314d8ee4b75f485235683"
+}

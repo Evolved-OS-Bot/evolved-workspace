@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+  "recorded_at": "2026-08-04T15:26:56+10:00",
+  "technical_qa": {
+    "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v10/qa-report.json",
+    "sha256": "f2b37d34b029e200c80808e8d717dbdc991bda0044a36a4d504d4ae8a3638c6a",
+    "result": "pass"
+  },
+  "human_approval": {
+    "record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+    "path": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-layered-source-v10-editable-source-approval-2026-08-04.json",
+    "sha256": "35cc8fd90f3f7ca4a4c6721a578cdfe5575ee4214fcd8844e5fd988f1a000cb6",
+    "result": "pass",
+    "visual_result": "approved_editable_layered_source_and_animation_identity_base"
+  },
+  "approved_artifact": {
+    "source_package_record_sha256": "d4e46a00e8f4cb9f0cff02e3946eeb2640a870e98806aa473a11247a3b8a775b",
+    "layer_manifest_sha256": "18753d3c2d08e0fe697e3400bf4477f2b79acbc74abd16699437afdafba0d3f2",
+    "openraster_sha256": "8e59ad7579a5e93bd084b17832972d5bfe6577e3ce7dd0fcf68dc8222d1cdc2f",
+    "neutral_recomposite_sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180",
+    "layer_count": 29,
+    "neutral_differing_visible_pixels": 0
+  },
+  "promotion": {
+    "status": "approved_for_use_as_motion_rig_source",
+    "approved_copy_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10",
+    "source_package_preserved": true
+  },
+  "scope_exclusions": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ],
+  "mandatory_next_gate": "Peter Brown approval of the editable Apple Motion rig after technical QA, including final pivots and resolved leg-root cover behavior."
+}

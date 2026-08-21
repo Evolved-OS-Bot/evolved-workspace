@@ -1,16 +1,85 @@
 # Blog Catalog — The Evolved
-**Last Updated:** 2026-04-27
-**Status:** 20 articles published across 6 demographic folders
+**Last Updated:** 2026-08-04
+**Status:** 23 substantive articles live on the legacy site; WordPress has 1 published article, 20 draft imports and 2 missing imports
+**Website authority:** `outputs/systems/website-v2-release-manifest.md`
 
 ---
 
-## Hierarchy Status
+## Platform Status
+
+The earlier catalog described the legacy GHL blog as though it were the WordPress publication state. The sources are now separated:
+
+| Surface | Current state | Transfer requirement |
+|---|---|---|
+| `evolved-woman.theevolvedgym.com.au` | 23 substantive live articles | Preserve until all 23 have approved and verified WordPress destinations |
+| WordPress standard posts | 1 published, 20 drafts | Configure `/blog/`, approve slugs and review before publication |
+| Missing WordPress imports | 2 live legacy articles | Import or rebuild before legacy retirement |
+| Legacy categories | 5 live category pages | Approve exact destination for each |
+| Other legacy posts | Team and Our Mission | Approve exact destination for each |
+
+The Phase 1 crawl captured 33 successful legacy surfaces. After normalising two trailing-slash duplicates, that is 31 unique live URLs: root, five category pages and 25 post pages. The 25 post pages comprise 23 substantive articles plus Team and Our Mission.
+
+This editorial migration and eventual legacy-host retirement is a protected
+workstream, not evidence that Website V2 is unbuilt. The root-domain promotion
+may proceed while the legacy host remains live, provided the V2 `/blog` link is
+repaired and no legacy route is retired.
+
+## Legacy-to-WordPress Article Register
+
+An empty WordPress draft slug is not a final redirect destination. Final root `/blog/` paths must be approved before redirects are generated.
+
+| # | Legacy `/post/` slug | WordPress record | Current WordPress status |
+|---|---|---|---|
+| 0 | `strength-at-every-stage-of-life-for-women` | ID 42, renamed `Strength Training for Women: The Evidence-Based Guide to Strength Through 5 Life Stages` | Published as `/strength-training-for-women/`; target `/blog/` path not configured |
+| 1 | `postmenopause-strength-guide` | ID 113 | Draft, empty slug |
+| 1.1 | `how-to-start-strength-training-after-menopause-for-strong-bones-joints` | ID 120 | Draft, empty slug |
+| 1.2 | `best-strength-training-exercises-for-women-over-50` | ID 123 | Draft, empty slug |
+| 1.3 | `protect-joints-prevent-injury-post-menopause` | ID 127 | Draft, empty slug |
+| 1.4 | `why-strength-training-prevents-osteoporosis-after-menopause` | ID 130 | Draft, empty slug |
+| 1.5 | `build-muscle-over-50-without-soreness` | ID 133 | Draft, empty slug |
+| 2 | `perimenopause-strength-guide` | ID 136 | Draft, empty slug |
+| 2.1 | `how-to-build-strength-maintain-muscle-in-your-40s-a-perimenopause-smart-strength-guide` | ID 139 | Draft, empty slug |
+| 3 | `pre-postnatal-fitness-guide` | ID 142 | Draft, empty slug |
+| 3.1 | `strength-training-and-ivf` | ID 150 | Draft, empty slug |
+| 3.2 | `can-you-strength-train-during-ivf` | ID 153 | Draft, empty slug |
+| 3.3 | `how-physical-activity-impacts-fertility` | ID 156 | Draft, empty slug |
+| 3.4 | `ivf-nutrition-guide` | ID 159 | Draft, empty slug |
+| 3.5 | `strength-training-during-pregnancy-best-worst-exercises` | ID 162 | Draft, empty slug |
+| 4 | `under-40-strength-guide` | ID 207 | Draft, empty slug |
+| 5 | `teenage-strength-guide` | ID 216 | Draft, empty slug |
+| 5.1 | `the-best-body-weight-resistance-workouts-for-girls-under-18` | ID 295 | Draft, empty slug |
+| 5.2 | `is-lifting-weights-safe-for-teenage-girls` | ID 299 | Draft, empty slug |
+| 5.3 | `how-to-improve-sports-performance-with-strength-training` | ID 302 | Draft, empty slug |
+| 5.4 | `the-best-workouts-for-busy-high-school-students` | ID 305 | Draft, empty slug |
+| A | `busting-myths-about-strength-training-for-women` | No WordPress record | Missing import; preserved in the Phase 1 HTML capture |
+| B | `how-to-lift-safely-build-confidence-in-the-gym` | No WordPress record | Missing import; preserved in the Phase 1 HTML capture |
+
+### Other Legacy Destinations Required
+
+| Legacy path group | Count | Required decision |
+|---|---|---|
+| `/categories/peri-menopause` | 1 | WordPress category, guide or `/blog/` destination |
+| `/categories/post-menopause` | 1 | WordPress category, guide or `/blog/` destination |
+| `/categories/pre-post-natal` | 1 | WordPress category, guide or `/blog/` destination |
+| `/categories/teenager` | 1 | WordPress category, guide or `/blog/` destination |
+| `/categories/under-40` | 1 | WordPress category, guide or `/blog/` destination |
+| `/post/team` | 1 | Proposed `/team`, subject to content review |
+| `/post/our-mission` | 1 | Homepage or another approved destination |
+| Legacy root | 1 | Proposed `/blog/`, subject to final archive build |
+
+No legacy hostname or page is approved for retirement until all rows above have a verified destination.
+
+---
+
+## Editorial Hierarchy Status
+
+This section describes the legacy editorial library and future content gaps. It does not mean that all listed articles are published in WordPress.
 
 ```
-Pillar Page (1/1) ✅
+Legacy Pillar Page (1/1) ✅
       │
       ▼
-Demographic Guides (5/6) — Missing: Postpartum standalone guide
+Legacy Demographic Guides (5/6) — Missing: Postpartum standalone guide
   ├─ Postmenopause ✅ (1 guide + 5 long-tail = 6 articles)
   ├─ Perimenopause ✅ (1 guide + 1 long-tail = 2 articles)
   ├─ Pregnancy / IVF ✅ (1 guide + 5 long-tail = 6 articles)
@@ -19,7 +88,10 @@ Demographic Guides (5/6) — Missing: Postpartum standalone guide
   └─ Postpartum ❌ — No guide, no long-tail articles
 ```
 
-**Total published:** 21 articles (including pillar)
+**Original catalog set:** 21 articles (including pillar), all live on the legacy site
+**Additional live legacy articles found in Phase 1:** 2
+**Total substantive legacy articles:** 23
+**Current WordPress publication state:** 1 published, 20 drafts, 2 missing
 **Largest gap:** Postpartum — entire cluster missing
 **Thinnest cluster:** 20s & 30s — guide only, no supporting long-tail articles
 
@@ -29,7 +101,7 @@ Demographic Guides (5/6) — Missing: Postpartum standalone guide
 
 | # | Title | Primary Keyword | Status |
 |---|---|---|---|
-| 0 | Strength Training at Every Stage of Life: The Complete Guide for Women | Strength training for women at every stage of life | Live (March 2025) |
+| 0 | Strength Training at Every Stage of Life: The Complete Guide for Women | Strength training for women at every stage of life | Legacy live; imported to WordPress under a changed title and published |
 
 **Outbound links needed to:** all 5 demographic guides (all exist except Postpartum)
 **Inbound anchors:** "Ultimate Guide to Strength Training for Women", "strength training for women at every stage of life", "complete guide to women's strength training", "women-only strength gym in West End Brisbane"

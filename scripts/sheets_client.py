@@ -9,6 +9,7 @@ import json
 import time
 from pathlib import Path
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
@@ -16,6 +17,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+BRISBANE_TZ = ZoneInfo("Australia/Brisbane")
 
 
 SCRIPTS_DIR = Path(__file__).parent
@@ -119,12 +121,58 @@ def read_appointments_this_week():
                     "datetime":     apt_dt,
                     "sales_person": str(row[8]).strip() if len(row) > 8 else "",
                     "pre_qual":     str(row[9]).strip() if len(row) > 9 else "",
-                    "showed":       str(row[10]).strip() if len(row) > 10 else "",
+                    "showed":       "",
+                    "attendance_source": "governed mirror",
                 })
         except (ValueError, IndexError):
             continue
 
     return sorted(appointments, key=lambda x: x["datetime"])
+
+
+def read_sa_attendance_this_week():
+    """Read canonical event-level attendance from the governed mirror.
+
+    The mirror can be absent during shadow setup. In that case this function
+    returns an empty list rather than falling back to Appointments column K.
+    """
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    sunday = monday + timedelta(days=6)
+    try:
+        rows = read_sheet("SA Attendance", "A2:O2000", formatted=True)
+    except Exception:
+        return []
+    events = []
+    for row in rows:
+        if len(row) < 7:
+            continue
+        try:
+            start = datetime.fromisoformat(
+                str(row[2]).strip().replace("Z", "+00:00")
+            )
+        except (ValueError, IndexError):
+            continue
+        if monday <= start.astimezone(BRISBANE_TZ).date() <= sunday:
+            state = str(row[11]).strip() if len(row) > 11 else ""
+            events.append(
+                {
+                    "appointment_id": str(row[0]).strip(),
+                    "contact_id": str(row[1]).strip(),
+                    "datetime": start,
+                    "status": str(row[6]).strip().lower(),
+                    "reconciliation_state": state,
+                    "unresolved": state in {
+                        "elapsed_confirmed",
+                        "ambiguous_feedback_match",
+                        "terminal_conflict",
+                    },
+                    "rule_version": (
+                        str(row[14]).strip() if len(row) > 14 else ""
+                    ),
+                }
+            )
+    return sorted(events, key=lambda row: row["datetime"])
 
 
 def find_current_week_col(rows):

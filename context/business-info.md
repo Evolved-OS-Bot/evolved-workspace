@@ -64,6 +64,31 @@ Revenue mechanics, targets, and operational metrics live elsewhere.
 
 ---
 
+## Facility
+
+| Metric | Value |
+|---|---|
+| Total floor space | 112 sqm |
+| Usable training space | ~100 sqm |
+
+1:1 PT sessions occupy floor space that competes directly with class delivery. Peak-hour PT must be managed carefully to protect SGPT class capacity.
+
+---
+
+## Staff & Employment Model
+
+Trainers at The Evolved are **employees** — not subcontractors. This is an important distinction across all documentation, policies, and onboarding materials.
+
+**Timesheet & Pay:**
+- Timesheets are due by EOD on Tuesdays via the app provided by our accountants
+- Pay is processed on Wednesdays
+- If timesheets aren't submitted on time, pay will be processed the following week
+
+**Instagram requirement:**
+- Trainers are required to film and upload an Instagram story after every class — tag @the_evolved_allfemalegym
+
+---
+
 ## Billing Policy
 
 **All members are billed at least one week in advance.**

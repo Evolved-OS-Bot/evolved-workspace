@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-RIG-three-quarter-pivot-canary-v1",
+  "executed_at": "2026-08-04T18:55:00+10:00",
+  "artifact_id": "PEACH-RIG-three-quarter-pivot-canary-v1",
+  "scope": "One reversible anatomical-right upper-leg anchor-compensation canary. Root-cover construction and rotated stress testing are not complete.",
+  "native_project": {
+    "path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-pivot-canary-v1.motn",
+    "sha256": "a748e18d6991294136622480cf21923eeaa3e4a0279c69be2632241c3fa3f488",
+    "motion_version": "6.3",
+    "frame_rate_fps": 30
+  },
+  "pivot": {
+    "layer": "07-14-ANAT-R-LEG-UPPER",
+    "provisional_source_canvas_xy": [582, 680],
+    "motion_anchor_xy": [-45, -53],
+    "motion_position_compensation_xy": [-45, -53],
+    "rotation_degrees": 0,
+    "approval_status": "provisional_pending_complete_rig_review"
+  },
+  "supported_neutral_export": {
+    "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-pivot-canary-v1-neutral-share-v1.png",
+    "sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+    "format": "1254 x 1254, 16-bit/color RGBA PNG, sRGB",
+    "reference_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-neutral-share-v1.png",
+    "reference_sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+    "byte_identical": true,
+    "rgb_differing_pixels": 0,
+    "alpha_differing_pixels": 0
+  },
+  "checks": [
+    {
+      "check_id": "PIVOT_COORDINATE",
+      "status": "pass",
+      "observation": "The anatomical-right upper-leg anchor is at the provisional canvas coordinate (582, 680), represented as Motion anchor (-45, -53)."
+    },
+    {
+      "check_id": "NEUTRAL_TRANSFORM_COMPENSATION",
+      "status": "pass",
+      "observation": "Matching position compensation (-45, -53) preserves the imported neutral exactly."
+    },
+    {
+      "check_id": "SUPPORTED_NEUTRAL_EXPORT_PARITY",
+      "status": "pass",
+      "observation": "The supported 16-bit RGBA Motion export is byte-identical to the proven neutral stack export."
+    },
+    {
+      "check_id": "SOURCE_DERIVED_ROOT_COVER",
+      "status": "pending",
+      "observation": "Motion exposes and selects its native Bezier and Rectangle Mask tools, and the duplicate layer is correctly selected, but synthetic canvas drawing gestures did not create a mask object. The failed duplicate was removed; the saved canary is pivot-only and remains neutral-exact."
+    },
+    {
+      "check_id": "ROTATED_STRESS_GRID",
+      "status": "pending",
+      "observation": "Do not rotate through +/-6 degrees, +/-12 degrees, or overtravel until the fixed source-derived root cover exists."
+    }
+  ],
+  "technical_result": "partial_pass",
+  "passed_scope": "Provisional anatomical-right upper-leg pivot placement and neutral transform compensation.",
+  "next_safe_action": "Create the fixed body-space root-cover mask through a native Motion canvas interaction, then render the prescribed rotation stress grid.",
+  "approval_scope_warning": "This canary does not approve the pivot, root-cover mask, rig, motions, expressions, templates, exports beyond the neutral test, or deployment."
+}

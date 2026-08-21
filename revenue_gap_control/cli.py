@@ -123,11 +123,33 @@ def _roster(args, read_sheet=None) -> list:
     return load_live_roster(read_sheet)
 
 
-def run(args) -> tuple:
+def run(args, *, hub_contract=None) -> tuple:
     live_reader = None
-    if not (args.sgpt_csv and args.pt_csv) or args.cleared_cash is None:
+    if (
+        (hub_contract is None and not (args.sgpt_csv and args.pt_csv))
+        or args.cleared_cash is None
+    ):
         live_reader = _live_reader()
-    roster = _roster(args, live_reader)
+    if hub_contract is None:
+        roster = _roster(args, live_reader)
+        evidence, contact_to_email, limitations, membership_run = (
+            load_membership_evidence(
+                args.membership_db,
+                max_age_hours=args.membership_max_age_hours,
+                require_invoices=not args.allow_missing_invoices,
+                identity_links_path=args.identity_links_csv,
+            )
+        )
+        apply_verified_phone_fallback(roster, evidence)
+    else:
+        from .hub_contract import build_hub_audit_sources
+
+        hub_sources = build_hub_audit_sources(hub_contract)
+        roster = list(hub_sources.roster)
+        evidence = dict(hub_sources.evidence_by_email)
+        contact_to_email = dict(hub_sources.contact_to_email)
+        limitations = list(hub_sources.limitations)
+        membership_run = hub_sources.source_run_id
     cleared_cash = args.cleared_cash
     cash_label = args.cash_label
     if cleared_cash is None:
@@ -136,15 +158,6 @@ def run(args) -> tuple:
         )
         if cash_label == "Manually confirmed cleared bank cash":
             cash_label = f"{detected_label}; manually confirmed bank input"
-    evidence, contact_to_email, limitations, membership_run = (
-        load_membership_evidence(
-            args.membership_db,
-            max_age_hours=args.membership_max_age_hours,
-            require_invoices=not args.allow_missing_invoices,
-            identity_links_path=args.identity_links_csv,
-        )
-    )
-    apply_verified_phone_fallback(roster, evidence)
     booking_limitations, booking_run = load_booking_evidence(
         args.booking_db,
         evidence,
@@ -156,10 +169,18 @@ def run(args) -> tuple:
         limitations.append(
             "Stripe invoice completeness was not required for this run; payment classifications need manual verification."
         )
-    legacy_evidence = load_approved_account_classifications(
-        args.account_classifications_csv
-    )
-    legacy_evidence.update(load_legacy_payment_csv(args.legacy_evidence_csv))
+    if hub_contract is None:
+        legacy_evidence = load_approved_account_classifications(
+            args.account_classifications_csv
+        )
+        legacy_evidence.update(
+            load_legacy_payment_csv(args.legacy_evidence_csv)
+        )
+    else:
+        # Payment authority is already supplied by the accepted Hub contract.
+        # Reapplying email-keyed legacy payment exceptions would silently
+        # override the person-keyed payment and entitlement evidence.
+        legacy_evidence = {}
     inputs = AuditInputs(
         window_start=args.window_start,
         window_end=args.window_end,

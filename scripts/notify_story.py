@@ -56,7 +56,7 @@ STAGE_MAP = {
     "teen":          (["teen"],                                   "notify-story-teen"),
     "20s-30s":       (["20/30s"],                                 "notify-story-2030s"),
     "pregnancy":     (["planning pregnancy", "pregnant"],         "notify-story-pregnancy"),
-    "postpartum":    (["post partum"],                            "notify-story-postpartum"),
+    "postpartum":    (["postpartum"],                             "notify-story-postpartum"),
     "perimenopause": (["perimenopause"],                          "notify-story-perimenopause"),
     "postmenopause": (["postmenopause"],                          "notify-story-postmenopause"),
 }

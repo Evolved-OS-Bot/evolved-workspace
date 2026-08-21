@@ -1,0 +1,4 @@
+interface:
+  display_name: "MBE West End Printing"
+  short_description: "Request printing and lamination from MBE"
+  default_prompt: "Use $request-mbe-west-end-printing to prepare and submit this print job to MBE West End."

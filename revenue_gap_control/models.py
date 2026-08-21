@@ -43,6 +43,8 @@ class RosterRecord:
     sessions_per_week: str = ""
     session_cost: Decimal | None = None
     notes: str = ""
+    contract_length: str = ""
+    renewal_date: str = ""
 
     @property
     def name(self) -> str:

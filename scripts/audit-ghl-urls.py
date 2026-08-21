@@ -18,6 +18,7 @@ import sys
 import json
 import requests
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -95,27 +96,63 @@ def fetch_workflows():
 def fetch_email_templates():
     """Fetch all email templates from GHL."""
     print("Scanning email templates...")
-    r = requests.get(
-        f"{GHL_BASE}/emails/builder",
-        headers=GHL_HEADERS,
-        params={"locationId": GHL_LOCATION_ID, "limit": 100},
-    )
-    if not r.ok:
-        # Try alternative endpoint
+    templates = []
+    seen_ids = set()
+
+    def fetch_folder(parent_id=None):
+        params = {"locationId": GHL_LOCATION_ID, "limit": 100}
+        if parent_id:
+            params["parentId"] = parent_id
+
         r = requests.get(
-            f"{GHL_BASE}/templates/",
+            f"{GHL_BASE}/emails/builder",
             headers=GHL_HEADERS,
-            params={"locationId": GHL_LOCATION_ID, "limit": 100, "type": "email"},
+            params=params,
+            timeout=30,
         )
         if not r.ok:
             print(f"  Email templates API error {r.status_code}: {r.text[:200]}")
             return
-    data = r.json()
-    templates = data.get("templates", data.get("data", []))
+
+        data = r.json()
+        builders = data.get("builders", data.get("templates", data.get("data", [])))
+        for item in builders:
+            item_id = item.get("id")
+            if not item_id or item_id in seen_ids:
+                continue
+            seen_ids.add(item_id)
+
+            if item.get("previewUrl"):
+                templates.append(item)
+            else:
+                fetch_folder(item_id)
+
+    fetch_folder()
     print(f"  Found {len(templates)} email templates")
     for tmpl in templates:
         name = tmpl.get("name", "Unknown")
         scan_object(tmpl, "Email Template", name)
+
+    def fetch_rendered_body(tmpl):
+        preview_url = tmpl.get("previewUrl")
+        if not preview_url:
+            return tmpl, None, None
+        try:
+            preview = requests.get(preview_url, timeout=30)
+            preview.raise_for_status()
+            return tmpl, preview.text, None
+        except requests.RequestException as exc:
+            return tmpl, None, exc
+
+    with ThreadPoolExecutor(max_workers=12) as pool:
+        rendered_templates = list(pool.map(fetch_rendered_body, templates))
+
+    for tmpl, rendered_body, error in rendered_templates:
+        name = tmpl.get("name", "Unknown")
+        if error:
+            print(f"  Could not scan rendered template {name}: {str(error)[:160]}")
+        elif rendered_body:
+            scan_object(rendered_body, "Email Template", name, path="rendered_body")
 
 
 def fetch_sms_templates():

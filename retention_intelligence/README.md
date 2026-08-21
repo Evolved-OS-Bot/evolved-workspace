@@ -24,7 +24,8 @@ Staff, owners, demo and approved internal accounts are excluded through the prot
 
 ## Schedule
 
-The Railway scheduler runs daily at 5:45 am in Australia/Brisbane.
+The Railway scheduler runs at 5:45 am and 5:45 pm in
+Australia/Brisbane.
 
 The first seven runs are a shadow-validation period. Google Sheets writes remain disabled during this period.
 

@@ -11,9 +11,21 @@ import json
 import requests
 from pathlib import Path
 from datetime import datetime
-from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env")
+
+def load_local_env(path):
+    """Load simple KEY=VALUE entries without requiring python-dotenv."""
+    if not path.exists():
+        return
+    for raw_line in path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+load_local_env(Path(__file__).parent / ".env")
 
 API_KEY     = os.environ["GHL_API_KEY"]
 LOCATION_ID = os.environ["GHL_LOCATION_ID"]

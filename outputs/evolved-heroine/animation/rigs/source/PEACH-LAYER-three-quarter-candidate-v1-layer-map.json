@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "status": "visual_target_approved_for_layered_construction",
+  "approval": {
+    "owner": "Peter Brown",
+    "approved_at": "2026-08-04T12:59:09+10:00",
+    "approved_sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d",
+    "scope": "neutral visual target for full layered construction",
+    "record": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-candidate-v1-visual-target-approval-2026-08-04.json"
+  },
+  "root": {
+    "name": "PEACH-3Q-ROOT",
+    "pivot": "floor_center_between_shoes",
+    "children": [
+      {
+        "name": "00-GUIDES-NONRENDER",
+        "render": false,
+        "children": [
+          "ANATOMY-MAP",
+          "VIEWER-MAP",
+          "DO-NOT-FLIP",
+          "PIVOTS",
+          "APPROVED-REFERENCE-OVERLAY"
+        ]
+      },
+      {
+        "name": "10-REAR-LIMB-ROOTS",
+        "children": [
+          "ANAT-R-ARM-UPPER",
+          "ANAT-L-ARM-UPPER",
+          "ANAT-R-LEG-UPPER",
+          "ANAT-L-LEG-UPPER"
+        ]
+      },
+      {
+        "name": "20-BODY-LOCKED",
+        "pivot": "fruit_mass_center",
+        "children": [
+          "OUTER-INK",
+          "PEACH-BASE",
+          "CORAL-MIDSHADOW",
+          "DEEP-PLUM-SHADOW",
+          "CREAM-HIGHLIGHT",
+          "VINTAGE-INK-TEXTURE"
+        ]
+      },
+      {
+        "name": "30-APPAREL",
+        "children": [
+          "SHORTS-REAR",
+          "SHORTS-FRONT"
+        ]
+      },
+      {
+        "name": "40-LEGS-AND-SHOES",
+        "children": [
+          "ANAT-R-LEG-LOWER",
+          "ANAT-R-SHOE-BLANK",
+          "ANAT-L-LEG-LOWER",
+          {
+            "name": "ANAT-L-SHOE",
+            "children": [
+              "SHOE-ART",
+              "EVOLVED-BRAND-LOCKED"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "50-FACE",
+        "children": [
+          "EYE-L",
+          "PUPIL-L",
+          "LID-L",
+          "BROW-L",
+          "EYE-R",
+          "PUPIL-R",
+          "LID-R",
+          "BROW-R",
+          "CHEEK-L",
+          "CHEEK-R",
+          "NOSE-FIXED",
+          "MOUTH-STATE-SLOTS"
+        ]
+      },
+      {
+        "name": "60-FOREARMS-AND-GLOVES",
+        "children": [
+          "ANAT-R-ARM-LOWER",
+          "ANAT-R-GLOVE-STATE",
+          "ANAT-L-ARM-LOWER",
+          "ANAT-L-GLOVE-STATE"
+        ]
+      },
+      {
+        "name": "70-STEM-AND-LEAVES",
+        "children": [
+          "STEM",
+          "LEAF-A",
+          "LEAF-B"
+        ]
+      },
+      {
+        "name": "80-PROP-ATTACHMENTS",
+        "children": [
+          "ANAT-R-PALM-ATTACH",
+          "ANAT-L-PALM-ATTACH"
+        ]
+      }
+    ]
+  },
+  "pivot_rules": {
+    "stem_and_leaves": "individual_base_at_cleft",
+    "arms": ["body_side_attachment", "tube_bend", "glove_cuff"],
+    "legs": ["lower_fruit_edge", "tube_bend", "shoe_cuff"],
+    "pupils": "masked_inside_fixed_eye_whites",
+    "mouths": "mutually_exclusive_replacement_shapes"
+  },
+  "prohibited_controls": [
+    "negative_x_scale",
+    "horizontal_flip",
+    "independent_brand_position",
+    "independent_brand_rotation",
+    "independent_brand_scale",
+    "right_shoe_brand_layer"
+  ]
+}

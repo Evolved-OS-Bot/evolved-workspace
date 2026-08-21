@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-ALPHA-smoke-test-v1",
+  "artifact_id": "PEACH-ALPHA-smoke-test-frame0060-v1",
+  "artifact_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-ALPHA-smoke-test-frame0060-v1.png",
+  "artifact_sha256": "d8cd4d1bf30f785414ad86c32249edc7efd9e50f959a6e1d9e64547cf4cd6cf4",
+  "executed_at": "2026-08-04T12:13:03+10:00",
+  "environment": {
+    "motion_version": "6.3",
+    "macos_version": "26.5.2",
+    "ffmpeg_version": "8.1"
+  },
+  "checks": [
+    {
+      "check_id": "MOTION_PROJECT_LOAD",
+      "method": "Motion internal smoke renderer",
+      "status": "pass",
+      "observation": "Installed Apple Motion project rendered without error."
+    },
+    {
+      "check_id": "PNG_DECODE",
+      "method": "ffprobe",
+      "status": "pass",
+      "observation": "1920x1080 PNG decoded as RGBA."
+    },
+    {
+      "check_id": "ALPHA_RANGE",
+      "method": "ffmpeg alphaextract and signalstats",
+      "status": "pass",
+      "observation": "Alpha min 0, max 255, average 29.5211."
+    }
+  ],
+  "technical_result": "pass",
+  "visual_result": "not_applicable",
+  "limitations": [
+    "Installed Apple template rather than Peach source",
+    "PNG frame proof only",
+    "No ProRes 4444 proof",
+    "No Final Cut Pro template proof"
+  ]
+}
+

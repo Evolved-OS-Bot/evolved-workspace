@@ -1,0 +1,606 @@
+{
+  "schema_version": 1,
+  "contract_id": "PEACH-RIG-three-quarter-layered-source-v10-architecture-contract-v1",
+  "contract_status": "candidate_for_motion_build",
+  "source_artifact": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "approved_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10",
+    "approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+    "layer_manifest": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10/layer-manifest.json",
+    "layer_manifest_sha256": "18753d3c2d08e0fe697e3400bf4477f2b79acbc74abd16699437afdafba0d3f2",
+    "canvas": [1254, 1254],
+    "neutral_recomposite_sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180"
+  },
+  "scope": {
+    "includes": [
+      "Motion hierarchy",
+      "canonical rig z-order",
+      "review-rig published controls",
+      "initial pivot candidates",
+      "deformation ownership",
+      "neutral zero-state",
+      "laterality and no-flip guards",
+      "native Motion leg-root socket covers"
+    ],
+    "excludes": [
+      "rig approval",
+      "final pivot approval",
+      "final root-cover approval",
+      "motion approval",
+      "expression approval",
+      "template approval",
+      "external publishing"
+    ]
+  },
+  "approval_boundary": {
+    "all_pivots_provisional_pending_rig_approval": true,
+    "all_leg_root_cover_geometry_provisional_pending_rig_approval": true,
+    "published_control_ranges_provisional_pending_rig_approval": true,
+    "approved_static_master_mutation_allowed": false
+  },
+  "motion_hierarchy": {
+    "root_group": "PEACH-3Q-RIG-ROOT",
+    "groups": [
+      {
+        "name": "00-QA-NONRENDER",
+        "render": false,
+        "children": [
+          "ANATOMY-MAP",
+          "VIEWER-MAP",
+          "DO-NOT-FLIP",
+          "PIVOT-GUIDES-PROVISIONAL",
+          "ROOT-COVER-GUIDES-PROVISIONAL",
+          "NEUTRAL-DIFFERENCE-REFERENCE"
+        ]
+      },
+      {
+        "name": "10-SECONDARY-REAR",
+        "children": [
+          "01-LEAF-A",
+          "02-LEAF-B",
+          "03-STEM"
+        ]
+      },
+      {
+        "name": "20-ARM-UPPERS-REAR",
+        "children": [
+          "ANAT-R-ARM-UPPER-DRIVER",
+          "ANAT-L-ARM-UPPER-DRIVER"
+        ]
+      },
+      {
+        "name": "30-LEG-SOCKETS-AND-CHAINS-REAR",
+        "children": [
+          "ANAT-R-LEG-UPPER-DRIVER",
+          "ANAT-R-LEG-LOWER-DRIVER",
+          "ANAT-R-LEG-ROOT-COVER-PROVISIONAL",
+          "ANAT-L-LEG-UPPER-DRIVER",
+          "ANAT-L-LEG-LOWER-DRIVER",
+          "ANAT-L-LEG-ROOT-COVER-PROVISIONAL"
+        ]
+      },
+      {
+        "name": "40-APPAREL",
+        "children": [
+          "20-SHORTS"
+        ]
+      },
+      {
+        "name": "50-BODY-LOCKED",
+        "children": [
+          "30-PEACH-BODY-AND-SHADING-LOCKED",
+          "31-FACE-FIELD-TEXTURE-LOCKED"
+        ]
+      },
+      {
+        "name": "60-FACE",
+        "children": [
+          "40-ANAT-R-EYE",
+          "41-ANAT-L-EYE",
+          "42-ANAT-R-PUPIL",
+          "43-ANAT-L-PUPIL",
+          "44-ANAT-R-BROW",
+          "45-ANAT-L-BROW",
+          "46-ANAT-R-CHEEK",
+          "47-ANAT-L-CHEEK",
+          "48-NOSE-FIXED",
+          "49-MOUTH-NEUTRAL"
+        ]
+      },
+      {
+        "name": "70-FOREARMS-AND-GLOVES-FRONT",
+        "children": [
+          "ANAT-R-ARM-LOWER-LINKED",
+          "50-ANAT-R-GLOVE-NEUTRAL",
+          "ANAT-L-ARM-LOWER-LINKED",
+          "51-ANAT-L-GLOVE-NEUTRAL"
+        ]
+      },
+      {
+        "name": "80-SHOES-FRONT",
+        "children": [
+          "52-ANAT-R-SHOE-BLANK",
+          "ANAT-L-SHOE-LOCKED-GROUP"
+        ]
+      }
+    ]
+  },
+  "canonical_z_order_back_to_front": [
+    "01-LEAF-A",
+    "02-LEAF-B",
+    "03-STEM",
+    "10-ANAT-R-ARM-UPPER",
+    "12-ANAT-L-ARM-UPPER",
+    "14-ANAT-R-LEG-UPPER",
+    "15-ANAT-R-LEG-LOWER",
+    "ANAT-R-LEG-ROOT-COVER-PROVISIONAL",
+    "16-ANAT-L-LEG-UPPER",
+    "17-ANAT-L-LEG-LOWER",
+    "ANAT-L-LEG-ROOT-COVER-PROVISIONAL",
+    "20-SHORTS",
+    "30-PEACH-BODY-AND-SHADING-LOCKED",
+    "31-FACE-FIELD-TEXTURE-LOCKED",
+    "40-ANAT-R-EYE",
+    "41-ANAT-L-EYE",
+    "42-ANAT-R-PUPIL",
+    "43-ANAT-L-PUPIL",
+    "44-ANAT-R-BROW",
+    "45-ANAT-L-BROW",
+    "46-ANAT-R-CHEEK",
+    "47-ANAT-L-CHEEK",
+    "48-NOSE-FIXED",
+    "49-MOUTH-NEUTRAL",
+    "11-ANAT-R-ARM-LOWER",
+    "50-ANAT-R-GLOVE-NEUTRAL",
+    "13-ANAT-L-ARM-LOWER",
+    "51-ANAT-L-GLOVE-NEUTRAL",
+    "52-ANAT-R-SHOE-BLANK",
+    "53-ANAT-L-SHOE-ART",
+    "54-EVOLVED-BRAND-LOCKED"
+  ],
+  "provisional_pivots_full_canvas_xy": {
+    "PEACH-3Q-RIG-ROOT": {
+      "point": [642, 1075],
+      "status": "provisional_pending_rig_approval"
+    },
+    "BODY": {
+      "point": [644, 440],
+      "status": "provisional_pending_rig_approval"
+    },
+    "STEM": {
+      "point": [642, 230],
+      "status": "provisional_pending_rig_approval"
+    },
+    "LEAF-A": {
+      "point": [614, 226],
+      "status": "provisional_pending_rig_approval"
+    },
+    "LEAF-B": {
+      "point": [670, 226],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-ARM-ROOT": {
+      "point": [469, 583],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-ARM-BEND": {
+      "point": [460, 638],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-GLOVE-CUFF": {
+      "point": [448, 690],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-ARM-ROOT": {
+      "point": [796, 565],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-ARM-BEND": {
+      "point": [812, 636],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-GLOVE-CUFF": {
+      "point": [821, 693],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-LEG-ROOT": {
+      "point": [582, 680],
+      "tested_alternative": [582, 704],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-LEG-BEND": {
+      "point": [582, 810],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-R-SHOE-CUFF": {
+      "point": [579, 904],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-LEG-ROOT": {
+      "point": [678, 680],
+      "tested_alternative": [678, 704],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-LEG-BEND": {
+      "point": [706, 811],
+      "status": "provisional_pending_rig_approval"
+    },
+    "ANAT-L-SHOE-CUFF": {
+      "point": [739, 910],
+      "status": "provisional_pending_rig_approval"
+    }
+  },
+  "deformation_ownership": [
+    {
+      "owner": "PEACH-3Q-RIG-ROOT",
+      "owns": ["global_position", "global_uniform_scale", "global_rotation", "global_opacity"],
+      "prohibits": ["independent_scale_x", "independent_scale_y", "negative_scale", "flip_filter"]
+    },
+    {
+      "owner": "BODY-DRIVER",
+      "owns": ["body_settle_y", "body_tilt", "restrained_squash_stretch"],
+      "linked_dependants": ["body", "shorts", "face", "leaf_roots", "stem_root", "arm_root_locators", "leg_root_locators", "leg_root_covers"],
+      "rule": "Limb artwork keeps its own scale. Body deformation may move root locators but must not stretch tube limbs into anatomy."
+    },
+    {
+      "owner": "ANAT-R-ARM-UPPER-DRIVER",
+      "owns": ["ANAT-R-arm_root_rotation"],
+      "linked_dependants": ["ANAT-R-ARM-LOWER-LINKED", "ANAT-R-GLOVE"]
+    },
+    {
+      "owner": "ANAT-L-ARM-UPPER-DRIVER",
+      "owns": ["ANAT-L-arm_root_rotation"],
+      "linked_dependants": ["ANAT-L-ARM-LOWER-LINKED", "ANAT-L-GLOVE"]
+    },
+    {
+      "owner": "ANAT-R-ARM-LOWER-LINKED",
+      "owns": ["ANAT-R-arm_bend_rotation"],
+      "linked_dependants": ["ANAT-R-GLOVE"]
+    },
+    {
+      "owner": "ANAT-L-ARM-LOWER-LINKED",
+      "owns": ["ANAT-L-arm_bend_rotation"],
+      "linked_dependants": ["ANAT-L-GLOVE"]
+    },
+    {
+      "owner": "ANAT-R-LEG-UPPER-DRIVER",
+      "owns": ["ANAT-R-leg_root_rotation"],
+      "linked_dependants": ["ANAT-R-LEG-LOWER-DRIVER", "ANAT-R-SHOE"]
+    },
+    {
+      "owner": "ANAT-L-LEG-UPPER-DRIVER",
+      "owns": ["ANAT-L-leg_root_rotation"],
+      "linked_dependants": ["ANAT-L-LEG-LOWER-DRIVER", "ANAT-L-SHOE"]
+    },
+    {
+      "owner": "ANAT-R-LEG-LOWER-DRIVER",
+      "owns": ["ANAT-R-leg_bend_rotation"],
+      "linked_dependants": ["ANAT-R-SHOE"]
+    },
+    {
+      "owner": "ANAT-L-LEG-LOWER-DRIVER",
+      "owns": ["ANAT-L-leg_bend_rotation"],
+      "linked_dependants": ["ANAT-L-SHOE"]
+    },
+    {
+      "owner": "FACE",
+      "owns": ["pupil_position", "brow_offset", "approved_mouth_visibility"],
+      "prohibits": ["freeform_face_warp", "unapproved_expression_morph"]
+    },
+    {
+      "owner": "ANAT-L-SHOE-LOCKED-GROUP",
+      "owns": ["shoe_transform_and_brand_inheritance"],
+      "rule": "54-EVOLVED-BRAND-LOCKED has no independent transform, opacity, spelling or visibility control."
+    }
+  ],
+  "published_controls_for_rig_review": [
+    {
+      "label": "PEACH / Uniform Scale",
+      "type": "slider",
+      "default": 100,
+      "minimum": 25,
+      "maximum": 200,
+      "unit": "percent",
+      "guard": "X and Y remain linked and positive"
+    },
+    {
+      "label": "Body / Settle Y",
+      "type": "slider",
+      "default": 0,
+      "minimum": -20,
+      "maximum": 20,
+      "unit": "pixels"
+    },
+    {
+      "label": "Body / Tilt",
+      "type": "slider",
+      "default": 0,
+      "minimum": -4,
+      "maximum": 4,
+      "unit": "degrees"
+    },
+    {
+      "label": "Body / Squash Stretch",
+      "type": "slider",
+      "default": 0,
+      "minimum": -1,
+      "maximum": 1,
+      "unit": "normalized",
+      "mapping": "At extremes, no more than 2 percent reciprocal X/Y scale change."
+    },
+    {
+      "label": "ANAT-R Arm / Root",
+      "type": "slider",
+      "default": 0,
+      "minimum": -20,
+      "maximum": 20,
+      "unit": "degrees"
+    },
+    {
+      "label": "ANAT-R Arm / Bend",
+      "type": "slider",
+      "default": 0,
+      "minimum": -20,
+      "maximum": 20,
+      "unit": "degrees"
+    },
+    {
+      "label": "ANAT-L Arm / Root",
+      "type": "slider",
+      "default": 0,
+      "minimum": -20,
+      "maximum": 20,
+      "unit": "degrees"
+    },
+    {
+      "label": "ANAT-L Arm / Bend",
+      "type": "slider",
+      "default": 0,
+      "minimum": -20,
+      "maximum": 20,
+      "unit": "degrees"
+    },
+    {
+      "label": "ANAT-R Leg / Root",
+      "type": "slider",
+      "default": 0,
+      "minimum": -12,
+      "maximum": 12,
+      "unit": "degrees",
+      "guard": "Cannot exceed this range until root-cover QA is repeated."
+    },
+    {
+      "label": "ANAT-R Leg / Bend",
+      "type": "slider",
+      "default": 0,
+      "minimum": -15,
+      "maximum": 15,
+      "unit": "degrees"
+    },
+    {
+      "label": "ANAT-L Leg / Root",
+      "type": "slider",
+      "default": 0,
+      "minimum": -12,
+      "maximum": 12,
+      "unit": "degrees",
+      "guard": "Cannot exceed this range until root-cover QA is repeated."
+    },
+    {
+      "label": "ANAT-L Leg / Bend",
+      "type": "slider",
+      "default": 0,
+      "minimum": -15,
+      "maximum": 15,
+      "unit": "degrees"
+    },
+    {
+      "label": "Eyes / Gaze X",
+      "type": "slider",
+      "default": 0,
+      "minimum": -8,
+      "maximum": 8,
+      "unit": "pixels"
+    },
+    {
+      "label": "Eyes / Gaze Y",
+      "type": "slider",
+      "default": 0,
+      "minimum": -6,
+      "maximum": 6,
+      "unit": "pixels"
+    },
+    {
+      "label": "ANAT-R Brow / Lift",
+      "type": "slider",
+      "default": 0,
+      "minimum": -6,
+      "maximum": 6,
+      "unit": "pixels"
+    },
+    {
+      "label": "ANAT-L Brow / Lift",
+      "type": "slider",
+      "default": 0,
+      "minimum": -6,
+      "maximum": 6,
+      "unit": "pixels"
+    },
+    {
+      "label": "Leaf A / Rotation",
+      "type": "slider",
+      "default": 0,
+      "minimum": -8,
+      "maximum": 8,
+      "unit": "degrees"
+    },
+    {
+      "label": "Leaf B / Rotation",
+      "type": "slider",
+      "default": 0,
+      "minimum": -8,
+      "maximum": 8,
+      "unit": "degrees"
+    },
+    {
+      "label": "Stem / Rotation",
+      "type": "slider",
+      "default": 0,
+      "minimum": -4,
+      "maximum": 4,
+      "unit": "degrees"
+    }
+  ],
+  "internal_controls_not_published": [
+    "conditional fallback root-cover rotation multiplier",
+    "root-cover Bezier mask points",
+    "brand transform",
+    "independent X or Y scale",
+    "layer opacity",
+    "anatomy QA overlay",
+    "neutral difference overlay"
+  ],
+  "neutral_zero_state": {
+    "rule": "The imported v10 neutral is the zero value of every review control. Moving anchors to provisional pivots must use transform compensation so no source pixel shifts.",
+    "defaults": {
+      "global_position": [0, 0],
+      "global_uniform_scale_percent": 100,
+      "global_rotation_degrees": 0,
+      "body_settle_y_pixels": 0,
+      "body_tilt_degrees": 0,
+      "body_squash_stretch": 0,
+      "all_arm_rotations_degrees": 0,
+      "all_leg_rotations_degrees": 0,
+      "all_leaf_and_stem_rotations_degrees": 0,
+      "gaze_offset_pixels": [0, 0],
+      "brow_offsets_pixels": [0, 0],
+      "mouth_state": "49-MOUTH-NEUTRAL",
+      "root_cover_rotation_degrees": 0,
+      "root_cover_scale_percent": 100
+    },
+    "reset_semantics": "Use Motion parameter Reset to return every published value to its imported default. Do not simulate a reset button with a checkbox.",
+    "acceptance": "Neutral flatten must contain zero differing rendered pixels from the v10 neutral recomposite."
+  },
+  "laterality_guard": {
+    "neutral_mapping": {
+      "anatomical_left": "viewer_right",
+      "anatomical_right": "viewer_left"
+    },
+    "rules": [
+      "All layer, group, rig and control names use anatomical left or right.",
+      "Directional motions are constructed independently and never derived by flip.",
+      "52-ANAT-R-SHOE-BLANK contains no brand child.",
+      "53-ANAT-L-SHOE-ART and 54-EVOLVED-BRAND-LOCKED share one locked transform group.",
+      "A nonrender anatomy overlay must identify ANAT-L and ANAT-R at rig review.",
+      "A rig render fails if Evolved appears on the anatomical-right shoe, appears twice, is mirrored, moves independently or is misspelled."
+    ]
+  },
+  "no_flip_guard": {
+    "horizontal_flip_allowed": false,
+    "negative_x_scale_allowed": false,
+    "negative_y_scale_allowed": false,
+    "implementation": [
+      "Publish one uniform positive scale control only.",
+      "Do not publish Scale X or Scale Y.",
+      "Do not apply Motion's Flip filter.",
+      "Do not use negative scale in Link behaviours, rig widget states, keyframes, clones or templates.",
+      "Validate every rig state and rendered motion against the anatomy overlay."
+    ]
+  },
+  "native_motion_leg_root_cover_design": {
+    "status": "provisional_pending_rig_approval",
+    "problem": "At 12-degree outward root rotation, both v10 upper-leg groups vacate narrow wedges inside the fixed shorts openings.",
+    "principle": "For each leg, use a fixed body-space duplicate of approved neutral upper-leg source pixels. Apply one tight Bezier mask directly to the duplicate so only the socket-filling interior remains. Keep the duplicate unscaled and unrotated by default, above the rotating leg chain but below the fixed shorts and body.",
+    "z_order_rule": "background, rotating upper leg, lower leg, fixed body-space root cover, shorts, body",
+    "shared_settings": {
+      "default_Motion_objects": ["Clone Layer", "Bezier Mask"],
+      "blend_mode": "Normal",
+      "opacity_percent": 100,
+      "mask_feather_pixels": 0,
+      "cover_rotation_degrees_default": 0,
+      "cover_scale_x_percent_default": 100,
+      "cover_scale_y_percent_default": 100,
+      "parent": "BODY-DRIVER",
+      "published": false,
+      "outline_rule": "The Bezier mask is applied directly to the duplicate and retains interior source pixels only. No deep-plum exterior contour may appear inside the socket wedge.",
+      "default_link_to_leg_rotation": false
+    },
+    "conditional_fallback_if_static_cover_fails": {
+      "trigger": "Use only if the fixed body-space cover fails one or more stress angles after its provisional Bezier geometry has been tuned.",
+      "Motion_object_added": "Link behaviour",
+      "cover_rotation_link_multiplier_initial": 0.5,
+      "cover_rotation_link_multiplier_allowed_tuning_range": [0.45, 0.55],
+      "scale_remains_percent": [100, 100],
+      "reapproval_required": true
+    },
+    "ANAT-R": {
+      "source_layer": "14-ANAT-R-LEG-UPPER",
+      "pivot": [582, 680],
+      "source_interior_mask_points_xy": [
+        [548, 676],
+        [616, 676],
+        [620, 752],
+        [611, 775],
+        [553, 775],
+        [540, 752]
+      ],
+      "socket_aperture_mask_points_xy": [
+        [523, 657],
+        [635, 657],
+        [637, 751],
+        [625, 780],
+        [542, 780],
+        [522, 752]
+      ],
+      "default_rotation_degrees": 0,
+      "conditional_fallback_rotation_link": "0.5 * ANAT-R Leg / Root"
+    },
+    "ANAT-L": {
+      "source_layer": "16-ANAT-L-LEG-UPPER",
+      "pivot": [678, 680],
+      "source_interior_mask_points_xy": [
+        [661, 676],
+        [730, 676],
+        [741, 754],
+        [736, 778],
+        [669, 778],
+        [651, 753]
+      ],
+      "socket_aperture_mask_points_xy": [
+        [637, 657],
+        [751, 657],
+        [754, 754],
+        [742, 782],
+        [653, 782],
+        [634, 753]
+      ],
+      "default_rotation_degrees": 0,
+      "conditional_fallback_rotation_link": "0.5 * ANAT-L Leg / Root"
+    },
+    "neutral_rule": "At zero degrees, each fixed body-space cover must be fully occluded by its source upper leg and shorts. Any visible neutral cover pixel or any neutral recomposite difference fails.",
+    "stress_acceptance": [
+      "No transparent or background-coloured wedge at -12, -6, 0, +6 or +12 degrees on either leg.",
+      "No double dark outline, peach stub, human thigh shape or shorts deformation.",
+      "Minimum 8-pixel overlap between cover and rotating upper-leg alpha at every tested angle.",
+      "Cover remains clipped above y=782 and never becomes visible below the shorts socket.",
+      "Combined leg-root, body tilt and 2-percent squash tests remain clean.",
+      "The root-cover design is not approved until Peter approves the complete rig review."
+    ]
+  },
+  "rig_review_gate": {
+    "required_renders": [
+      "neutral exact comparison",
+      "pivots and anatomy overlay",
+      "arm root and bend extremes",
+      "leg root sweep at -12, -6, 0, +6 and +12 degrees",
+      "leg bend extremes",
+      "root covers isolated for technical review",
+      "root covers hidden in final composite",
+      "leaf and stem extremes",
+      "pupil safe bounds",
+      "left-shoe brand close-up",
+      "light, dark plum and checkerboard backgrounds"
+    ],
+    "approval_wording_boundary": "Approval of the rig includes the selected pivot coordinates and root-cover behaviour for the tested control ranges only. It does not approve reusable motions or expressions."
+  }
+}

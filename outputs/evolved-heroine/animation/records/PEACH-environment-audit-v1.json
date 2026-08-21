@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "audit_id": "PEACH-environment-audit-v1",
+  "audited_at": "2026-08-04T12:13:03+10:00",
+  "platform": {
+    "macos_version": "26.5.2",
+    "architecture": "Apple silicon",
+    "chip_family": "Apple M5",
+    "memory_gb": 24,
+    "metal_supported": true
+  },
+  "applications": {
+    "motion": {
+      "version": "6.3",
+      "build": "450156",
+      "installed": true,
+      "applescript_dictionary": false
+    },
+    "final_cut_pro": {
+      "version": "11.0.1",
+      "build": "430155",
+      "installed": true,
+      "mixed_version_compatibility": "requires_empirical_test"
+    },
+    "compressor": {
+      "version": "5.3",
+      "build": "450131",
+      "installed": true
+    },
+    "ffmpeg": {
+      "version": "8.1",
+      "installed": true
+    }
+  },
+  "control_routes": {
+    "motion_gui": {
+      "supported_route": true,
+      "accessibility_ui_automation_enabled": false,
+      "status": "permission_gated"
+    },
+    "motion_internal_smoke_renderer": {
+      "publicly_documented": false,
+      "verified": true,
+      "formats_observed": [
+        "PNG",
+        "OpenEXR"
+      ]
+    },
+    "compressor_cli": {
+      "publicly_documented": true,
+      "verified_for_peach": false
+    }
+  },
+  "alpha_smoke_test": {
+    "status": "pass_with_limits",
+    "source_type": "installed Apple Motion template",
+    "source_path": "/Library/Application Support/Final Cut Pro/Templates.localized/Compositions.localized/Skyline.localized/Skyline-Lower Third.localized/Skyline-Lower Third.motn",
+    "frame": 60,
+    "output_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-ALPHA-smoke-test-frame0060-v1.png",
+    "width": 1920,
+    "height": 1080,
+    "pixel_format": "rgba",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "alpha_average": 29.5211,
+    "sha256": "d8cd4d1bf30f785414ad86c32249edc7efd9e50f959a6e1d9e64547cf4cd6cf4",
+    "proves": [
+      "Motion project decoding",
+      "Motion frame rendering",
+      "RGBA PNG output",
+      "transparent and opaque pixel survival"
+    ],
+    "does_not_prove": [
+      "Peach project rendering",
+      "ProRes 4444 export",
+      "Final Cut Pro template compatibility",
+      "Motion-to-Compressor export"
+    ]
+  }
+}
+

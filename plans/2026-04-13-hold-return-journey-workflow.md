@@ -1,10 +1,17 @@
 # Plan: Hold Return Journey Workflow
 **Created:** 2026-04-13
-**Updated:** 2026-04-16
-**Status:** Built — Pending Live Test
+**Updated:** 2026-08-05
+**Status:** Live — current-cycle guards verified
 **Depends on:** `outputs/systems/membership-hold.md`
 
 > **Superseded assumption, 24 July 2026:** PT Minder references in this historical plan are not current operating instructions. The owner confirmed that The Evolved does not use PT Minder or its remaining-pack-sessions function. Current billing evidence comes from Stripe; prepaid-pack session balances remain an unresolved operational-data gap.
+
+> **Current-cycle hardening, 5 August 2026:** the original delayed-write design
+> did not prove that an enrolment still belonged to the accepted hold cycle.
+> The published workflow now calls Billing OS and branches fail-closed before
+> both Returning and Completed mutations. Re-entry remains enabled for later
+> valid cycles, while multiple simultaneous workflow opportunities are
+> disabled.
 
 ---
 
@@ -256,7 +263,8 @@ Your coach will be in touch today. See you soon.
 - **Field:** HS: Pre-Return Date
 - **Time:** 9:00am
 - **Filter:** HS: Hold Status = `On Hold`
-- **Allow re-entry:** No
+- **Allow re-entry:** Yes, for a later accepted cycle
+- **Allow multiple opportunities:** No
 
 ### Steps
 
@@ -271,32 +279,51 @@ Your coach will be in touch today. See you soon.
 
 **4. Wait 2 Days**
 
-**5. Update Pipeline Stage → Returning**
+**5. Reset Return Guard - Returning**
+- Set `HS: Return Guard Status = Not Checked` so a webhook failure cannot
+  inherit a Passed value from an earlier cycle
+
+**6. Guard Returning Write - Current Cycle**
+- POST `contact_id`, `contact_name` and `phase = returning` to
+  `POST /ghl/hold-return-guard`
+- Continue only when `HS: Return Guard Status = Passed - Returning`
+- None branch ends without a member message or lifecycle write
+
+**7. Update Pipeline Stage → Returning**
 - Pipeline: Hold OS
 - Stage: Returning (`b8e1fe6a-f375-4c4e-b6b4-05c0376e9f68`)
 
-**6. Update HS: Hold Status → Returning**
+**8. Update HS: Hold Status → Returning**
 
-**7. SMS: Welcome Back**
+**9. SMS: Welcome Back**
 - Send SMS 2
 
-**8. Internal Notification → Contact's Assigned User**
+**10. Internal Notification → Contact's Assigned User**
 - Message: `{{contact.first_name}} {{contact.last_name}} is back from hold today. Reach out and confirm their first session back.`
 
-**9. Coach Task**
+**11. Coach Task**
 - Assigned To: Contact's Assigned User
 - Title: `{{contact.first_name}} {{contact.last_name}} is back from hold today — check in.`
 
-**10. Internal Notification → Admin Eve**
+**12. Internal Notification → Admin Eve**
 - Message: `{{contact.first_name}} {{contact.last_name}} is back from hold today. Hold Type: {{contact.hold_type}}. Coach has been notified.`
 
-**11. Wait 3 Days**
+**13. Wait 3 Days**
 
-**12. Remove from Pipeline**
+**14. Reset Return Guard - Completed**
+- Set `HS: Return Guard Status = Not Checked`
 
-**13. Update HS: Hold Status → Completed**
+**15. Guard Completed Write - Current Cycle**
+- POST `contact_id`, `contact_name` and `phase = completed` to the same Billing
+  OS endpoint
+- Continue only when `HS: Return Guard Status = Passed - Completed`
+- None branch ends without opportunity removal or a Completed write
 
-**14. END**
+**16. Update HS: Hold Status → Completed**
+
+**17. Remove from Pipeline**
+
+**18. END**
 
 ### Design decisions
 - No automated non-returner SMS sequence — coaches manage non-returners directly through their member relationships
@@ -440,6 +467,9 @@ After workflows are built and tested, update `outputs/systems/membership-hold.md
 | HS: Extended Hold Requested | `{{contact.hf_extended_hold_requested}}` | `cfrz74CObki77ONueXcB` |
 | HS: Extended Hold - Weeks | `{{contact.mc_hold__weeks}}` | `3yC0db0uh3ciZOrT7tyy` |
 | HS: Signature - Hold Request Confirmation | `{{contact.eh_signature__confirmation}}` | — |
+| HS: Return Guard Status | `{{contact.hs_return_guard_status}}` | `iU6YEszKisH5GPy1znMG` |
+| HS: Return Guard Result | `{{contact.hs_return_guard_result}}` | `cobnePuTqEMDPrF8JAft` |
+| HS: Return Guard Checked At | `{{contact.hs_return_guard_checked_at}}` | `f2hmmwxlygunRXIpGcsA` |
 
 ### Existing Workflows
 | Workflow | ID |
@@ -463,3 +493,18 @@ After workflows are built and tested, update `outputs/systems/membership-hold.md
 - **"Remove from Pipeline" on completion** — confirm the exact GHL action name in the workflow builder.
 - **Four `Copy -` draft workflows exist** — do not accidentally publish these when modifying the live workflows.
 - **Hold Start Date field ID** — needs to be confirmed in GHL and added to the reference table above before building the GHL trigger.
+
+## 5 August 2026 verification evidence
+
+- The complete live canvas, trigger, settings, enrolment history and delayed
+  lifecycle writes were inspected.
+- Both current-cycle webhook actions and both Passed/None branches were saved,
+  published, reloaded and read back.
+- Normal Returning and Completed guard calls passed on a disposable contact.
+- A second disposable contact carrying a newer accepted cycle failed closed;
+  retrying the same mismatch produced one open same-day Admin Eve task.
+- Billing OS removed the mismatch contact from the Return Journey; both
+  disposable contacts were deleted after verification.
+- The Billing OS unit suite passed 39 tests.
+- No real member record, billing state, Stripe subscription or member message
+  was changed by this acceptance test.

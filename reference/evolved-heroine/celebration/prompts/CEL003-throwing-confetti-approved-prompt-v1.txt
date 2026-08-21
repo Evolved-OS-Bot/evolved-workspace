@@ -1,0 +1,39 @@
+CEL003: Throwing Confetti
+
+Status: Approved master
+Master version: v1
+Generated: 18 July 2026
+Approved: 18 July 2026 by Peter Brown
+
+APPROVED GENERATION PROMPT
+
+Create CEL003: Throwing Confetti as the same Evolved Heroine mascot from the approved references.
+
+Pose: Delighted full-body celebration with both gloved hands raised beneath a burst of colourful confetti.
+
+The peach fruit is her complete head and torso and must dominate the silhouette. Preserve the approved cute face, eyelashes, rosy cheeks, brown stem, exactly two green leaves, cream gloves, short rounded cartoon tube limbs, shallow black athletic shorts, and pink athletic sneakers.
+
+Match the approved polished 3D cartoon mascot render style, proportions, materials, palette, and playful energy. Keep the full character and both shoes visible with generous transparent padding.
+
+Do not add a separate human torso, chest, breasts, abdomen, waist, hips, pelvis, groin, buttocks, anatomical thighs, or visible musculature. Limbs attach directly to the peach and remain simple rounded cartoon tubes. Shorts remain a shallow garment at the lower peach edge.
+
+LOCKED FOOTWEAR BRANDING
+
+Place the exact white cursive word "Evolved", spelled E-V-O-L-V-E-D, on the outward-facing lateral side panel of the anatomical left sneaker only. In a front-facing pose this is the viewer-right shoe. The anatomical right sneaker must be completely blank.
+
+Never mirror, duplicate, abbreviate, invent pseudo-text, or move the word elsewhere. Add no other letters or logos. If the outside of the left shoe is hidden, leave the branding hidden rather than relocating it.
+
+Produce one centred character only on a removable flat chroma blue #0066FF background for transparent processing. No floor, cast shadow, reflection, scenery, caption, border, badge, watermark, or extra character. The requested confetti is the only permitted prop.
+
+TRANSPARENCY QA
+
+Genuine 1254 x 1254 RGBA PNG. Alpha range 0 to 255. Four transparent corners passed. Blue chroma pixels: none detected. Transparent pixels: 1,226,320; partial antialiasing pixels: 18,934.
+
+Character construction, pose readability, shoe spelling, anatomical-left placement, and one-shoe-only rule passed visual inspection.
+
+APPROVAL RECORD
+
+Peter Brown approved CEL003 on 18 July 2026. The transparent master was promoted to the Drive PNGs/Celebration library, the approved prompt was saved in Character Prompts/Celebration, and the master spreadsheet prompt and asset fields were updated.
+
+Legacy ChatGPT thread fields remain incomplete because the asset was produced through the workspace workflow.
+

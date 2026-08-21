@@ -113,18 +113,7 @@ def build_formulas(C):
             "=SUMIFS(Sales!$J:$J,Sales!$A:$A,\">=\"&" + C + "$1-7,Sales!$A:$A,\"<\"&" + C + "$1,Sales!$F:$F,\"Paid*\")"
         ),
 
-        # Row 57: Studio Bookings Attended via Meta Ads
-        57: (
-            "=COUNTIFS(Appointments!$H:$H,\">=\"&" + C + "$1-7,Appointments!$H:$H,\"<\"&" + C + "$1,Appointments!$K:$K,\"Y\",Appointments!$G:$G,\"Paid Social - Meta\")"
-        ),
-        # Row 58: Studio Bookings Attended via Google Ads
-        58: (
-            "=COUNTIFS(Appointments!$H:$H,\">=\"&" + C + "$1-7,Appointments!$H:$H,\"<\"&" + C + "$1,Appointments!$K:$K,\"Y\",Appointments!$G:$G,\"Paid Search - Google\")"
-        ),
-        # Row 59: Studio Bookings Attended via Organic
-        59: (
-            "=COUNTIFS(Appointments!$H:$H,\">=\"&" + C + "$1-7,Appointments!$H:$H,\"<\"&" + C + "$1,Appointments!$K:$K,\"Y\",Appointments!$G:$G,\"Organic\")"
-        ),
+        # Rows 57-63 are governed attendance outputs from the operating hub.
 
         # Row 38: Leads via Organic
         38: (
@@ -163,7 +152,7 @@ def build_formulas(C):
     }
 
 
-PROTECTED_ROWS = {53, 54, 88, 89}
+PROTECTED_ROWS = {53, 54, 57, 58, 59, 60, 61, 62, 63, 88, 89}
 
 
 def build_requests_for_col(sheet_id, col_idx, C):

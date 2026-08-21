@@ -1,0 +1,35 @@
+movement_family,stage_number,stage_label,source_exercise_name,mapping_status,participants,workouts,result_rows,first_seen,last_seen,comparison_rule
+Bilateral Squat,1,Goblet Squat,Kettlebell Goblet Squat,confirmed,207,790,1759,2023-11-13,2026-07-21,Goblet stage; do not compare load numerically with canonical Nexus Squat
+Bilateral Squat,1,Goblet Squat,Dumbbell Goblet Squat,confirmed,98,271,556,2025-11-10,2026-07-21,Goblet stage; do not compare load numerically with canonical Nexus Squat
+Bilateral Squat,1,Goblet Squat,Goblet Box Squat,provisional variant,77,364,898,2023-09-11,2026-07-20,Goblet stage; do not compare load numerically with canonical Nexus Squat
+Bilateral Squat,1,Goblet Squat,Banded Goblet Squat,provisional variant,10,13,29,2024-08-30,2026-05-26,Goblet stage; do not compare load numerically with canonical Nexus Squat
+Bilateral Squat,1,Goblet Squat,Dumbbell Heel Elevated Goblet Squat,provisional variant,2,10,20,2025-11-18,2026-01-06,Goblet stage; do not compare load numerically with canonical Nexus Squat
+Bilateral Squat,2,Nexus Point Squat,Nexus Point Squat,confirmed canonical name,248,2312,5196,2023-09-11,2026-07-20,Canonical Nexus alias; combine loads across the three confirmed source names
+Bilateral Squat,2,Nexus Point Squat,Barbell Front Squat,confirmed unintended alias,168,2021,4292,2024-11-15,2026-07-21,Canonical Nexus alias; combine loads across the three confirmed source names
+Bilateral Squat,2,Nexus Point Squat,Barbell Back Squat,confirmed unintended alias,51,218,659,2023-09-11,2026-06-22,Canonical Nexus alias; combine loads across the three confirmed source names
+Horizontal Press,,Dumbbell Bench Press,Dumbbell Bench Press,exposure only,220,1586,3061,2024-01-31,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Horizontal Press,,Single Arm Bench Press,Single Arm Bench Press,exposure only,156,995,2071,2023-10-11,2026-06-17,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Horizontal Press,,Barbell Bench Press,Barbell Bench Press,exposure only,258,4892,11372,2023-09-11,2026-07-18,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Horizontal Press,,Close Grip Bench Press,Barbell Close Grip Bench Press,exposure only,153,1170,2405,2024-05-29,2026-07-15,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Horizontal Press,,Incline Bench Press,Dumbbell Incline Bench Press,exposure only,80,482,1197,2023-11-08,2026-06-18,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Dumbbell Romanian Deadlift,Dumbbell Romanian Deadlift,exposure only,114,403,899,2024-02-27,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Staggered RDL,Staggered Stance Romanian Deadlift,exposure only,113,435,882,2024-01-01,2026-06-12,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Anchored Barbell RDL,Front Anchored Banded Barbell Romanian Deadlift,exposure only,153,1013,2053,2024-04-01,2026-07-20,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Barbell Romanian Deadlift,Barbell Romanian Deadlift,exposure only,228,3283,7032,2023-10-20,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Dumbbell Deadlift,Dumbbell Deadlift,exposure only,134,265,384,2023-11-03,2026-07-17,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Trap Bar Deadlift,Trap Bar Deadlift,exposure only,73,303,589,2023-09-15,2026-07-18,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Hinge / Deadlift,,Barbell Deadlift,Barbell Deadlift,exposure only,234,3011,6893,2023-09-11,2026-07-15,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Lat Pulldown,Underhand Grip Lat Pulldown,exposure only,177,1529,3189,2023-12-04,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Lat Pulldown,Close Grip Strict Lat Pulldown,exposure only,149,1227,2601,2023-09-11,2026-07-20,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Lat Pulldown,Single Arm Neutral Grip Lat Pulldown,exposure only,106,621,1279,2023-12-22,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Lat Pulldown,Lat Pulldown Machine Wide Grip,exposure only,104,435,974,2023-09-11,2026-07-20,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Assisted Chin Up,Band Assisted Chin Up,exposure only,217,3269,6299,2023-10-13,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Assisted Pull Up,Band Assisted Mid Grip Pull Up,exposure only,124,597,1205,2023-10-27,2026-07-17,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Bodyweight Chin Up,Chin Up,exposure only,160,820,1684,2024-01-29,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Bodyweight Pull Up,Pull Up,exposure only,5,19,39,2025-02-06,2025-12-22,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Vertical Pull,,Weighted Chin Up,Weighted Chin Up,exposure only,85,253,514,2025-02-24,2026-07-15,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Split Squat,,ATG Split Squat,ATG Split Squat,exposure only,186,2519,5748,2023-09-12,2026-07-20,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Split Squat,,Barbell Split Squat,Barbell Split Squat,exposure only,204,1602,3316,2024-01-01,2026-07-21,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Split Squat,,Bulgarian Split Squat,Dumbbell Bulgarian Split Squat,exposure only,144,970,2026,2024-02-26,2026-07-17,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Split Squat,,Front Foot Elevated Split Squat,Front Foot Elevated Split Squat,exposure only,48,269,678,2023-10-11,2026-04-23,Exposure grouping only; exact-exercise outcome analysis remains authoritative
+Loaded Carry,,Farmer Walk,Farmer Walk,exposure only,226,1957,4526,2023-10-10,2026-07-20,Exposure grouping only; exact-exercise outcome analysis remains authoritative

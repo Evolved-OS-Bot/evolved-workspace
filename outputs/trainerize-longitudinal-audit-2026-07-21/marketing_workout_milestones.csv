@@ -1,0 +1,7 @@
+completed_workout_threshold,confirmed_female_participants,pct_of_confirmed_female_participants_with_workouts,claim_status
+1,484,100.0,Descriptive operational metric; not a health outcome
+25,226,46.7,Descriptive operational metric; not a health outcome
+50,150,31.0,Descriptive operational metric; not a health outcome
+100,82,16.9,Descriptive operational metric; not a health outcome
+250,17,3.5,Descriptive operational metric; not a health outcome
+500,0,0.0,Descriptive operational metric; not a health outcome

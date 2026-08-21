@@ -1,0 +1,403 @@
+/*
+Theme Name: Blocksy Child
+Template: blocksy
+Version: 1.0
+*/
+
+/* ===================================================
+   THE EVOLVED — HOMEPAGE STYLES
+   =================================================== */
+
+:root {
+    --evolved-bg:        #0a0a0a;
+    --evolved-bg-2:      #111111;
+    --evolved-pink:      #e43388;
+    --evolved-pink-dim:  #e4338855;
+    --evolved-text:      #f5f0eb;
+    --evolved-text-dim:  #aaaaaa;
+    --evolved-border:    #222222;
+}
+
+html { scroll-behavior: smooth; }
+
+body.home {
+    background: var(--evolved-bg);
+    color: var(--evolved-text);
+    font-family: "Lato", sans-serif;
+}
+
+body.home .site-header,
+body.home #header {
+    display: none !important;
+}
+
+.evolved-section {
+    padding: 80px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.evolved-section--dark {
+    background: var(--evolved-bg-2);
+    max-width: 100%;
+    padding: 80px 24px;
+}
+
+.evolved-section--dark .section-inner {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    padding: 24px;
+}
+
+.hero-headline {
+    font-family: "PT Serif Caption", serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    color: var(--evolved-text);
+    margin-bottom: 24px;
+    opacity: 0;
+}
+
+.hero-subheadline {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--evolved-text-dim);
+    margin-bottom: 36px;
+    line-height: 1.6;
+    opacity: 0;
+}
+
+.hero-disclaimer {
+    font-size: 0.85rem;
+    color: var(--evolved-text-dim);
+    margin-top: 16px;
+    opacity: 0;
+}
+
+.btn-primary {
+    display: inline-block;
+    background: var(--evolved-pink);
+    color: #fff;
+    padding: 16px 36px;
+    border-radius: 4px;
+    font-family: "Lato", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    background: #c42b76;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.section-heading {
+    font-family: "PT Serif Caption", serif;
+    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    color: var(--evolved-text);
+    margin-bottom: 40px;
+    line-height: 1.25;
+}
+
+.chart-wrapper {
+    background: var(--evolved-bg-2);
+    border: 1px solid var(--evolved-border);
+    border-radius: 8px;
+    padding: 32px 24px;
+    margin: 32px 0;
+}
+
+.age-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 24px 0 16px;
+}
+
+.age-btn {
+    padding: 10px 20px;
+    border: 1px solid var(--evolved-border);
+    background: transparent;
+    color: var(--evolved-text-dim);
+    border-radius: 4px;
+    font-family: "Lato", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.age-btn:hover,
+.age-btn.active {
+    border-color: var(--evolved-pink);
+    color: var(--evolved-pink);
+    background: #e4338811;
+}
+
+.chart-annotation {
+    font-size: 0.95rem;
+    color: var(--evolved-text-dim);
+    line-height: 1.7;
+    margin: 20px 0;
+    min-height: 2.5em;
+    border-left: 3px solid var(--evolved-pink);
+    padding-left: 16px;
+    opacity: 0;
+}
+
+.chart-below-copy {
+    font-size: 1rem;
+    color: var(--evolved-text-dim);
+    margin: 24px 0;
+    line-height: 1.6;
+}
+
+.three-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 32px;
+    margin: 40px 0;
+}
+
+.three-col-item {
+    border-top: 2px solid var(--evolved-pink);
+    padding-top: 20px;
+}
+
+.three-col-item h3 {
+    font-family: "PT Serif Caption", serif;
+    font-size: 1rem;
+    color: var(--evolved-pink);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.three-col-item p {
+    font-size: 0.95rem;
+    color: var(--evolved-text-dim);
+    line-height: 1.6;
+}
+
+.results-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin: 40px 0;
+}
+
+.result-card {
+    background: var(--evolved-bg-2);
+    border: 1px solid var(--evolved-border);
+    border-radius: 8px;
+    padding: 28px 24px;
+    opacity: 0;
+}
+
+.result-card blockquote {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--evolved-text);
+    font-style: italic;
+    margin: 0 0 16px;
+    border: none;
+    padding: 0;
+}
+
+.result-card cite {
+    font-size: 0.85rem;
+    color: var(--evolved-pink);
+    font-style: normal;
+}
+
+.results-link {
+    color: var(--evolved-pink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--evolved-pink-dim);
+    transition: border-color 0.2s;
+}
+
+.results-link:hover {
+    border-color: var(--evolved-pink);
+}
+
+.cta-final {
+    text-align: center;
+    background: var(--evolved-bg-2);
+    padding: 100px 24px;
+}
+
+.cta-final .section-heading {
+    margin-bottom: 16px;
+}
+
+.cta-final .cta-sub {
+    font-size: 1rem;
+    color: var(--evolved-text-dim);
+    margin-bottom: 40px;
+}
+
+body.home .site-footer {
+    background: #000;
+    color: var(--evolved-text-dim);
+    font-size: 0.8rem;
+    padding: 32px 24px;
+    text-align: center;
+    border-top: 1px solid var(--evolved-border);
+}
+
+body.home .site-footer a {
+    color: var(--evolved-text-dim);
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .evolved-section { padding: 60px 16px; }
+    .chart-wrapper { padding: 20px 12px; }
+}
+
+
+/* ── Homepage Animation Layer v2.0 ───────────────────────────── */
+
+/* Reveal system — elements start hidden until GSAP triggers */
+[data-reveal] { opacity: 0; }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; min-height: 100vh; }
+.hero-bg {
+    position: absolute; inset: 0;
+}
+.hero-eyebrow {
+    font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 0.18em; color: #e43388;
+    margin-bottom: 12px; opacity: 0; transform: translateY(20px);
+}
+.hero-headline  { opacity: 0; transform: translateY(30px); }
+.hero-sub       { opacity: 0; transform: translateY(30px); }
+.hero-cta       { opacity: 0; transform: translateY(20px); }
+.hero-disclaimer { opacity: 0; transform: translateY(20px); }
+
+/* Journey & Membership card hover lift */
+.journey-card, .membership-card {
+    transition: transform 0.28s cubic-bezier(0.25,0.8,0.25,1),
+                box-shadow 0.28s cubic-bezier(0.25,0.8,0.25,1);
+    cursor: pointer;
+}
+.journey-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(228,51,136,0.25);
+}
+.membership-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(228,51,136,0.2);
+}
+.journey-card .card-label { transition: background 0.25s; }
+.journey-card:hover .card-label { background: #c4206e; }
+
+/* Stat counters */
+.stat-number {
+    font-family: 'PT Serif Caption', serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    color: #e43388; line-height: 1;
+    display: block; margin-bottom: 8px;
+}
+.stat-label {
+    color: #aaa; font-size: 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+/* Chart wrappers */
+.chart-canvas-wrap {
+    position: relative; background: #0d0d0d;
+    border-radius: 8px; border: 1px solid #222; padding: 24px;
+}
+.chart-annotation {
+    color: #aaa; font-size: 0.9rem; line-height: 1.75;
+    margin-top: 20px; min-height: 3em;
+    border-left: 2px solid #e43388; padding-left: 16px;
+}
+.age-btn {
+    background: #1a1a1a; border: 1px solid #333;
+    color: #aaa; padding: 8px 16px;
+    border-radius: 4px; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s;
+}
+.age-btn.active { background: #e43388; border-color: #e43388; color: #fff; }
+
+/* Testimonial carousel */
+.carousel-viewport {
+    overflow: hidden; position: relative;
+    cursor: grab; user-select: none;
+}
+.carousel-viewport:active { cursor: grabbing; }
+.carousel-track {
+    display: flex; gap: 24px;
+    will-change: transform;
+}
+.carousel-card {
+    flex: 0 0 calc(50% - 12px); min-width: 280px;
+    background: #0d0d0d; border: 1px solid #222;
+    border-radius: 8px; padding: 28px;
+}
+.carousel-nav {
+    display: flex; gap: 12px; justify-content: center;
+    margin-top: 20px;
+}
+.carousel-prev, .carousel-next {
+    background: #1a1a1a; border: 1px solid #333;
+    color: #f5f0eb; width: 44px; height: 44px;
+    border-radius: 50%; cursor: pointer;
+    font-size: 1.1rem; line-height: 1;
+    transition: all 0.2s; display: flex;
+    align-items: center; justify-content: center;
+}
+.carousel-prev:hover, .carousel-next:hover {
+    background: #e43388; border-color: #e43388;
+}
+
+@media (max-width: 640px) {
+    .carousel-card { flex: 0 0 calc(100% - 0px); min-width: 260px; }
+}
+
+/* ── Card row mobile: vertical stack ─────────────────────────── */
+@media (max-width: 768px) {
+  .card-row {
+    flex-direction: column !important;
+    overflow-x: visible !important;
+    padding: 0 16px !important;
+  }
+  .card-row > div {
+    min-width: 0 !important;
+    width: 100% !important;
+    flex: none !important;
+  }
+  .card-row .journey-card img {
+    height: 260px !important;
+  }
+  .card-row .membership-card img {
+    height: 200px !important;
+  }
+}

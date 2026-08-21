@@ -1,0 +1,47 @@
+{
+  "audit_date": "2026-07-22",
+  "non_test_accounts": 573,
+  "confirmed_female_analysis_accounts": 529,
+  "accounts_excluded_from_womens_analysis": 44,
+  "recorded_sex_counts": {
+    "female": 529,
+    "missing": 34,
+    "other": 3,
+    "male": 7
+  },
+  "recorded_sex_workout_counts": {
+    "female": 25186,
+    "missing": 397,
+    "other": 640,
+    "male": 81
+  },
+  "account_status_counts": {
+    "deactivated": 370,
+    "active": 159
+  },
+  "accounts_with_completed_calendar_workouts": 484,
+  "accounts_with_detailed_workouts": 271,
+  "active_accounts_with_detail": 158,
+  "deactivated_accounts_with_detail": 113,
+  "detailed_workouts": 22764,
+  "exercise_result_rows": 539694,
+  "bodyweight_participants": 524,
+  "paired_outcome_rows": 943,
+  "remarkable_candidate_rows": 174,
+  "remarkable_candidate_participants": 118,
+  "confirmed_goblet_to_nexus_participants": 22,
+  "observed_goblet_then_nexus_sequence_participants": 149,
+  "strict_horizon_goblet_to_nexus_participants": 7,
+  "tracked_completed_workouts": 25186,
+  "all_account_tracked_workouts": 26304,
+  "tracked_participants": 484,
+  "temporary_change_log_rows": 134,
+  "unrestored_temporary_changes": 0,
+  "extraction_error_rows": 2591,
+  "extraction_errors_by_stage": {
+    "fatal": 1,
+    "training_plans_json": 2,
+    "daily_workout": 2588
+  },
+  "methodological_status": "Retrospective observational training-log audit; not a controlled scientific study"
+}

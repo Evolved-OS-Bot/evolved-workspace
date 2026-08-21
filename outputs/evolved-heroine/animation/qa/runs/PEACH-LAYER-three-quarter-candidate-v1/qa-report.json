@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "artifact_path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-candidate-v1-neutral.png",
+  "artifact_sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d",
+  "source_manifest_revision": 1,
+  "executed_at": "2026-08-04T12:20:00+10:00",
+  "checks": [
+    {
+      "check_id": "DIMENSIONS_1254_SQUARE",
+      "method": "ffprobe",
+      "status": "pass",
+      "evidence_paths": ["ffprobe.json"],
+      "observation": "1254 x 1254 RGBA PNG."
+    },
+    {
+      "check_id": "NO_HORIZONTAL_FLIP",
+      "method": "construction record and laterality inspection",
+      "status": "pass",
+      "observation": "Anatomical left remains viewer-right in the neutral target."
+    },
+    {
+      "check_id": "LEFT_SHOE_BRAND",
+      "method": "visual inspection and approved-layer provenance",
+      "status": "pass",
+      "observation": "Exact Evolved artwork appears only on the anatomical-left shoe; source is FRD001 v3."
+    },
+    {
+      "check_id": "NO_HUMAN_ANATOMY",
+      "method": "visual inspection",
+      "status": "pass",
+      "observation": "Peach remains the complete fruit body; limbs are simple mascot tubes."
+    },
+    {
+      "check_id": "REFERENCE_ROLE_CONTROL",
+      "method": "manifest inspection",
+      "status": "pass",
+      "observation": "Only original calibration assets are identity/style authorities."
+    },
+    {
+      "check_id": "HUMAN_VISUAL_APPROVAL",
+      "method": "Peter Brown decision",
+      "status": "pending",
+      "observation": "Candidate is not approved or promoted."
+    }
+  ],
+  "technical_result": "pass",
+  "visual_result": "pending",
+  "approval_record_id": null
+}
+

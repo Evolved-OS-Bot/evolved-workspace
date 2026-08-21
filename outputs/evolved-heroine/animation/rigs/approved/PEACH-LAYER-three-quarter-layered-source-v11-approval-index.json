@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+  "status": "approved_corrected_animation_identity_base",
+  "approved_at": "2026-08-04T20:46:32+10:00",
+  "approved_copy": {
+    "path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v11",
+    "file_count": 33,
+    "verification": "byte_identical_to_source_package_at_promotion"
+  },
+  "approved_source_snapshot": {
+    "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11",
+    "source_package_record_sha256": "674c384f591f249c400b73e0c105a50605a799e50c38b0a4db59039e64414c76",
+    "layer_manifest_sha256": "b6c76d06bb4656683b4d9dbaaea7af5849fbbfa425cf625267f44d5c75e5e58f",
+    "openraster_sha256": "10dc97f922a9932507b2bd12850ffc91fca2b7a60b20d280d7f85928d890bc42",
+    "neutral_recomposite_sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536"
+  },
+  "approval": {
+    "record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v11-EDITABLE-SOURCE-2026-08-04-01",
+    "path": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-layered-source-v11-editable-source-approval-2026-08-04.json",
+    "sha256": "c04da4c8cc342910182aa6f94fad37ef991fb343ec35d52d80411b5dcd1752ba"
+  },
+  "supersession": {
+    "supersedes_artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "supersedes_approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+    "v10_approved_copy_preserved": true
+  },
+  "historical_record_note": "The copied source-package-record.json retains its pre-approval status because it is immutable evidence of the package at creation. This index and the approval record govern its current approved status.",
+  "scope_exclusions": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ]
+}

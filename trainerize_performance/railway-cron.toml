@@ -1,0 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "trainerize_performance/Dockerfile.cron"
+
+[deploy]
+cronSchedule = "15 7,19 * * *"
+restartPolicyType = "NEVER"

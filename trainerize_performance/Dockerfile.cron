@@ -1,0 +1,9 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY trainerize_performance/requirements.txt /app/trainerize_performance/requirements.txt
+RUN pip install --no-cache-dir -r /app/trainerize_performance/requirements.txt
+
+COPY trainerize_performance /app/trainerize_performance
+
+CMD ["python", "-m", "trainerize_performance.cron"]

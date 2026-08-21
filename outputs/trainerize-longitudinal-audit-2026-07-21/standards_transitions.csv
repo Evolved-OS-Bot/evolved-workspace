@@ -1,0 +1,175 @@
+participant_id,account_status,movement,baseline_source_exercise,followup_source_exercise,horizon,baseline_level,followup_level,levels_gained,baseline_ratio,followup_ratio
+WSP-35D2B825E2,active,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,24 months (600-900d),Live,Live,0,0.286,0.296
+WSP-35D2B825E2,active,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,Beyond 24 months (901d+),Live,Live,0,0.286,0.317
+WSP-3747400FEE,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.32,0.328
+WSP-3747400FEE,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.32,0.364
+WSP-3747400FEE,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Below Live,0,0.4,0.304
+WSP-749D8C9097,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.518,0.697
+WSP-749D8C9097,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.518,0.631
+WSP-749D8C9097,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Long,1,1.096,1.564
+WSP-749D8C9097,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Long,1,1.096,1.336
+WSP-749D8C9097,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,12 months (300-450d),Live,Live,0,0.752,1.025
+WSP-749D8C9097,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.752,1.144
+WSP-749D8C9097,deactivated,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,6 months (120-240d),Live,Live,0,0.344,0.371
+WSP-2B27FEB68C,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Long,Long,0,0.816,0.778
+WSP-2B27FEB68C,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Long,Long,0,0.816,0.755
+WSP-2B27FEB68C,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Long,Long,0,1.292,1.474
+WSP-2B27FEB68C,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Long,Long,0,1.292,1.581
+WSP-2B27FEB68C,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Live,Live,0,0.884,0.818
+WSP-2B27FEB68C,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.884,0.749
+WSP-97D354E37F,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.505,0.499
+WSP-97D354E37F,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.505,0.588
+WSP-97D354E37F,deactivated,Farmer Walk 60s,Farmer Walk,Farmer Walk,12 months (300-450d),Below Live,Below Live,0,0.211,0.241
+WSP-E6C38FCCB7,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.502,0.501
+WSP-E6C38FCCB7,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.867,0.925
+WSP-E6C38FCCB7,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.674,0.622
+WSP-793DCC26EF,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Long,Long,0,0.817,0.784
+WSP-793DCC26EF,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Long,Long,0,1.484,1.905
+WSP-793DCC26EF,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Long,Long,0,1.29,1.265
+WSP-793DCC26EF,deactivated,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,6 months (120-240d),Live,Live,0,0.434,0.436
+WSP-793DCC26EF,deactivated,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Live,Live,0,0.817,1.143
+WSP-DB04841EAF,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Below Live,Live,1,0.184,0.25
+WSP-DB04841EAF,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Below Live,Live,1,0.184,0.285
+WSP-DB04841EAF,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Below Live,Below Live,0,0.284,0.442
+WSP-DB04841EAF,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Below Live,Live,1,0.284,0.538
+WSP-DB04841EAF,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.165,0.206
+WSP-E3A5A761C3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.304,0.38
+WSP-E3A5A761C3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.304,0.507
+WSP-E3A5A761C3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.304,0.348
+WSP-E3A5A761C3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,Beyond 24 months (901d+),Live,Live,0,0.304,0.507
+WSP-E3A5A761C3,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Live,0,0.585,1.078
+WSP-E3A5A761C3,active,Deadlift,Barbell Deadlift,Barbell Deadlift,24 months (600-900d),Live,Long,1,0.585,1.338
+WSP-E3A5A761C3,active,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.585,0.877
+WSP-E3A5A761C3,active,Deadlift,Barbell Deadlift,Barbell Deadlift,Beyond 24 months (901d+),Live,Long,1,0.585,1.364
+WSP-E3A5A761C3,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,24 months (600-900d),Below Live,Below Live,0,0.11,0.364
+WSP-E3A5A761C3,active,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,12 months (300-450d),Live,Below Live,-1,0.576,0.202
+WSP-E3A5A761C3,active,Nexus Point Squat,Barbell Back Squat,Barbell Front Squat,24 months (600-900d),Live,Live,0,0.576,0.512
+WSP-E3A5A761C3,active,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.576,0.54
+WSP-E3A5A761C3,active,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,6 months (120-240d),Below Live,Live,1,0.151,0.25
+WSP-E3A5A761C3,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,Beyond 24 months (901d+),Below Live,Long,2,0.545,1.368
+WSP-C1751DA190,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.269,0.385
+WSP-C1751DA190,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Long,1,0.638,1.39
+WSP-C1751DA190,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.638,1.114
+WSP-C1751DA190,deactivated,Farmer Walk 60s,Farmer Walk,Farmer Walk,12 months (300-450d),Below Live,Below Live,0,0.106,0.244
+WSP-C1751DA190,deactivated,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.106,0.176
+WSP-C1751DA190,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,12 months (300-450d),Live,Live,0,0.538,0.677
+WSP-C1751DA190,deactivated,Nexus Point Squat,Barbell Back Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.538,0.566
+WSP-C43D13B011,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.428,0.448
+WSP-C43D13B011,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.67,0.842
+WSP-A16D32377E,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.405,0.442
+WSP-A16D32377E,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.555,1.023
+WSP-A16D32377E,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Live,Below Live,-1,0.543,0.477
+WSP-A16D32377E,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Live,Live,0,0.543,0.607
+WSP-E4DBF5AF4F,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.626,0.704
+WSP-917EBE9157,active,Nexus Point Squat,Nexus Point Squat,Barbell Back Squat,12 months (300-450d),Below Live,Below Live,0,0.148,0.249
+WSP-D68795368D,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.412,0.447
+WSP-3E3373D817,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Long,1,0.691,0.836
+WSP-3E3373D817,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Long,1,0.691,0.753
+WSP-3E3373D817,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Long,1,0.873,1.309
+WSP-3E3373D817,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.873,1.02
+WSP-3E3373D817,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Below Live,Live,1,0.436,0.982
+WSP-3E3373D817,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.436,0.492
+WSP-993531D4CB,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.345,0.5
+WSP-993531D4CB,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.764,0.862
+WSP-12B45EC0B3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.257,0.61
+WSP-12B45EC0B3,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.257,0.499
+WSP-F148A8C19A,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.253,0.571
+WSP-F148A8C19A,active,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.253,0.652
+WSP-F148A8C19A,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.253,0.495
+WSP-F148A8C19A,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Live,0,0.821,1.206
+WSP-F148A8C19A,active,Deadlift,Barbell Deadlift,Barbell Deadlift,24 months (600-900d),Live,Live,0,0.821,1.118
+WSP-F148A8C19A,active,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Live,Live,0,0.821,0.89
+WSP-F148A8C19A,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Below Live,Live,1,0.147,0.66
+WSP-F148A8C19A,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,24 months (600-900d),Below Live,Live,1,0.147,0.687
+WSP-F148A8C19A,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.147,0.197
+WSP-74F1CDA5E1,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.404,0.358
+WSP-0F776FC732,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Long,Long,0,1.689,1.812
+WSP-0F776FC732,active,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Long,Long,0,1.689,1.836
+WSP-0F776FC732,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Long,Live,-1,1.267,1.159
+WSP-0F776FC732,active,Nexus Point Squat,Nexus Point Squat,Barbell Front Squat,6 months (120-240d),Long,Live,-1,1.267,0.866
+WSP-D408964823,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Long,1,0.576,0.772
+WSP-F384938133,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.4,0.628
+WSP-F384938133,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.4,0.63
+WSP-F384938133,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.4,0.581
+WSP-F384938133,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Below Live,Live,1,0.422,1.105
+WSP-F384938133,deactivated,Nexus Point Squat,Nexus Point Squat,Barbell Front Squat,24 months (600-900d),Below Live,Live,1,0.422,0.675
+WSP-F384938133,deactivated,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Below Live,Live,1,0.422,0.739
+WSP-ACF22DFC36,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.297,0.512
+WSP-ACF22DFC36,active,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.297,0.441
+WSP-ACF22DFC36,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Live,0,0.908,0.717
+WSP-89E2851F63,active,Bench Press,Barbell Bench Press,Barbell Bench Press,24 months (600-900d),Live,Live,0,0.452,0.476
+WSP-89E2851F63,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.452,0.473
+WSP-89E2851F63,active,Deadlift,Barbell Deadlift,Barbell Deadlift,24 months (600-900d),Live,Live,0,0.835,1.229
+WSP-89E2851F63,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,24 months (600-900d),Live,Long,1,0.699,1.116
+WSP-89E2851F63,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,6 months (120-240d),Live,Long,1,0.699,0.743
+WSP-5BD4C15BD0,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.518,0.594
+WSP-5BD4C15BD0,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.518,0.535
+WSP-5BD4C15BD0,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Live,0,0.863,1.085
+WSP-5BD4C15BD0,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,12 months (300-450d),Long,Long,0,1.091,0.972
+WSP-5BD4C15BD0,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,6 months (120-240d),Long,Long,0,1.091,1.05
+WSP-5BD4C15BD0,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Below Live,Live,1,0.097,0.605
+WSP-5BD4C15BD0,active,Nexus Point Squat,Nexus Point Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.097,0.328
+WSP-AB0A6E5C81,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.326,0.563
+WSP-AB0A6E5C81,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.326,0.487
+WSP-AB0A6E5C81,active,Deadlift,Barbell Deadlift,Barbell Deadlift,6 months (120-240d),Below Live,Live,1,0.445,0.609
+WSP-AB0A6E5C81,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,12 months (300-450d),Below Live,Live,1,0.222,0.53
+WSP-AB0A6E5C81,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.222,0.325
+WSP-92A400FCFF,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.554,0.68
+WSP-92A400FCFF,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Below Live,Live,1,0.311,1.144
+WSP-92A400FCFF,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,12 months (300-450d),Below Live,Live,1,0.321,0.891
+WSP-7AA21CB1F4,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.39,0.505
+WSP-7AA21CB1F4,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.39,0.476
+WSP-7AA21CB1F4,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,12 months (300-450d),Below Live,Live,1,0.39,0.737
+WSP-7AA21CB1F4,active,Nexus Point Squat,Barbell Front Squat,Nexus Point Squat,6 months (120-240d),Below Live,Live,1,0.39,0.903
+WSP-7AA21CB1F4,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,12 months (300-450d),Below Live,Live,1,0.496,1.159
+WSP-7AA21CB1F4,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.496,0.964
+WSP-A440F0FC5B,active,Nexus Point Squat,Barbell Front Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.081,0.13
+WSP-A440F0FC5B,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Below Live,0,0.063,0.357
+WSP-9D2E5E5705,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.35,0.412
+WSP-9D2E5E5705,deactivated,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.461,0.659
+WSP-B87BAFCC35,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Below Live,Live,1,0.22,0.597
+WSP-B87BAFCC35,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,12 months (300-450d),Live,Long,1,0.8,1.045
+WSP-B87BAFCC35,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,12 months (300-450d),Below Live,Live,1,0.22,0.567
+WSP-B87BAFCC35,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,12 months (300-450d),Live,Long,1,0.66,1.313
+WSP-4FDD7C13D8,deactivated,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,6 months (120-240d),Long,Live,-1,0.731,0.566
+WSP-8D049C5D56,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.294,0.667
+WSP-8D049C5D56,deactivated,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Live,0,0.686,0.81
+WSP-8D049C5D56,deactivated,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,12 months (300-450d),Below Live,Live,1,0.412,0.554
+WSP-3875A22C34,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,12 months (300-450d),Long,Long,0,0.933,0.805
+WSP-3875A22C34,active,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,6 months (120-240d),Long,Long,0,0.933,0.953
+WSP-3875A22C34,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.074,0.274
+WSP-3FEC7CF653,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Below Live,0,0.042,0.582
+WSP-FF8A796A6E,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.431,0.447
+WSP-FF8A796A6E,deactivated,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.265,0.294
+WSP-FF8A796A6E,deactivated,Nexus Point Squat,Nexus Point Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.247,0.261
+WSP-3558050B40,active,Bench Press,Barbell Bench Press,Barbell Bench Press,12 months (300-450d),Live,Live,0,0.639,0.678
+WSP-3558050B40,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.639,0.668
+WSP-3558050B40,active,Deadlift,Barbell Deadlift,Barbell Deadlift,12 months (300-450d),Live,Long,1,1.202,1.32
+WSP-3558050B40,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,12 months (300-450d),Below Live,Live,1,0.678,0.88
+WSP-3558050B40,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Live,1,0.678,0.909
+WSP-3558050B40,active,Nexus Point Squat,Nexus Point Squat,Nexus Point Squat,12 months (300-450d),Below Live,Live,1,0.431,0.77
+WSP-3558050B40,active,Nexus Point Squat,Nexus Point Squat,Barbell Front Squat,6 months (120-240d),Below Live,Live,1,0.431,0.581
+WSP-6E5A708942,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.549,0.516
+WSP-6E5A708942,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.176,0.398
+WSP-20AB5BBD04,deactivated,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.238,0.303
+WSP-20AB5BBD04,deactivated,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.5,0.792
+WSP-FFE4F951EE,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.176,0.326
+WSP-FFE4F951EE,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.261,0.893
+WSP-B242C627C1,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.394,0.635
+WSP-B242C627C1,deactivated,Lat Pulldown,Underhand Grip Lat Pulldown,Underhand Grip Lat Pulldown,6 months (120-240d),Long,Long,0,0.941,1.187
+WSP-B242C627C1,deactivated,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.105,0.28
+WSP-025D1B9E8F,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.429,0.523
+WSP-025D1B9E8F,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.179,0.435
+WSP-025D1B9E8F,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.45,0.918
+WSP-9F3E1B2C42,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Below Live,Live,1,0.226,0.306
+WSP-9F3E1B2C42,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.476,0.608
+WSP-A9F42F42C7,active,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.342,0.404
+WSP-A9F42F42C7,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.368,0.482
+WSP-A9F42F42C7,active,Nexus Point Squat,Barbell Front Squat,Barbell Front Squat,6 months (120-240d),Below Live,Below Live,0,0.27,0.362
+WSP-A9F42F42C7,active,Overhead Press,Barbell Overhead Press,Barbell Overhead Press,6 months (120-240d),Below Live,Live,1,0.071,0.27
+WSP-A9F42F42C7,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Below Live,Live,1,0.448,0.736
+WSP-D785D5403C,deactivated,Bench Press,Barbell Bench Press,Barbell Bench Press,6 months (120-240d),Live,Live,0,0.444,0.559
+WSP-D785D5403C,deactivated,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.5,0.548
+WSP-B72E4B8D85,active,Farmer Walk 60s,Farmer Walk,Farmer Walk,6 months (120-240d),Below Live,Below Live,0,0.646,0.638
+WSP-B72E4B8D85,active,Nexus Point Squat,Barbell Front Squat,Nexus Point Squat,6 months (120-240d),Below Live,Below Live,0,0.433,0.45
+WSP-B72E4B8D85,active,Romanian Deadlift,Barbell Romanian Deadlift,Barbell Romanian Deadlift,6 months (120-240d),Live,Live,0,0.716,1.018

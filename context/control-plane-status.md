@@ -1,7 +1,7 @@
 # Evolved Control-Plane Status
 
 **As of:** 5 August 2026  
-**Freshness:** Current for the Peach Animation rig build, Website V2 governance recovery, Pregnancy route correction and Cloudflare rollback capture, Full Standards completion, governance rollout, Membership Service Change filing, Hold OS exception review and Return Journey hardening, GHL WARM/COLD pipeline reconciliation, cancellation contact-evidence hardening, the Strength Assessment feedback fallback repair, the guarded COLD-Won handoff, the first-week Retention Manager handoff and Conversation Triage deployment recovery  
+**Freshness:** Current for the Peach Animation rig build, Website V2 governance recovery, Pregnancy route correction and Cloudflare rollback capture, Full Standards completion, governance rollout, Membership Service Change filing, Hold OS exception review and Return Journey hardening, GHL backend and Drive audit closure, GHL WARM/COLD pipeline reconciliation, cancellation contact-evidence hardening, the Strength Assessment feedback fallback repair, the guarded COLD-Won handoff, the first-week Retention Manager handoff and Conversation Triage deployment recovery
 **Owner:** Evolved workspace
 
 ## Active outcomes
@@ -9,11 +9,12 @@
 - Peach Animation System has passed its layered-source and native-neutral-ingest gates. Peter approved exact-hash `PEACH-LAYER-three-quarter-layered-source-v10` as the editable source and animation identity base, fixed 30 fps as the canonical phase-one rate and enabled Accessibility control. The native Motion ingest contains all 29 approved stills in exact manifest order with the protected layers locked. Motion's supported Save Current Frame path produced byte-identical 1254 × 1254, 16-bit/color transparent RGBA sRGB exports from the layered stack and separate single-neutral reference, with zero RGB or alpha differences. The provisional anatomical-right upper-leg pivot at `(582, 680)` also passes neutral compensation exactly. The fixed source-derived root-cover mask and rotated stress grid remain pending; the disclosed leg-root stress gap must be closed before the later rig approval gate.
 - Reporting Architecture remains the sole owner of Evolved reporting migration and consumer cutover.
 - Website V2 is the already-built WordPress product awaiting governed promotion from `blog.theevolvedgym.com.au` to the root domain. GHL remains the operational CRM, communication, workflow, funnel, form and booking platform.
-- Evolved Anywhere and Online Only service-change activation remains gated by the real six-surface accepted event at or after the 5 August effective boundary; the Strong 12-month commitment pathway is Live.
+- Evolved Anywhere and Online Only service-change activation remains gated by the real six-surface accepted event. Post-boundary billing, canonical service fields and current-roster placement are correct. One member-specific exception now retains the remaining split identity, expired personalised plan, app-bookable class credits and missing trainer/time/mode agreement; no future appointment, accepted event or member send exists. The Strong 12-month commitment pathway is Live.
 - Membership Hold System remains in case-level exception repair, but its cross-cycle Return Journey overwrite defect is closed. Protected accepted-cycle, expected-status and exact-date checks now gate both delayed lifecycle writes; a dated activation safeguard remains for the approved extended cycle.
 
 ## Recently completed
 
+- Strength Assessment booking entry is repaired and production-widget acceptance has passed. The published workflow now uses one exact-calendar `Customer Booked Appointment` trigger, with the faulty status trigger removed. A controlled Confirmed booking enrolled immediately, passed the intended one-minute wait and produced the expected single WARM opportunity, booked tag, notifications, appointment-sheet row and SA Nurture entry with no COLD opportunity. The exact test enrolments and records were removed and verified absent. Reload verification preserved the reschedule and COLD/30DNNC safeguards. The identified same-day missed booking was reconciled internally without duplicate client communication or a duplicate opportunity.
 - Hold Return Journey current-cycle hardening is Live. Both delayed lifecycle
   writes now call Billing OS and continue only through explicit Passed branches;
   mismatch branches end, stop stale execution where GHL permits and create one
@@ -21,9 +22,10 @@
   changes. Normal, completion and overlap paths passed disposable-contact
   acceptance; the test records were deleted.
 - Conversation Triage production deployment `77d7b5de-f444-4753-a4ca-24f382059830` now packages the shared governed reporting client correctly. A manual recovery cycle completed its existing Discord and email delivery, and the approved twice-daily schedule remains unchanged.
-- The GHL duplicate-library tranche is closed. Two obsolete `NS - Not Interested` drafts and four stale Hold copies are verified in the workflow Archive; two older empty or unloadable generated workflows were removed from the active library and now follow GHL's 30-day deletion cycle. The same-day build shell and dormant goal nurtures were preserved.
+- The GHL backend and Drive process audit is complete. Material workflows were revalidated across their full canvases; forms, surveys, custom data, tags, calendars, funnels, email assets, products, users, tasks, seven pipelines and current Drive process folders were reconciled. The living backend, owner, task, custom-data and Drive registers now govern ongoing change. Remaining inbound ownership, post-Day-7 lifecycle, membership service-change, attendance-control and AI pre-qualification work is separate implementation scope.
+- The GHL duplicate-library tranche is closed. Two obsolete `NS - Not Interested` drafts and four stale Hold copies are verified in the workflow Archive; all three empty or unloadable generated workflows were removed from the active library and now follow GHL's 30-day deletion cycle. The five dormant goal nurtures remain disconnected pending the SA Pre-qual AI Agent.
 - The PT appointment-storage defect is fully remediated. The complete audit found 18 recurring masters, including ten from the prior week's work and eight older series missed by a fragile calendar-name filter. All were corrected into 223 verified individual appointments with notifications suppressed. A read-only audit of all 18 current and retained 1:1 calendars through 2 February 2027 found zero future recurring PT events. The permanent rule prohibits bounded and open-ended PT recurrence and mandates individual appointments plus registry-based calendar discovery.
-- The restricted first-week Retention Manager SOP and standalone training course are live, with the course access offer held in Draft. The published First 7 Days workflow now uses the verified plain-English positive follow-up instruction on Days 7, 8 and 9. All 15 reply tasks are standardised to 5:00 pm with their existing due-day values retained and weekend skipping enabled.
+- The native first-week Retention Manager SOP is live at Version 1.3 and the standalone course access offer remains held in Draft. The approved positive path now requires a prompt rapport call, review check and consent-based referral invitation; the negative path retains its prompt support call and owner escalation. Lessons 2 and 5 plus quiz questions 3, 4 and 7 were republished and read back in the restricted course. All 15 Day 7–9 reply tasks are now due in one day at 5:00 pm with weekend skipping in the saved, published workflow. Piper's email reply remains a saved draft. Runtime branch acceptance still awaits a safe staging path or genuine Positive, Negative and None cases.
 - Cancellation contact-evidence hardening is Live. Active-notice member replies
   now write governed evidence without relying on Piper; ambiguous call status
   fails closed; all eight Piper-led reason workflows use a same-day Megan
@@ -52,12 +54,15 @@
 - Record the pending Single Arm DB Reverse Lunge and Performance Warm-Up videos.
 - Complete live GoHighLevel publication parity for the affected trainer-course material.
 - Verify the dated extended-hold activation safeguard.
+- Complete first-week runtime branch acceptance when GHL provides a safe Day 7 reply simulation or by auditing the next genuine Positive, Negative and None executions. The current test panel only runs the real workflow from the beginning and was not submitted.
+- Sign back into GHL, publish the revised positive-reply lesson and quiz, then update and read back the three positive Piper task descriptions and one-day timing.
 
 ## Decisions required
 
+- No GHL backend or Drive audit decision remains open. The remaining GHL items are governed implementation work.
 - One Peach technical decision is open before rigging: accept the measured Motion color-managed neutral tolerance, approve a neutral-hold-plate mitigation, or require a linear-compositing layer rebuild. This decision would not approve the rig. The later visual decision remains the complete Apple Motion rig after technical QA, final pivots and resolved leg-root coverage.
 - No COLD reconciliation decision remains open. The status semantics and six future exit controls are owner-approved.
-- First-week follow-up still needs an owner decision on negative-task wording, unclear-reply Admin wording and the scope of controlled live branch testing.
+- No first-week wording or timing decision remains open. Authenticated GHL sync and the separate platform-limited runtime verification remain implementation work, not owner decisions.
 
 ## Peter summary boundary
 

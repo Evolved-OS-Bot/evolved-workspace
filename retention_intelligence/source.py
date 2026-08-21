@@ -53,7 +53,8 @@ def run_source_reconciliation(settings: Settings) -> dict[str, Any]:
     controls = local_or_configured_controls(settings)
     summary = reconciliation.run_reconciliation(
         database=path,
-        fetch_invoices=False,
+        fetch_invoices=True,
+        invoice_lookback_days=35,
         **controls,
     )
     summary["account_classifications"] = controls["account_classifications"]

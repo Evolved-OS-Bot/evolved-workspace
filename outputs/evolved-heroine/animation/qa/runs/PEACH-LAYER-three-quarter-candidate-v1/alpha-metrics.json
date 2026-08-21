@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "width": 1254,
+  "height": 1254,
+  "pixel_format": "rgba",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "alpha_average": 54.4096,
+  "corner_alpha": {
+    "top_left": 0,
+    "top_right": 0,
+    "bottom_left": 0,
+    "bottom_right": 0
+  },
+  "colour_metadata": {
+    "declared_profile": null,
+    "intended_interpretation": "sRGB",
+    "required_next_action": "tag the layered source and verified exports explicitly as sRGB"
+  }
+}

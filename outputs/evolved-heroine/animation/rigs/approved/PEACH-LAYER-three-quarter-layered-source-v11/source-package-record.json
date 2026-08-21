@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+  "status": "awaiting_human_layered_source_approval",
+  "created_at": "2026-08-04T19:46:47+10:00",
+  "correction_of": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "approved_snapshot_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10",
+    "approved_snapshot_unchanged": true
+  },
+  "package": {
+    "layer_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/layer-manifest.json",
+      "sha256": "b6c76d06bb4656683b4d9dbaaea7af5849fbbfa425cf625267f44d5c75e5e58f"
+    },
+    "openraster": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/PEACH-LAYER-three-quarter-layered-source-v11.ora",
+      "sha256": "10dc97f922a9932507b2bd12850ffc91fca2b7a60b20d280d7f85928d890bc42"
+    },
+    "neutral_recomposite": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/PEACH-LAYER-three-quarter-layered-source-v11-neutral-recomposite.png",
+      "sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536"
+    },
+    "layer_count": 29,
+    "layer_format": "1254x1254 8-bit RGBA PNG with embedded sRGB profile"
+  },
+  "controls": {
+    "horizontal_flip_allowed": false,
+    "negative_x_scale_allowed": false,
+    "left_shoe_brand_layer_unchanged": true,
+    "human_approval_required_before_rig_use": true
+  },
+  "qa_report": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v11/qa-report.json",
+  "promotion_blocked_until_human_approval": true
+}

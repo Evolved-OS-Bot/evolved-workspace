@@ -45,6 +45,14 @@ def _bool(name: str, default: bool = False) -> bool:
     return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _cron_hours(name: str, default: str) -> str:
+    raw = os.getenv(name, default)
+    hours = sorted({int(value.strip()) for value in raw.split(",")})
+    if not hours or any(hour < 0 or hour > 23 for hour in hours):
+        raise RuntimeError(f"{name} must contain hours from 0 to 23")
+    return ",".join(str(hour) for hour in hours)
+
+
 def load_local_env(path: Path) -> None:
     if not path.exists():
         return
@@ -67,6 +75,7 @@ class Settings:
     email_from: str
     shadow_mode: bool
     scheduler_enabled: bool
+    roster_refresh_hours: str
     report_dry_run: bool
     pattern_confidence: float
     horizon_weeks: int
@@ -85,6 +94,7 @@ class Settings:
     trainerize_api_token: str | None
     trainerize_api_base_url: str
     trainerize_location_id: int | None
+    revenue_gap_data_dir: str
 
     @property
     def timezone(self):
@@ -115,6 +125,9 @@ class Settings:
             email_from=os.getenv("EMAIL_FROM", "The Evolved <info@theevolvedgym.com.au>"),
             shadow_mode=shadow,
             scheduler_enabled=_bool("ENABLE_SCHEDULER", True),
+            roster_refresh_hours=_cron_hours(
+                "ROSTER_REFRESH_HOURS", "6,18"
+            ),
             report_dry_run=_bool("REPORT_DRY_RUN", False),
             pattern_confidence=float(os.getenv("PATTERN_CONFIDENCE", "0.80")),
             horizon_weeks=int(os.getenv("HORIZON_WEEKS", "13")),
@@ -151,5 +164,8 @@ class Settings:
                 int(os.environ["TRAINERIZE_LOCATION_ID"])
                 if os.getenv("TRAINERIZE_LOCATION_ID", "").isdigit()
                 else None
+            ),
+            revenue_gap_data_dir=os.getenv(
+                "REVENUE_GAP_DATA_DIR", "/data/revenue-gap-control"
             ),
         )

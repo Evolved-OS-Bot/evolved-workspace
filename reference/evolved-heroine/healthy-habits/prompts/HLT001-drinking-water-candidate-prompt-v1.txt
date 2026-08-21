@@ -1,0 +1,15 @@
+Create HLT001, Drinking Water, as the established peach-bodied Evolved Heroine in a relaxed upright three-quarter pose with shallow fitted black athletic shorts. One white-gloved hand tilts exactly one plain reusable water bottle toward her mouth while her eyes and face remain recognisable; the other arm rests naturally.
+
+Reference roles: CHR002 controls identity, relaxed stance and original 2D vintage style. FND002 controls peach construction only. FND004 controls hard cream, peach, coral and deep-plum value separation. FUN003 supports approved shorts, palette and original ink treatment only. Ignore all weights, exercise poses, floors and backgrounds.
+
+Peach is the complete body, never a head on a human torso. Use simple rounded tube limbs, shallow black shorts, white gloves and pink vintage sneakers. No human torso, chest, waist, hips, pelvis, groin or anatomical legs.
+
+Use the original hand-inked flat 2D vintage athletic-mascot treatment with heavy deep-plum contours, hard cel values, sparse carved-print slashes and restrained eyes. No 3D, Pixar-like, glossy, soft-gradient or cinematic rendering.
+
+Allowed prop: one plain reusable water bottle.
+
+Forbidden: protein shaker, cup, straw, liquid spill, brand label, gym equipment, clipboard, text, scenery, floor, shadow, badge, border or extra object.
+
+The word `Evolved` may appear only on the anatomical left shoe's outside panel when visible; otherwise omit it. No pseudo-text.
+
+Use a full isolated character on a perfectly uniform flat `#ff00ff` chroma background with no floor, shadow, gradient, texture or reflection.

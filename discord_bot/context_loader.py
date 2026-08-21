@@ -17,6 +17,13 @@ CONTEXT_FILES = [
     "policies.md",
 ]
 
+SHARE_SAFE_REPORTS = [
+    WORKSPACE_ROOT
+    / "outputs"
+    / "reporting-control-plane"
+    / "latest-executive-brief.md",
+]
+
 
 def load_journal_entries(max_entries=5):
     """Load the most recent daily journal entries."""
@@ -43,9 +50,9 @@ def build_system_prompt():
         "",
         "CRITICAL RULES:",
         "1. Your business context, KPI data, and metrics are loaded below in this system prompt. You have the data. Use it.",
-        "2. NEVER say you lack data, cannot access information, or need Peter to share numbers. The numbers are already here.",
-        "3. NEVER suggest Peter paste or share data — it is already loaded.",
-        "4. Answer data questions directly from the current-data.md section below without any preamble about limitations.",
+        "2. Use the reporting period, freshness and limitations stated in the loaded report contracts. Never silently present a stale or unsynchronised report as current.",
+        "3. NEVER suggest Peter paste or share KPI data that is already loaded.",
+        "4. Answer KPI questions directly from current-data.md and use the executive reporting brief for cross-report health.",
         "5. Keep responses concise — aim for under 800 words. Lead with the answer, not caveats.",
         "",
         "## Bot Capabilities",
@@ -61,6 +68,10 @@ def build_system_prompt():
         path = CONTEXT_DIR / filename
         if path.exists():
             parts.append(f"## {filename}\n\n{path.read_text().strip()}")
+
+    for path in SHARE_SAFE_REPORTS:
+        if path.exists():
+            parts.append(f"## {path.name}\n\n{path.read_text().strip()}")
 
     parts.append(load_journal_entries())
 

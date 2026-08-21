@@ -1,0 +1,17 @@
+{
+    "programs": [
+
+    ],
+    "stream_groups": [
+
+    ],
+    "streams": [
+        {
+            "codec_name": "png",
+            "width": 1254,
+            "height": 1254,
+            "pix_fmt": "rgba",
+            "color_space": "gbr"
+        }
+    ]
+}

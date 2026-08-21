@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+  "record_status": "active",
+  "immutable": true,
+  "recorded_at": "2026-08-04T15:26:56+10:00",
+  "approver": {
+    "name": "Peter Brown",
+    "role": "owner"
+  },
+  "decision": "approved",
+  "approval_scope": "editable_layered_source_and_identity_base_for_apple_motion_rig_construction",
+  "approval_text_verbatim": "Approve PEACH-LAYER-three-quarter-layered-source-v10 as the editable layered source and identity base for Apple Motion rig construction. This does not approve the rig, provisional pivots, root-cover masks, motions, expressions, templates, exports, or deployment.",
+  "artifact": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "approved_package_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/source-package-record.json",
+      "sha256": "d4e46a00e8f4cb9f0cff02e3946eeb2640a870e98806aa473a11247a3b8a775b"
+    },
+    "layer_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/layer-manifest.json",
+      "sha256": "18753d3c2d08e0fe697e3400bf4477f2b79acbc74abd16699437afdafba0d3f2"
+    },
+    "openraster_package": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/PEACH-LAYER-three-quarter-layered-source-v10.ora",
+      "sha256": "8e59ad7579a5e93bd084b17832972d5bfe6577e3ce7dd0fcf68dc8222d1cdc2f"
+    },
+    "neutral_recomposite": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/PEACH-LAYER-three-quarter-layered-source-v10-neutral-recomposite.png",
+      "sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180",
+      "differing_visible_pixels_from_approved_target": 0
+    },
+    "layer_count": 29,
+    "technical_qa_result_at_record_time": "pass"
+  },
+  "qa_evidence": [
+    {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v10/qa-report.json",
+      "sha256": "f2b37d34b029e200c80808e8d717dbdc991bda0044a36a4d504d4ae8a3638c6a"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v10/articulation-source-test-v2.json",
+      "sha256": "572c8b42d2c64f17261d8ab004ddb1a6b0e199e8c789e521ef64c71f22591f1a"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v10/articulation-visual-adjudication-v1.json",
+      "sha256": "81069bf96e196ad15e7597f3c2edad5f1f05097543bf23405a232a1d379ee4d8"
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-review.md",
+      "sha256": "5b7404687146f8a80f9b47079b71469295c68706fbef511932770bd3f4eb1179"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-light-dark-checker.png",
+      "sha256": "f300962fe16b726c14577c700f92d3507c3fa0eedcafc8d4da24a5ca865ebbbd"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-neutral-difference.png",
+      "sha256": "a9dce9429fa4362e6a44f3751294e9b85ecdefeac1ac5bd0eaf5a65dbe71b39d"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-exploded-components.png",
+      "sha256": "89357cbb5ba8598d2e290aad63241420605ea4af1935de29994d3faf83a71c69"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-hidden-restoration-exposure.png",
+      "sha256": "0cd49a05e7a0fb90c1986d1179939f00daa33b4192527d4c9fa90eacc30bdd22"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v10-articulation-stress-sheet-v2.png",
+      "sha256": "25bec299b6fbf64f57c30a16dc3535e3f6a5777409dbc61eea1043edcd4b54a4"
+    }
+  ],
+  "approval_scope_excludes": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ],
+  "known_unapproved_rig_followup": {
+    "issue": "A 12-degree outward leg-root stress rotation exposes wedges at the shorts openings with the tested provisional pivot heights.",
+    "required_resolution": "Build and visually verify native Motion root-cover masks or equivalent linked cover behavior before rig approval.",
+    "effect_on_this_approval": "none; this approval is limited to the editable layered source and animation identity base"
+  },
+  "identity_authority_limit": "This artifact is the approved animation identity base. It does not replace or modify any approved static master.",
+  "next_required_gate": {
+    "artifact_class": "apple_motion_rig",
+    "requirement": "Technical QA and Peter Brown visual approval of the editable Apple Motion rig, including resolved root-cover behavior and final pivots, before reusable motion production."
+  },
+  "provenance": {
+    "source_host_id": "slingshot:env_e_6a6e5522cfa48331922b805b3d4a94e7",
+    "source_thread_id": "019f6a36-089f-7622-aab9-9fe0e7a18f14",
+    "recorded_by_task": "/root/qa_architecture"
+  },
+  "supersedes_approval_record_id": null
+}

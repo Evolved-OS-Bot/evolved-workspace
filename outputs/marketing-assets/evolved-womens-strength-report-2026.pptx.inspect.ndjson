@@ -1,0 +1,152 @@
+{"kind":"deck","id":"pr/rmetyh","name":"Deck"}
+{"kind":"layout","layoutId":"2a825d0b-79ba-4031-bb62-b72b08e48a1e","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"f2e22307-d3ab-412e-8255-9ee096d4531c","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/l82svg","slide":1,"title":"THE EVOLVED WOMEN'S STRENGTH REPORT 2026","textShapes":14}
+{"kind":"textbox","id":"sh/uxgbil4b","slide":1,"name":"kicker-The Evolved Wo","text":"THE EVOLVED WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED WOMEN'S STRENGTH REPORT 2026","textChars":40,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/h0rud0n2","slide":1,"name":"cover-line-1","text":"We've always","textPreview":"We've always","textChars":12,"textLines":1,"bbox":[70,160,940,115]}
+{"kind":"textbox","id":"sh/gzidkvmh","slide":1,"name":"cover-line-2","text":"measured.","textPreview":"measured.","textChars":9,"textLines":1,"bbox":[70,262,940,115]}
+{"kind":"textbox","id":"sh/329cfq58","slide":1,"name":"cover-line-3","text":"Now we've","textPreview":"Now we've","textChars":9,"textLines":1,"bbox":[70,392,940,115]}
+{"kind":"textbox","id":"sh/i10vm54n","slide":1,"name":"cover-line-4","text":"analysed.","textPreview":"analysed.","textChars":9,"textLines":1,"bbox":[70,494,940,115]}
+{"kind":"shape","id":"sh/54ruh0ny","slide":1,"name":"cover-rule","bbox":[70,650,940,2]}
+{"kind":"textbox","id":"sh/43idovmt","slide":1,"name":"cover-stat-0","text":"25,186","textPreview":"25,186","textChars":6,"textLines":1,"bbox":[70,700,450,108]}
+{"kind":"textbox","id":"sh/j65c365o","slide":1,"name":"cover-stat-label-0","text":"TRACKED WORKOUTS","textPreview":"TRACKED WORKOUTS","textChars":16,"textLines":1,"bbox":[560,724,450,58]}
+{"kind":"textbox","id":"sh/y5wba14j","slide":1,"name":"cover-stat-1","text":"539,694","textPreview":"539,694","textChars":7,"textLines":1,"bbox":[70,860,450,108]}
+{"kind":"textbox","id":"sh/0f25sbqp","slide":1,"name":"cover-stat-label-1","text":"RECORDED EXERCISE RESULTS","textPreview":"RECORDED EXERCISE RESULTS","textChars":25,"textLines":1,"bbox":[560,884,450,58]}
+{"kind":"textbox","id":"sh/1gbm1gra","slide":1,"name":"cover-stat-2","text":"484","textPreview":"484","textChars":3,"textLines":1,"bbox":[70,1020,450,108]}
+{"kind":"textbox","id":"sh/ed0nq18j","slide":1,"name":"cover-stat-label-2","text":"WOMEN WITH COMPLETED TRAINING HISTORIES","textPreview":"WOMEN WITH COMPLETED TRAINING HISTORIES","textChars":39,"textLines":1,"bbox":[560,1044,450,58]}
+{"kind":"textbox","id":"sh/ze94z694","slide":1,"name":"cover-question","text":"What changed after six months of structured strength training?","textPreview":"What changed after six months of structured strength training?","textChars":62,"textLines":1,"bbox":[70,1183,940,48]}
+{"kind":"shape","id":"sh/oj25wbql","slide":1,"name":"footer-rule-1","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/94b65gr6","slide":1,"name":"footer-label-1","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/mhknul8v","slide":1,"name":"footer-page-1","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"notes","id":"nt/l82svg","slide":1,"text":""}
+{"kind":"slide","id":"sl/h4xzl6","slide":2,"title":"THE QUESTION","textShapes":10}
+{"kind":"textbox","id":"sh/qxs3i1kn","slide":2,"name":"kicker-The question","text":"THE QUESTION","textPreview":"THE QUESTION","textChars":12,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/d0j2dwje","slide":2,"name":"question-head","text":"Most gyms show\nbefore & after photos.","textPreview":"Most gyms show | before & after photos.","textChars":37,"textLines":2,"bbox":[70,160,940,230]}
+{"kind":"textbox","id":"sh/szalkb2t","slide":2,"name":"question-sub","text":"We wanted to know:","textPreview":"We wanted to know:","textChars":18,"textLines":1,"bbox":[70,470,500,55]}
+{"kind":"textbox","id":"sh/3uhk7m1c","slide":2,"name":"question-body","text":"What happens in the training logs when women consistently strength train?","textPreview":"What happens in the training logs when women consistently strength train?","textChars":73,"textLines":1,"bbox":[70,550,900,250]}
+{"kind":"shape","id":"sh/it8jehkr","slide":2,"name":"timeline","bbox":[70,930,940,3]}
+{"kind":"shape","id":"sh/5wz29wj2","slide":2,"name":"tick-0","bbox":[70,915,3,34]}
+{"kind":"shape","id":"sh/4vq1gr2h","slide":2,"name":"tick-1","bbox":[383,915,3,34]}
+{"kind":"shape","id":"sh/nqlkjq1g","slide":2,"name":"tick-2","bbox":[696,915,3,34]}
+{"kind":"shape","id":"sh/2pc3qlkv","slide":2,"name":"tick-3","bbox":[1007,915,3,34]}
+{"kind":"textbox","id":"sh/gb65cved","slide":2,"name":"timeline-start","text":"BASELINE","textPreview":"BASELINE","textChars":8,"textLines":1,"bbox":[70,960,200,34]}
+{"kind":"textbox","id":"sh/1czmlgfy","slide":2,"name":"timeline-middle","text":"TRACKED TRAINING","textPreview":"TRACKED TRAINING","textChars":16,"textLines":1,"bbox":[405,960,300,34]}
+{"kind":"textbox","id":"sh/e9onalw7","slide":2,"name":"timeline-end","text":"6 MONTHS","textPreview":"6 MONTHS","textChars":8,"textLines":1,"bbox":[810,960,200,34]}
+{"kind":"textbox","id":"sh/fax4jqxs","slide":2,"name":"audit-label","text":"RETROSPECTIVE TRAINING-LOG AUDIT","textPreview":"RETROSPECTIVE TRAINING-LOG AUDIT","textChars":32,"textLines":1,"bbox":[70,1100,940,34]}
+{"kind":"shape","id":"sh/s7658beh","slide":2,"name":"footer-rule-2","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/t8fmhgfm","slide":2,"name":"footer-label-2","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/6lon61wb","slide":2,"name":"footer-page-2","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"notes","id":"nt/h4xzl6","slide":2,"text":""}
+{"kind":"slide","id":"sl/is4qke","slide":3,"title":"SIX-MONTH FINDING  |  N = 143","textShapes":8}
+{"kind":"textbox","id":"sh/zu5cjq98","slide":3,"name":"kicker-Six-month find","text":"SIX-MONTH FINDING  |  N = 143","textPreview":"SIX-MONTH FINDING  |  N = 143","textChars":29,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/0vedsvat","slide":3,"name":"movement-3","text":"BENCH PRESS","textPreview":"BENCH PRESS","textChars":11,"textLines":1,"bbox":[70,150,940,78]}
+{"kind":"textbox","id":"sh/1gnul0re","slide":3,"name":"movement-pct-3","text":"+14.3%","textPreview":"+14.3%","textChars":6,"textLines":1,"bbox":[70,275,940,250]}
+{"kind":"textbox","id":"sh/qpcvmlsr","slide":3,"name":"movement-label-3","text":"MEDIAN ESTIMATED STRENGTH CHANGE","textPreview":"MEDIAN ESTIMATED STRENGTH CHANGE","textChars":32,"textLines":1,"bbox":[70,580,940,42]}
+{"kind":"textbox","id":"sh/rqlcfq9c","slide":3,"name":"movement-time-3","text":"AFTER SIX MONTHS","textPreview":"AFTER SIX MONTHS","textChars":16,"textLines":1,"bbox":[70,630,940,42]}
+{"kind":"textbox","id":"sh/credobax","slide":3,"name":"movement-note-3","text":"143 women with comparable six-month records.","textPreview":"143 women with comparable six-month records.","textChars":44,"textLines":1,"bbox":[70,715,940,80]}
+{"kind":"shape","id":"sh/algvy5sv","slide":3,"name":"footer-rule-3","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/bmpwra9g","slide":3,"name":"footer-label-3","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/fet4nyts","slide":3,"name":"footer-page-3","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"chart","id":"ch/x4f2hcny","slide":3,"name":"","chartType":"bar","bbox":[70,875,940,320]}
+{"kind":"notes","id":"nt/is4qke","slide":3,"text":""}
+{"kind":"slide","id":"sl/eg8lm3","slide":4,"title":"SIX-MONTH FINDING  |  N = 76","textShapes":8}
+{"kind":"textbox","id":"sh/idw3ylgr","slide":4,"name":"kicker-Six-month find","text":"SIX-MONTH FINDING  |  N = 76","textPreview":"SIX-MONTH FINDING  |  N = 76","textChars":28,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/5g7m90z2","slide":4,"name":"movement-4","text":"DEADLIFT","textPreview":"DEADLIFT","textChars":8,"textLines":1,"bbox":[70,150,940,78]}
+{"kind":"textbox","id":"sh/4fel0vyh","slide":4,"name":"movement-pct-4","text":"+14.2%","textPreview":"+14.2%","textChars":6,"textLines":1,"bbox":[70,275,940,250]}
+{"kind":"textbox","id":"sh/rip4bah8","slide":4,"name":"movement-label-4","text":"MEDIAN ESTIMATED STRENGTH CHANGE","textPreview":"MEDIAN ESTIMATED STRENGTH CHANGE","textChars":32,"textLines":1,"bbox":[70,580,940,42]}
+{"kind":"textbox","id":"sh/6hgn25gn","slide":4,"name":"movement-time-4","text":"AFTER SIX MONTHS","textPreview":"AFTER SIX MONTHS","textChars":16,"textLines":1,"bbox":[70,630,940,42]}
+{"kind":"textbox","id":"sh/tk7md0ze","slide":4,"name":"movement-note-4","text":"76 women with paired six-month measurements.","textPreview":"76 women with paired six-month measurements.","textChars":44,"textLines":1,"bbox":[70,715,940,80]}
+{"kind":"shape","id":"sh/fmp4fah4","slide":4,"name":"footer-rule-4","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/elgn65gj","slide":4,"name":"footer-label-4","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/k32do369","slide":4,"name":"footer-page-4","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"chart","id":"ch/sbq50rup","slide":4,"name":"","chartType":"bar","bbox":[70,875,940,320]}
+{"kind":"notes","id":"nt/eg8lm3","slide":4,"text":""}
+{"kind":"slide","id":"sl/0k4lpm","slide":5,"title":"SIX-MONTH FINDING  |  N = 70","textShapes":9}
+{"kind":"textbox","id":"sh/wjyhwfi9","slide":5,"name":"kicker-Six-month find","text":"SIX-MONTH FINDING  |  N = 70","textPreview":"SIX-MONTH FINDING  |  N = 70","textChars":28,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/vipgnaho","slide":5,"name":"movement-5","text":"ROMANIAN DEADLIFT","textPreview":"ROMANIAN DEADLIFT","textChars":17,"textLines":1,"bbox":[70,150,940,78]}
+{"kind":"textbox","id":"sh/ahgzup0j","slide":5,"name":"movement-pct-5","text":"+46.0%","textPreview":"+46.0%","textChars":6,"textLines":1,"bbox":[70,275,940,250]}
+{"kind":"shape","id":"sh/9wnylkzy","slide":5,"name":"rdl-accent","bbox":[70,548,940,15]}
+{"kind":"textbox","id":"sh/8vehsfid","slide":5,"name":"movement-label-5","text":"MEDIAN ESTIMATED STRENGTH CHANGE","textPreview":"MEDIAN ESTIMATED STRENGTH CHANGE","textChars":32,"textLines":1,"bbox":[70,580,940,42]}
+{"kind":"textbox","id":"sh/nu5gjahs","slide":5,"name":"movement-time-5","text":"AFTER SIX MONTHS","textPreview":"AFTER SIX MONTHS","textChars":16,"textLines":1,"bbox":[70,630,940,42]}
+{"kind":"textbox","id":"sh/mtwfq507","slide":5,"name":"movement-note-5","text":"70 women with comparable six-month records.","textPreview":"70 women with comparable six-month records.","textChars":43,"textLines":1,"bbox":[70,715,940,80]}
+{"kind":"textbox","id":"sh/tsrix4z2","slide":5,"name":"movement-caveat-5","text":"Large relative gain; lower starting loads and programming progression may contribute.","textPreview":"Large relative gain; lower starting loads and programming progression may contribute.","textChars":85,"textLines":1,"bbox":[70,790,940,58]}
+{"kind":"shape","id":"sh/uxk7ah8n","slide":5,"name":"footer-rule-5","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/vit8jm9s","slide":5,"name":"footer-label-5","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/wj2pcrqd","slide":5,"name":"footer-page-5","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"chart","id":"ch/0b2lszmp","slide":5,"name":"","chartType":"bar","bbox":[70,875,940,320]}
+{"kind":"notes","id":"nt/0k4lpm","slide":5,"text":""}
+{"kind":"slide","id":"sl/hd0ga3","slide":6,"title":"SIX-MONTH FINDING  |  N = 129","textShapes":9}
+{"kind":"textbox","id":"sh/5gb2hgzq","slide":6,"name":"kicker-Six-month find","text":"SIX-MONTH FINDING  |  N = 129","textPreview":"SIX-MONTH FINDING  |  N = 129","textChars":29,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/itkjml0z","slide":6,"name":"movement-6","text":"CANONICAL NEXUS SQUAT","textPreview":"CANONICAL NEXUS SQUAT","textChars":21,"textLines":1,"bbox":[70,150,940,78]}
+{"kind":"textbox","id":"sh/3utkf6hk","slide":6,"name":"movement-pct-6","text":"+35.7%","textPreview":"+35.7%","textChars":6,"textLines":1,"bbox":[70,275,940,250]}
+{"kind":"textbox","id":"sh/gr21kbit","slide":6,"name":"movement-label-6","text":"MEDIAN ESTIMATED STRENGTH CHANGE","textPreview":"MEDIAN ESTIMATED STRENGTH CHANGE","textChars":32,"textLines":1,"bbox":[70,580,940,42]}
+{"kind":"textbox","id":"sh/hsb2dgze","slide":6,"name":"movement-time-6","text":"AFTER SIX MONTHS","textPreview":"AFTER SIX MONTHS","textChars":16,"textLines":1,"bbox":[70,630,940,42]}
+{"kind":"textbox","id":"sh/up0ji103","slide":6,"name":"movement-note-6","text":"129 women with paired six-month measurements.","textPreview":"129 women with paired six-month measurements.","textChars":45,"textLines":1,"bbox":[70,715,940,80]}
+{"kind":"textbox","id":"sh/vqtkb6h8","slide":6,"name":"movement-caveat-6","text":"Combines coach-confirmed Nexus, front-squat and back-squat recording aliases.","textPreview":"Combines coach-confirmed Nexus, front-squat and back-squat recording aliases.","textChars":77,"textLines":1,"bbox":[70,790,940,58]}
+{"kind":"shape","id":"sh/tor29wzi","slide":6,"name":"footer-rule-6","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/hw3u9s32","slide":6,"name":"footer-label-6","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/gvutgn2h","slide":6,"name":"footer-page-6","text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"chart","id":"ch/gjelwveh","slide":6,"name":"","chartType":"bar","bbox":[70,875,940,320]}
+{"kind":"notes","id":"nt/hd0ga3","slide":6,"text":""}
+{"kind":"slide","id":"sl/zw1vz1","slide":7,"title":"THE SCALE OF THE AUDIT","textShapes":14}
+{"kind":"textbox","id":"sh/lgzelgf2","slide":7,"name":"kicker-The scale of t","text":"THE SCALE OF THE AUDIT","textPreview":"THE SCALE OF THE AUDIT","textChars":22,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/yd8fa1wr","slide":7,"name":"scale-head-1","text":"This wasn't one","textPreview":"This wasn't one","textChars":15,"textLines":1,"bbox":[70,150,940,95]}
+{"kind":"textbox","id":"sh/jehwj6xw","slide":7,"name":"scale-head-2","text":"transformation.","textPreview":"transformation.","textChars":15,"textLines":1,"bbox":[70,235,940,95]}
+{"kind":"textbox","id":"sh/8jqxgvet","slide":7,"name":"scale-lead","text":"This was...","textPreview":"This was...","textChars":11,"textLines":1,"bbox":[70,360,940,55]}
+{"kind":"shape","id":"sh/tkjep0fe","slide":7,"name":"scale-v","bbox":[540,455,2,605]}
+{"kind":"shape","id":"sh/6h8felwn","slide":7,"name":"scale-h","bbox":[70,755,940,2]}
+{"kind":"textbox","id":"sh/7ihwnqx8","slide":7,"name":"scale-num-0","text":"25,186","textPreview":"25,186","textChars":6,"textLines":1,"bbox":[70,465,410,110]}
+{"kind":"textbox","id":"sh/g7axkvep","slide":7,"name":"scale-label-0","text":"TRACKED WORKOUTS","textPreview":"TRACKED WORKOUTS","textChars":16,"textLines":1,"bbox":[70,585,400,72]}
+{"kind":"textbox","id":"sh/h8jyt0fa","slide":7,"name":"scale-num-1","text":"539,694","textPreview":"539,694","textChars":7,"textLines":1,"bbox":[580,465,410,110]}
+{"kind":"textbox","id":"sh/p0j2tofu","slide":7,"name":"scale-label-1","text":"RECORDED EXERCISE RESULTS","textPreview":"RECORDED EXERCISE RESULTS","textChars":25,"textLines":1,"bbox":[580,585,400,72]}
+{"kind":"textbox","id":"sh/4zal0jy9","slide":7,"name":"scale-num-2","text":"22,764","textPreview":"22,764","textChars":6,"textLines":1,"bbox":[70,795,410,110]}
+{"kind":"textbox","id":"sh/3yhkrexo","slide":7,"name":"scale-label-2","text":"DETAILED WORKOUTS RECOVERED","textPreview":"DETAILED WORKOUTS RECOVERED","textChars":27,"textLines":1,"bbox":[70,915,400,72]}
+{"kind":"textbox","id":"sh/2x83y9gj","slide":7,"name":"scale-num-3","text":"484","textPreview":"484","textChars":3,"textLines":1,"bbox":[580,795,410,110]}
+{"kind":"textbox","id":"sh/doj2xof6","slide":7,"name":"scale-label-3","text":"WOMEN WITH COMPLETED TRAINING HISTORIES","textPreview":"WOMEN WITH COMPLETED TRAINING HISTORIES","textChars":39,"textLines":1,"bbox":[580,915,400,72]}
+{"kind":"shape","id":"sh/c3al4jyl","slide":7,"name":"footer-rule-7","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/r21kvex0","slide":7,"name":"footer-label-7","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/q1s32tgf","slide":7,"name":"footer-page-7","text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"notes","id":"nt/zw1vz1","slide":7,"text":""}
+{"kind":"slide","id":"sl/t7lp52","slide":8,"title":"WHAT WE CHOOSE TO VALUE","textShapes":9}
+{"kind":"textbox","id":"sh/kja5szid","slide":8,"name":"kicker-What we choose","text":"WHAT WE CHOOSE TO VALUE","textPreview":"WHAT WE CHOOSE TO VALUE","textChars":23,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/zi14juhs","slide":8,"name":"philosophy-head","text":"The story is bigger than\ncalories, sweat or scales.","textPreview":"The story is bigger than | calories, sweat or scales.","textChars":51,"textLines":2,"bbox":[70,160,940,235]}
+{"kind":"textbox","id":"sh/yh8nqp07","slide":8,"name":"philosophy-lead","text":"WE MEASURE","textPreview":"WE MEASURE","textChars":10,"textLines":1,"bbox":[70,500,940,44]}
+{"kind":"textbox","id":"sh/98j6p4zu","slide":8,"name":"value-0","text":"CAPABILITY.","textPreview":"CAPABILITY.","textChars":11,"textLines":1,"bbox":[70,570,940,100]}
+{"kind":"textbox","id":"sh/87a5wji9","slide":8,"name":"value-1","text":"STRENGTH.","textPreview":"STRENGTH.","textChars":9,"textLines":1,"bbox":[70,705,940,100]}
+{"kind":"textbox","id":"sh/761oneho","slide":8,"name":"value-2","text":"LONGEVITY.","textPreview":"LONGEVITY.","textChars":10,"textLines":1,"bbox":[70,840,940,100]}
+{"kind":"textbox","id":"sh/mlsnu903","slide":8,"name":"value-3","text":"CONFIDENCE.","textPreview":"CONFIDENCE.","textChars":11,"textLines":1,"bbox":[70,975,940,100]}
+{"kind":"shape","id":"sh/pczmdkjq","slide":8,"name":"footer-rule-8","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/obq5kfi5","slide":8,"name":"footer-label-8","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/qd8v6psr","slide":8,"name":"footer-page-8","text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"notes","id":"nt/t7lp52","slide":8,"text":""}
+{"kind":"slide","id":"sl/g6czi2","slide":9,"title":"METHOD BEFORE MARKETING","textShapes":12}
+{"kind":"textbox","id":"sh/ze103a5c","slide":9,"name":"kicker-Method before ","text":"METHOD BEFORE MARKETING","textPreview":"METHOD BEFORE MARKETING","textChars":23,"textLines":1,"bbox":[80,72,810,38]}
+{"kind":"textbox","id":"sh/kfa1wfmx","slide":9,"name":"method-head-1","text":"This isn't motivation.","textPreview":"This isn't motivation.","textChars":22,"textLines":1,"bbox":[70,160,940,110]}
+{"kind":"textbox","id":"sh/lgji5kni","slide":9,"name":"method-head-2","text":"This is measurement.","textPreview":"This is measurement.","textChars":20,"textLines":1,"bbox":[70,270,940,110]}
+{"kind":"textbox","id":"sh/mhcjyp4n","slide":9,"name":"method-num-0","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[70,515,80,52]}
+{"kind":"textbox","id":"sh/7il0ra58","slide":9,"name":"method-step-0","text":"STRUCTURED PROGRESSIVE PROGRAMMING","textPreview":"STRUCTURED PROGRESSIVE PROGRAMMING","textChars":34,"textLines":1,"bbox":[170,515,840,70]}
+{"kind":"shape","id":"sh/8ju10fmt","slide":9,"name":"method-rule-0","bbox":[170,593,840,2]}
+{"kind":"textbox","id":"sh/9k3itkne","slide":9,"name":"method-num-1","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[70,665,80,52]}
+{"kind":"textbox","id":"sh/2l8zmloj","slide":9,"name":"method-step-1","text":"WORKOUTS TRACKED","textPreview":"WORKOUTS TRACKED","textChars":16,"textLines":1,"bbox":[170,665,840,70]}
+{"kind":"shape","id":"sh/nmh0vq54","slide":9,"name":"method-rule-1","bbox":[170,743,840,2]}
+{"kind":"textbox","id":"sh/nutkfa58","slide":9,"name":"method-num-2","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[70,815,80,52]}
+{"kind":"textbox","id":"sh/mtkjm54n","slide":9,"name":"method-step-2","text":"RESULTS RECORDED","textPreview":"RESULTS RECORDED","textChars":16,"textLines":1,"bbox":[170,815,840,70]}
+{"kind":"shape","id":"sh/9wv2hkny","slide":9,"name":"method-rule-2","bbox":[170,893,840,2]}
+{"kind":"textbox","id":"sh/8vm1ofmd","slide":9,"name":"method-disclaimer","text":"Internal retrospective observational audit of accessible training logs, not a controlled scientific study. Findings describe women with comparable records and do not establish causation.","textPreview":"Internal retrospective observational audit of accessible training logs, not a controlled scientific study. Findings describe women with c...","textChars":186,"textLines":1,"bbox":[70,1045,940,115]}
+{"kind":"shape","id":"sh/z6tkba5w","slide":9,"name":"footer-rule-9","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/y5kji54b","slide":9,"name":"footer-label-9","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/lsb2dkn2","slide":9,"name":"footer-page-9","text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"notes","id":"nt/g6czi2","slide":9,"text":""}
+{"kind":"slide","id":"sl/b7v21g","slide":10,"title":"THE NEXT COHORT","textShapes":9}
+{"kind":"textbox","id":"sh/veho3atg","slide":10,"name":"cta-kicker","text":"THE NEXT COHORT","textPreview":"THE NEXT COHORT","textChars":15,"textLines":1,"bbox":[110,72,780,38]}
+{"kind":"textbox","id":"sh/wfq5cfu1","slide":10,"name":"cta-head","text":"Currently at\ncapacity.","textPreview":"Currently at | capacity.","textChars":22,"textLines":2,"bbox":[70,170,940,250]}
+{"kind":"shape","id":"sh/hgz650bm","slide":10,"name":"cta-accent","bbox":[70,465,170,12]}
+{"kind":"textbox","id":"sh/ihsne5c7","slide":10,"name":"cta-sub","text":"A small number of spots open each month.","textPreview":"A small number of spots open each month.","textChars":40,"textLines":1,"bbox":[70,540,850,95]}
+{"kind":"textbox","id":"sh/ji1o7ats","slide":10,"name":"cta-question","text":"Want to become part of the next\nWomen's Strength Report?","textPreview":"Want to become part of the next | Women's Strength Report?","textChars":56,"textLines":2,"bbox":[70,720,940,170]}
+{"kind":"textbox","id":"sh/43a5gfud","slide":10,"name":"cta-action","text":"JOIN THE WAITLIST","textPreview":"JOIN THE WAITLIST","textChars":17,"textLines":1,"bbox":[70,980,940,70]}
+{"kind":"textbox","id":"sh/54j69kbi","slide":10,"name":"cta-url","text":"theevolvedgym.com.au","textPreview":"theevolvedgym.com.au","textChars":20,"textLines":1,"bbox":[70,1085,940,60]}
+{"kind":"shape","id":"sh/ylon2lcn","slide":10,"name":"footer-rule-10","bbox":[70,1248,940,2]}
+{"kind":"textbox","id":"sh/zmx4vqt8","slide":10,"name":"footer-label-10","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1260,760,32]}
+{"kind":"textbox","id":"sh/7mdkzyd0","slide":10,"name":"footer-page-10","text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[930,1258,80,36]}
+{"kind":"textbox","id":"sh/6l4j6twf","slide":10,"name":"cta-footer-reinforce","text":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textPreview":"THE EVOLVED  |  WOMEN'S STRENGTH REPORT 2026","textChars":44,"textLines":1,"bbox":[70,1200,760,32]}
+{"kind":"notes","id":"nt/b7v21g","slide":10,"text":""}

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "manifest_id": "PEACH-source-reference-manifest-v1",
+  "revision": 1,
+  "references": [
+    {
+      "asset_id": "CHR002",
+      "path": "outputs/evolved-heroine/calibration/CHR002-original.png",
+      "sha256": "8a700ba4ebe835f936d99c335b6725fae585ddfb187f1bbd0f6ff61a8398249c",
+      "dimensions": [1024, 1536],
+      "role": ["identity_style", "neutral_face", "leaf_stem_identity"],
+      "ignore": ["front_pose", "ambient_backdrop", "glow", "floor_shadow"]
+    },
+    {
+      "asset_id": "CHR005",
+      "path": "outputs/evolved-heroine/calibration/CHR005-original.png",
+      "sha256": "4cb6ada3addcd7afe39bf4f277d03c16ff106e3a95adccadd37837eb13ef4c6c",
+      "dimensions": [1024, 1024],
+      "role": ["identity_style", "three_quarter_turn", "laterality", "left_shoe_orientation"],
+      "ignore": ["walking_pose", "floor_line", "ambient_backdrop", "shadow"]
+    },
+    {
+      "asset_id": "FND001",
+      "path": "outputs/evolved-heroine/calibration/FND001-original.png",
+      "sha256": "4d4cd49150fb1fcdf342037559f6628eaad45647f8516fc04ff2dabd75bf005e",
+      "dimensions": [1024, 1024],
+      "role": ["identity_style", "supporting_palette", "vintage_texture", "apparel", "limb_joins"],
+      "ignore": ["barbell", "crouch", "floor"]
+    },
+    {
+      "asset_id": "FND002",
+      "path": "outputs/evolved-heroine/calibration/FND002-original.png",
+      "sha256": "08f6b3b85a69e3f3f0a96910f19ff819da8c9aad0eb4bcad6fda08eed6091f8b",
+      "dimensions": [1024, 1024],
+      "role": ["construction", "body_contour", "lower_point", "shallow_shorts"],
+      "ignore": ["squat_pose", "barbell", "floor"]
+    },
+    {
+      "asset_id": "FND004",
+      "path": "outputs/evolved-heroine/calibration/FND004-original.png",
+      "sha256": "317071e8a4ccf290d8e937c6a740c12055710f244b0daf36b876a906cebe5990",
+      "dimensions": [1024, 1024],
+      "role": ["vintage_value", "hard_cel_regions", "ink_accents"],
+      "ignore": ["overhead_pose", "barbell", "one_leaf_visibility", "backdrop"]
+    },
+    {
+      "asset_id": "COA005",
+      "path": "outputs/evolved-heroine/approved/COA005-explaining-master-v1.png",
+      "sha256": "0b53bceeaa225df1c886337b1e272056792eb4450cb9584f1f7b5249bee55eda",
+      "dimensions": [1254, 1254],
+      "role": ["target_pose", "three_quarter_coaching_stance", "explaining_gesture"],
+      "style_authority": false
+    },
+    {
+      "asset_id": "COA007",
+      "path": "outputs/evolved-heroine/approved/COA007-listening-master-v1.png",
+      "sha256": "177ed5ba11a0c22142d6d7f40623ffcedb4cdfb9bab339d13407859070d947c2",
+      "dimensions": [1254, 1254],
+      "role": ["target_pose", "listening_gesture", "relaxed_left_forearm_glove"],
+      "style_authority": false
+    },
+    {
+      "asset_id": "FRD001",
+      "path": "outputs/evolved-heroine/approved/FRD001-wave-master-v3.png",
+      "sha256": "0c6296cccf709241b083a43fcd032bb30b870208ceefd4169c24ec0b3e99d20b",
+      "dimensions": [1254, 1254],
+      "role": ["implementation_benchmark", "wave", "left_shoe_brand_safeguard"],
+      "style_authority": false
+    },
+    {
+      "asset_id": "FRD002",
+      "path": "outputs/evolved-heroine/approved/FRD002-thumbs-up-master-v3.png",
+      "sha256": "121bb08d850339b774b68b6fa3fb47cee58677fa5e0a6e072b37337f0bc6d36f",
+      "dimensions": [1254, 1254],
+      "role": ["implementation_benchmark", "thumbs_up", "neutral_support_arm"],
+      "style_authority": false
+    },
+    {
+      "asset_id": "FRD005",
+      "path": "outputs/evolved-heroine/approved/FRD005-pointing-left-master-v3.png",
+      "sha256": "017a1cdbe2e76ac9069ce0fbe7881f81d2fbfdf1009b30d344eede68d2bb76e5",
+      "dimensions": [1254, 1254],
+      "role": ["implementation_benchmark", "independent_point_left"],
+      "mirror_source": false
+    },
+    {
+      "asset_id": "FRD006",
+      "path": "outputs/evolved-heroine/approved/FRD006-pointing-right-master-v3.png",
+      "sha256": "bafffa3726c1ff87978ed2ee0874adb0ff95a12656f744ad6bb8d928954c1a2e",
+      "dimensions": [1254, 1254],
+      "role": ["implementation_benchmark", "independent_point_right"],
+      "mirror_source": false
+    },
+    {
+      "asset_id": "ACH003",
+      "path": "outputs/evolved-heroine/approved/ACH003-double-arm-victory-master-v3.png",
+      "sha256": "e3422c338780bddd17d17d1e1176144007effcaa432977b489200eef635128f1",
+      "dimensions": [1254, 1254],
+      "role": ["implementation_benchmark", "double_arm_victory", "fists"],
+      "style_authority": false
+    }
+  ],
+  "laterality_lock": {
+    "neutral_view": "three_quarter",
+    "viewer_right": "anatomical_left",
+    "viewer_left": "anatomical_right",
+    "anatomical_left_shoe_brand": "Evolved",
+    "anatomical_right_shoe_brand": null,
+    "horizontal_flip_allowed": false
+  }
+}
+

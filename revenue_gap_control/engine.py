@@ -33,6 +33,8 @@ from .models import (
 
 
 ZERO = Decimal("0")
+FAST_TRACK_SGPT_ALLOCATION = Decimal("99.00")
+FAST_TRACK_BASE_PT_ALLOCATION = Decimal("50.00")
 
 
 def _contains(value: str, *needles: str) -> bool:
@@ -71,7 +73,24 @@ def _refunded(record: RosterRecord, evidence: SourceEvidence) -> bool:
 
 
 def _approved_hold(evidence: SourceEvidence) -> bool:
-    return bool(evidence.hold_status.strip())
+    return evidence.hold_status.strip().lower() in {
+        "pending hold",
+        "escalated hold",
+        "on hold",
+        "returning",
+    }
+
+
+def _fast_track_expected_pt_allocation(record: RosterRecord) -> Decimal:
+    if record.session_cost is None:
+        return FAST_TRACK_BASE_PT_ALLOCATION
+    try:
+        frequency = Decimal(record.sessions_per_week.strip())
+    except (AttributeError, ValueError):
+        return FAST_TRACK_BASE_PT_ALLOCATION
+    if frequency <= ZERO:
+        return FAST_TRACK_BASE_PT_ALLOCATION
+    return record.session_cost * frequency
 
 
 def _source_names(record: RosterRecord, evidence: SourceEvidence) -> list[str]:
@@ -271,7 +290,14 @@ class AuditEngine:
             pt_amount = sum(
                 (item.roster.weekly_allocation or ZERO for item in pt), ZERO
             )
-            if sgpt_amount != Decimal("99.00") or pt_amount != Decimal("50.00"):
+            expected_pt_amount = sum(
+                (_fast_track_expected_pt_allocation(item.roster) for item in pt),
+                ZERO,
+            )
+            if (
+                sgpt_amount != FAST_TRACK_SGPT_ALLOCATION
+                or pt_amount != expected_pt_amount
+            ):
                 exceptions.append(
                     AuditException(
                         email=email,
@@ -280,12 +306,20 @@ class AuditEngine:
                         classification=FAST_TRACK_ALLOCATION_MISMATCH,
                         summary=(
                             f"Fast Track allocation is SGPT ${sgpt_amount:.2f} and "
-                            f"PT ${pt_amount:.2f}; expected $99.00 and $50.00."
+                            f"PT ${pt_amount:.2f}; expected "
+                            f"${FAST_TRACK_SGPT_ALLOCATION:.2f} and "
+                            f"${expected_pt_amount:.2f} from the recorded PT "
+                            "session count and rate."
                         ),
-                        financial_value=abs(sgpt_amount - Decimal("99.00"))
-                        + abs(pt_amount - Decimal("50.00")),
+                        financial_value=abs(
+                            sgpt_amount - FAST_TRACK_SGPT_ALLOCATION
+                        )
+                        + abs(pt_amount - expected_pt_amount),
                         evidence_checked=["Active SGPT", "Active PT"],
-                        next_action="Correct the allocation rows without counting the $149 receipt twice.",
+                        next_action=(
+                            "Correct the component allocations without counting "
+                            "the combined customer receipt twice."
+                        ),
                     )
                 )
         return exceptions
@@ -352,7 +386,7 @@ class AuditEngine:
                 bridge.pif_rows += 1
             if item.classification == ACTIVE_ARREARS:
                 bridge.arrears += value
-            elif item.classification in {APPROVED_PAUSE, LIFECYCLE_EXCEPTION} and item.evidence.pause_collection:
+            elif item.classification == APPROVED_PAUSE:
                 bridge.approved_pauses += value
             elif item.classification == APPROVED_FUTURE_START:
                 bridge.future_starts += value

@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "candidate_id": "PEACH-RIG-three-quarter-candidate-v1",
+  "status": "approved_v11_relink_and_supported_neutral_parity_passed_root_cover_canary_pending",
+  "canonical_application": {
+    "name": "Apple Motion",
+    "version": "6.3"
+  },
+  "approved_identity_base": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+    "approved_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v11",
+    "approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v11-EDITABLE-SOURCE-2026-08-04-01",
+    "approval_record_sha256": "c04da4c8cc342910182aa6f94fad37ef991fb343ec35d52d80411b5dcd1752ba",
+    "layer_manifest_sha256": "b6c76d06bb4656683b4d9dbaaea7af5849fbbfa425cf625267f44d5c75e5e58f",
+    "neutral_recomposite_sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536"
+  },
+  "project_settings": {
+    "canvas": [1254, 1254],
+    "pixel_aspect": "square",
+    "scan": "progressive",
+    "background": "transparent",
+    "color": "Standard Gamut SDR preserving embedded sRGB",
+    "frame_rate_fps": 30,
+    "canonical_frame_rate_status": "approved_by_peter_brown_2026-08-04"
+  },
+  "import_controls": {
+    "image_sequence": false,
+    "each_png_is_separate_still": true,
+    "layer_count": 29,
+    "alpha": "inspect detected Alpha Type and stop on fringe or neutral mismatch"
+  },
+  "layers_back_to_front": [
+    "layers/00-01-LEAF-A.png",
+    "layers/01-02-LEAF-B.png",
+    "layers/02-03-STEM.png",
+    "layers/03-10-ANAT-R-ARM-UPPER.png",
+    "layers/04-11-ANAT-R-ARM-LOWER.png",
+    "layers/05-12-ANAT-L-ARM-UPPER.png",
+    "layers/06-13-ANAT-L-ARM-LOWER.png",
+    "layers/07-14-ANAT-R-LEG-UPPER.png",
+    "layers/08-15-ANAT-R-LEG-LOWER.png",
+    "layers/09-16-ANAT-L-LEG-UPPER.png",
+    "layers/10-17-ANAT-L-LEG-LOWER.png",
+    "layers/11-20-SHORTS.png",
+    "layers/12-30-PEACH-BODY-AND-SHADING-LOCKED.png",
+    "layers/13-31-FACE-FIELD-TEXTURE-LOCKED.png",
+    "layers/14-40-ANAT-R-EYE.png",
+    "layers/15-41-ANAT-L-EYE.png",
+    "layers/16-42-ANAT-R-PUPIL.png",
+    "layers/17-43-ANAT-L-PUPIL.png",
+    "layers/18-44-ANAT-R-BROW.png",
+    "layers/19-45-ANAT-L-BROW.png",
+    "layers/20-46-ANAT-R-CHEEK.png",
+    "layers/21-47-ANAT-L-CHEEK.png",
+    "layers/22-48-NOSE-FIXED.png",
+    "layers/23-49-MOUTH-NEUTRAL.png",
+    "layers/24-50-ANAT-R-GLOVE-NEUTRAL.png",
+    "layers/25-51-ANAT-L-GLOVE-NEUTRAL.png",
+    "layers/26-52-ANAT-R-SHOE-BLANK.png",
+    "layers/27-53-ANAT-L-SHOE-ART.png",
+    "layers/28-54-EVOLVED-BRAND-LOCKED.png"
+  ],
+  "architecture_contract": "outputs/evolved-heroine/animation/rigs/source/analysis/PEACH-RIG-three-quarter-layered-source-v10-architecture-contract-v1.json",
+  "build_sequence": [
+    "neutral_import_and_zero_difference_export",
+    "one_upper_leg_anchor_compensation_canary",
+    "fixed_body_space_source_derived_root_cover",
+    "leg_root_sweep_and_overtravel_test",
+    "complete_both_leg_chains_and_foreground_shoes",
+    "complete_arm_chains_and_foreground_gloves",
+    "add_leaf_stem_body_and_face_controls",
+    "add_bounded_rig_widgets",
+    "render_complete_rig_review"
+  ],
+  "root_cover_default": {
+    "source": "duplicate approved upper-leg pixels",
+    "space": "fixed body/pelvis space",
+    "transform": "100 percent scale and zero rotation",
+    "mask": "tight Bezier mask directly on duplicate",
+    "z_order": "above rotating leg chain and below shorts/body",
+    "rotation_link": null,
+    "conditional_fallback": "Only after static-cover failure, test a separately reviewed half-rotation Link behavior."
+  },
+  "acceptance_gates": {
+    "neutral_differing_visible_pixels": 0,
+    "horizontal_flip": "prohibited",
+    "negative_x_scale": "prohibited",
+    "left_shoe_brand": "Evolved on anatomical-left shoe only",
+    "root_cover": "no wedge, floating patch, double outline or visible neutral cover",
+    "native_rig_human_approval_required": true
+  },
+  "expected_outputs": {
+    "native_project": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-candidate-v1.motn",
+    "neutral_canary": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-neutral-canary.png",
+    "rig_review": "outputs/evolved-heroine/animation/review/rig/PEACH-RIG-three-quarter-candidate-v1-review/"
+  },
+  "neutral_canary_result": {
+    "qa_report": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-neutral-canary-v1/qa-report.json",
+    "supported_stack_export": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-neutral-share-v1.png",
+    "supported_reference_export": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-neutral-reference-share-v1.png",
+    "supported_export_sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+    "alpha_differing_pixels": 0,
+    "rgb_differing_pixels": 0,
+    "byte_identical": true,
+    "isolated_8_bit_renderer_diagnostic_rgb_differences": 35292,
+    "status": "pass"
+  },
+  "pivot_canary_result": {
+    "qa_report": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-pivot-canary-v1/qa-report.json",
+    "native_project": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-pivot-canary-v1.motn",
+    "native_project_sha256": "a748e18d6991294136622480cf21923eeaa3e4a0279c69be2632241c3fa3f488",
+    "anatomical_right_upper_leg_pivot_source_canvas_xy": [582, 680],
+    "motion_anchor_xy": [-45, -53],
+    "motion_position_compensation_xy": [-45, -53],
+    "neutral_export_sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+    "neutral_byte_identical": true,
+    "root_cover_status": "pending_native_motion_canvas_gesture",
+    "status": "partial_pass"
+  },
+  "v11_pivot_canary_result": {
+    "qa_report": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-v11-pivot-canary-v1/qa-report.json",
+    "native_project": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-v11-pivot-canary-v1.motn",
+    "native_project_sha256": "9b045a558a94b403690f4e8cb303e326bbce88cbe5278e89fa64ba77a3c3cfe9",
+    "neutral_reference_project": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-v11-neutral-reference-canary-v1.motn",
+    "neutral_reference_project_sha256": "c842df727d32c433404dd76d89c61d765eceac5c2a6a99f33965f2518470400f",
+    "supported_stack_export": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-pivot-canary-v1-neutral-share-v1.png",
+    "supported_reference_export": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-neutral-reference-share-v1.png",
+    "supported_export_sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca",
+    "neutral_byte_identical": true,
+    "rgb_differing_pixels": 0,
+    "alpha_differing_pixels": 0,
+    "approved_shoe_opacity_repair_pixels_preserved": 4755,
+    "root_cover_status": "pending_native_motion_construction",
+    "status": "partial_pass"
+  }
+}

@@ -1,0 +1,40 @@
+Use case: stylized-concept
+Asset type: Evolved Heroine transparent PNG master candidate
+Primary request: Create COA001, Holding Clipboard, as the same established Evolved Heroine peach-bodied female athletic mascot. She stands upright in a friendly attentive three-quarter coaching stance, holding one plain clipboard at chest-side height in one white-gloved hand while the other arm rests naturally. The clipboard has a blank cream page with absolutely no writing. Warm confident coaching smile. Full character and both shoes visible.
+
+Reference roles:
+- CHR002: identity/style and neutral standing-pose guidance only.
+- FND002: construction guidance only; full rounded upper lobes, clear stem cleft, inward taper below widest point, paired soft lower fruit lobes and distinct pointed lower centre.
+- FND004: original vintage value/shading guidance only; hard cream highlight, warm peach base, coral-red mid-shadow, large deep-plum perimeter and underside shadow, sparse carved-print ink slashes.
+- FND001: supporting original palette, face, linework and athletic-apparel guidance only.
+- Do not transfer any barbell, weights, lifting pose, floor, backdrop or equipment from the references.
+
+Character construction:
+- The peach is her complete head-and-body silhouette, never a peach head on a human torso.
+- Simple rounded cartoon tube arms and legs attach directly to the peach.
+- No human chest, abdomen, waist, hips, pelvis, groin, thighs, calves or muscular anatomy.
+- Fitted shallow black athletic shorts, white gloves, pink vintage sneakers, green leaf and brown stem.
+
+Style:
+- Match the original hand-inked flat 2D vintage athletic-mascot look exactly.
+- Heavy deep-plum contours, simplified graphic shapes, two-to-three hard-edged cel tones, bold cream/peach/coral/deep-plum separation, restrained original eyes and face, subtle vintage screen-print texture.
+- Preserve the sharper tapered Peach construction and midsection definition. No circular ball body.
+
+Brand rule:
+- The exact word “Evolved” may appear only once on the outward-facing side panel of the anatomical left shoe.
+- If that panel is not clearly visible, omit the word.
+- No other text, pseudo-text, logos or marks anywhere.
+
+Allowed prop: exactly one plain clipboard with a blank page.
+
+Forbidden: pencil, whistle, stopwatch, barbell, dumbbell, bench, charts, readable writing, extra paper, desk, scenery, floor line, cast shadow, reflection, badge or border.
+
+Avoid: 3D, Pixar-like, Disney-like, CGI, glossy plastic, plush, clay, airbrushed, volumetric, gradient-heavy or cinematic rendering; oversized glossy eyes; inflated round Peach.
+
+Backdrop/output preparation:
+- Place the isolated character on a perfectly flat solid #ff00ff chroma-key background for later removal.
+- The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane or lighting variation.
+- Do not use #ff00ff anywhere in the character or prop.
+- Crisp clean edges and generous padding.
+- No cast shadow, contact shadow or watermark.
+- Square composition.

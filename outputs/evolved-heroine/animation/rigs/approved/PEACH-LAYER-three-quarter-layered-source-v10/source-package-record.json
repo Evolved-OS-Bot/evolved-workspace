@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+  "status": "awaiting_human_layered_source_approval",
+  "created_at": "2026-08-04T13:33:31+10:00",
+  "approved_visual_target": {
+    "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+    "sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d"
+  },
+  "package": {
+    "layer_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/layer-manifest.json",
+      "sha256": "18753d3c2d08e0fe697e3400bf4477f2b79acbc74abd16699437afdafba0d3f2"
+    },
+    "openraster": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/PEACH-LAYER-three-quarter-layered-source-v10.ora",
+      "sha256": "8e59ad7579a5e93bd084b17832972d5bfe6577e3ce7dd0fcf68dc8222d1cdc2f"
+    },
+    "neutral_recomposite": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10/PEACH-LAYER-three-quarter-layered-source-v10-neutral-recomposite.png",
+      "sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180",
+      "differing_visible_pixels_from_approved_target": 0
+    },
+    "layer_count": 29,
+    "layer_format": "1254x1254 8-bit RGBA PNG with embedded sRGB profile"
+  },
+  "provisional_pivots": {
+    "root": [642, 1075],
+    "body": [644, 440],
+    "stem": [642, 230],
+    "leaf_a": [614, 226],
+    "leaf_b": [670, 226],
+    "anatomical_right_arm_root": [469, 583],
+    "anatomical_right_arm_bend": [460, 638],
+    "anatomical_left_arm_root": [796, 565],
+    "anatomical_left_arm_bend": [812, 636],
+    "anatomical_right_leg_root_candidate": [582, 680],
+    "anatomical_right_leg_bend": [582, 810],
+    "anatomical_left_leg_root_candidate": [678, 680],
+    "anatomical_left_leg_bend": [706, 811]
+  },
+  "controls": {
+    "horizontal_flip_allowed": false,
+    "negative_x_scale_allowed": false,
+    "anatomical_left_is_viewer_right_at_neutral": true,
+    "anatomical_left_shoe_brand": "Evolved",
+    "anatomical_right_shoe_brand": null,
+    "body_and_shading_clean_plate_locked": true,
+    "face_field_texture_correction_locked": true
+  },
+  "known_rig_followup": {
+    "status": "mandatory_before_rig_approval",
+    "issue": "A 12-degree leg-root stress rotation exposes wedges at the shorts openings with both tested provisional pivot heights.",
+    "required_resolution": "Build and visually verify native Motion root-cover masks or equivalent linked cover behavior. The layered-source decision does not approve this mechanic or either provisional leg-root pivot."
+  },
+  "promotion_blocked_until_human_approval": true
+}

@@ -180,3 +180,21 @@ def test_account_classification_does_not_treat_current_pt_as_receipt(tmp_path: P
     loaded = load_approved_account_classifications(path)
     assert "current@example.com" not in loaded
     assert loaded["prepaid@example.com"].status == "paid_in_advance"
+
+
+def test_external_payment_classification_is_time_bounded_collecting_evidence(
+    tmp_path: Path,
+):
+    path = tmp_path / "classifications.csv"
+    path.write_text(
+        "email,classification,approved_active_without_local_entitlement,"
+        "confirmed_date,note\n"
+        "external@example.com,external_payment_client,true,2026-07-27,"
+        "Owner confirmed another Stripe account.\n",
+        encoding="utf-8",
+    )
+
+    loaded = load_approved_account_classifications(path)
+
+    assert loaded["external@example.com"].status == "collecting"
+    assert loaded["external@example.com"].last_receipt_date == "2026-07-27"

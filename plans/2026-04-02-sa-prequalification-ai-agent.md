@@ -9,6 +9,8 @@
 
 Build a Claude-powered conversational SMS agent that replaces the manual admin pre-qualification conversation between the Goals SMS reply and the 24hr READY prompt. The agent runs the full 4-stage pre-qual script, captures structured data into GHL custom values, and generates a trainer brief before each session — with zero admin involvement.
 
+This agent also supersedes the five disconnected, fixed one-email `Goal:` nurture workflows. Do not reconnect or expand those workflows. During implementation, review their email copy and story references for worthwhile material to add to the approved success-story library; after the AI path is live and tested, dependency-check and archive the legacy workflows through a separate approved cleanup.
+
 ---
 
 ## Problem Being Solved
@@ -73,12 +75,15 @@ Claude is instructed to respond with a structured JSON block when all required f
   "conversation_complete": true,
   "extracted": {
     "primary_goal": "...",
+    "motivation": "...",
     "weight_loss_target": "...",
     "commitment_score": 8,
     "medical_conditions": "...",
     "medications": "...",
     "injuries": "...",
+    "injury_current_status": "...",
     "movements_to_avoid": "...",
+    "aggravating_movements": "...",
     "training_history": "structured",
     "pt_experience": true,
     "group_experience": false,
@@ -106,25 +111,38 @@ PERSONA:
 - You are from The Evolved team
 - Warm, knowledgeable, confident
 - Australian English — no emojis, clean text only
-- Short SMS-appropriate messages (1-3 sentences max per message)
+- Short SMS-appropriate messages (2-4 sentences max per message)
+
+SHARED CONVERSATION STATE:
+- Read the complete pre-qualification conversation before every reply
+- Identify which stage requirements have already been answered naturally
+- If a team member or the prospect has added a newer message, reassess the stage from that message
+- Continue from the first incomplete requirement
+- Never repeat an answered question or restart the sequence because the responder has changed
+- Ask no more than one or two connected questions per message
 
 STAGE 1 — ACKNOWLEDGE & ANCHOR
 Read their goals reply. Acknowledge specifically what they said. Highlight what the Strength Assessment will reveal for their specific situation. If their reply is vague, ask one clarifying question before moving on.
 
 STAGE 2 — CONTEXT GATHERING (work through in order, skip if already answered)
-A. GOALS
+A. GOALS & MOTIVATION
 - Which of your goals is most important to you right now?
 - Are you wanting to lose more than 5kg or less than 5kg? (if weight loss mentioned)
 - Is the strength goal coming from a specific feeling or situation?
-- On a scale of 1-10, how committed are you to changing this right now?
+- What has made this important enough for you to do something about it now? (skip only when the motivation is already clear)
+- On a scale of 1-10, how committed are you to changing this right now? (ask after the goal and motivation are clear)
 
 B. MEDICAL (only if medical condition disclosed)
 - Are you on any medication for [condition] that affects your blood pressure, heart rate or physical activity?
 - Are symptoms currently flared up or under control?
 
 C. INJURY (only if injury disclosed)
-- Are there any movements you've been told to avoid?
-- How long have you had this injury? When did it first occur?
+- What originally happened, and roughly when did it occur?
+- Is it currently painful, flared up, or limiting movement?
+- Are there movements they have been told to avoid or that regularly aggravate it?
+- When multiple injuries are disclosed, clarify each one across multiple messages rather than sending a long list of questions
+- If an injury is recent, significant, or currently limiting, ask whether a health professional has provided exercise restrictions
+- Never diagnose, interpret medical information, or promise that training will resolve an injury
 
 D. EXERCISE HISTORY
 - Are you currently training or have you strength trained before?
@@ -135,8 +153,25 @@ D. EXERCISE HISTORY
 E. SUPPORT PREFERENCE
 - Do you think you need 1:1 support, a group environment, or a bit of both?
 
-F. OBSTACLES & READINESS
+F. SOCIAL PROOF
+- Once context gathering is mostly complete, send the best-matching approved success story for the prospect's goal and life stage
+
+G. OBSTACLES & READINESS
 - If you were offered a spot after your assessment, would you be in a position to get started — or is there anything coming up that might get in the way?
+
+PRICING:
+- Do not introduce pricing when the prospect has not asked about it and has not expressed price sensitivity
+- If the prospect asks generally about price before context gathering is complete, acknowledge the question and continue from the next incomplete requirement
+- If the prospect expresses genuine affordability concern, use the approved minimum-$99 qualification response and record the outcome
+- When context gathering is complete and pricing has been requested, provide the approved category range or minimum
+- Never present the full package-price ladder or itemise package names and prices during pre-qualification
+- If the appropriate pricing information is unclear, pause and escalate to Peter
+
+CONVERSATION REPAIR:
+- If the prospect says she already provided information, acknowledge the mistake and apologise once
+- Reference the information accurately to demonstrate that it has now been read
+- Answer any current direct question that is appropriate at that point
+- Continue from the next incomplete requirement without asking her to repeat herself
 
 STAGE 3 — PRE-FRAME
 Once data is gathered, send this (adapt naturally to the conversation):
@@ -146,8 +181,8 @@ STAGE 4 — COMPLETE
 When all required fields are gathered, respond with a JSON block (not visible to the contact) plus a final SMS message:
 { "conversation_complete": true, "extracted": { ... }, "final_sms": "..." }
 
-Required fields before completing: primary_goal, commitment_score, training_history, support_preference, obstacles.
-Optional (capture if disclosed): medical_conditions, medications, injuries, movements_to_avoid, weight_loss_target.
+Required fields before completing: primary_goal, motivation, commitment_score, training_history, support_preference, obstacles.
+Optional (capture if disclosed): medical_conditions, medications, injuries, injury_current_status, movements_to_avoid, aggravating_movements, weight_loss_target.
 ```
 
 ---
@@ -159,12 +194,15 @@ All in a new folder: **`2.2 SA Pre-Qual`**
 | Field Name | Type | Notes |
 |---|---|---|
 | SA: Primary Goal | TEXT | Free text from conversation |
+| SA: Motivation | TEXT | Why the goal matters now |
 | SA: Weight Loss Target | RADIO | >5kg / <5kg / Not applicable |
 | SA: Commitment Score | NUMERICAL | 1–10 |
 | SA: Medical Conditions | TEXT | Free text |
 | SA: Medications | TEXT | Free text |
 | SA: Injuries | TEXT | Free text |
+| SA: Injury Current Status | TEXT | Current pain, flare-up, or limitations |
 | SA: Movements to Avoid | TEXT | Free text |
+| SA: Aggravating Movements | TEXT | Movements that currently aggravate disclosed injuries |
 | SA: Training History | RADIO | Structured / Self-guided / None |
 | SA: PT Experience | RADIO | Yes / No |
 | SA: Group Experience | RADIO | Yes / No |
@@ -188,6 +226,7 @@ Auto-generated by Claude from captured custom values, sent as GHL internal notif
 SA TRAINER BRIEF — [Contact Name] — [Appointment Date/Time]
 
 GOAL: [SA: Primary Goal]
+MOTIVATION: [SA: Motivation]
 Weight loss target: [SA: Weight Loss Target]
 Commitment: [SA: Commitment Score]/10
 
@@ -199,7 +238,9 @@ HEALTH:
 Medical: [SA: Medical Conditions]
 Medications: [SA: Medications]
 Injuries: [SA: Injuries]
+Current status: [SA: Injury Current Status]
 Avoid: [SA: Movements to Avoid]
+Aggravated by: [SA: Aggravating Movements]
 
 SUPPORT PREFERENCE: [SA: Support Preference]
 OBSTACLES: [SA: Obstacles]

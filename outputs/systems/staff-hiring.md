@@ -1,14 +1,14 @@
 # Staff Hiring & Recruitment System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-04-01
+**Last Updated:** 2026-07-31 (employment fields and hiring outcomes reconciled)
 
 ---
 
 ## Overview
 
-The Staff Hiring & Recruitment System manages the full end-to-end journey of bringing a new trainer into The Evolved — from application through to active employment. It is built around a single dedicated pipeline with 7 stages, one published workflow (`Send Trainer Contract`), two surveys associated with the business's industry partnership (`Strength For Industry`), a dedicated custom field group for employment data, and supporting tags.
+The Staff Hiring & Recruitment System manages the full end-to-end journey of bringing a new trainer into The Evolved — from application through to active employment. It is built around a single dedicated pipeline with 7 stages, one published workflow (`Send Trainer Contract`), a dedicated custom field group for employment data, and supporting tags. The two Strength For Industry surveys are retained corporate-programme assets, not hiring intake assets.
 
-The system is comparatively lean — there is currently one automated workflow in this system (contract sending), which suggests earlier stages (application intake, interview scheduling, offer communication) are handled manually or via a separate intake mechanism not yet reflected in GHL automation. The pipeline structure clearly anticipates a clean linear progression: Apply → Interview → Offer → Contract → Signed → Onboarding → Active.
+The system is comparatively lean: contract sending is the only workflow attached directly to the hiring pipeline. A separate published course-access chain grants Trainer Portal Courses 2–12, Course 13 Practical Sign-Off and Course 14 Congratulations. Earlier hiring stages and the operational setup required between Contract Signed, Onboarding and Hired / Commenced remain manual or undocumented.
 
 ---
 
@@ -23,9 +23,11 @@ The system is comparatively lean — there is currently one automated workflow i
 | 3 | Contract Sent | `21739d22-b02b-49fe-b96c-20afe1a727bd` |
 | 4 | Contract Signed | `8832c25b-5e24-4168-a485-046f109ff322` |
 | 5 | Onboarding | `7ca97b6c-4fdd-4251-bbac-ae61c345c75b` |
-| 6 | Active Trainer | `0848b410-490a-4261-9088-b9d3ec4ef75b` |
+| 6 | Hired / Commenced | `0848b410-490a-4261-9088-b9d3ec4ef75b` |
 
 Each stage maps to a discrete action in the hiring process. Candidates who do not progress are presumably removed from the pipeline rather than moved to a defined rejection stage — no "Rejected" or "Declined" stage exists.
+
+On 31 July 2026 the final stage was renamed from `Active Trainer` to `Hired / Commenced` while preserving its existing ID. This makes the pipeline a record of successful hiring rather than a misleading current-staff roster.
 
 ---
 
@@ -40,7 +42,7 @@ Each stage maps to a discrete action in the hiring process. Candidates who do no
 
 ## Surveys
 
-Two surveys exist under the "Strength For Industry" umbrella. These appear to be linked to an external industry program or partnership, with separate survey versions for employees and owners.
+Two surveys exist under the "Strength For Industry" umbrella. Peter confirmed on 30 July 2026 that they should be retained for possible future corporate use. They are not part of the current hiring or onboarding process.
 
 | Survey | ID |
 |---|---|
@@ -57,7 +59,7 @@ Two surveys exist under the "Strength For Industry" umbrella. These appear to be
 |---|---|---|
 | Send Trainer Contract | **published** | `6758cca7-78f4-4e99-a8a9-a012b745ba3d` |
 
-Only one workflow is active in the hiring system. It is named for contract delivery, which places its trigger point at the `Contract Sent` stage (position 3 in the pipeline). No automated workflows exist for:
+Only one workflow is attached directly to the hiring pipeline. It is named for contract delivery, which places its trigger point at the `Contract Sent` stage (position 3 in the pipeline). No automated workflows exist for:
 - Application acknowledgement
 - Interview scheduling or confirmation
 - Offer letter delivery
@@ -65,6 +67,29 @@ Only one workflow is active in the hiring system. It is named for contract deliv
 - Active trainer welcome/setup
 
 These may be handled manually, or they represent gaps for future automation.
+
+### Live contract workflow audit: revalidated 30 July 2026
+
+`Send Trainer Contract` is published and triggers when an opportunity enters `Staff Hiring Pipeline / Contract Sent`. It branches on Employment Type, but its coverage is incomplete:
+
+- Part Time - Hybrid sends the matching hybrid part-time contract.
+- Part Time - Level 3A sends the matching part-time Level 3A contract.
+- Part Time - Level 4A sends the matching part-time Level 4A contract.
+- Casual Level 3A and Casual Level 4A each send their matching casual contract.
+- Full Time - Level 3A and Full Time - Level 4A reach empty branches and send nothing.
+- The None fallback is empty and creates no exception task.
+
+The workflow had no enrolments in the available 30-day history. Before the next hire reaches Contract Sent, either provide an approved document for every permitted Employment Type or restrict the field to contract types the business can actually issue. Add an exception task for any blank or unsupported employment type rather than allowing the workflow to end silently.
+
+### Live Trainer Portal progression: rebuilt 24 July 2026
+
+The published `ET | Grant Access` workflows form a sequential chain. Completion of Course 1 grants Course 2; each subsequent completion grants the next course through Course 12.
+
+Completion of `12 | General Duties` now triggers `ET | Grant Access to 13 | Practical Sign-Off Course`, workflow ID `238ca7f8-615e-4f81-9378-297bf04404a3`. It grants the published Course 13 offer for product `13 | Practical Sign-Off: Certified to Deliver`, product ID `15e03062-f6d2-4018-9e4b-0a980865aefc`.
+
+Course 13 contains one overview lesson and ten published native assignments. Each assignment is manually graded by Megan; the final assignment is `Block 10: 36 Workouts`. Its completion criteria trigger the published `ET | Grant Access to 14 | Congratulations Course` workflow, ID `f4259fb9-3e7f-406a-af3d-6bbb14257efe`, which grants `14 | Congratulations: You're Certified`.
+
+The live path is therefore Course 12 → Course 13 Practical Sign-Off → approved Block 10 completion → Course 14 Congratulations. Course 13 has no automatic completion credential.
 
 ---
 
@@ -78,9 +103,20 @@ These fields store the employment details of hired trainers. They are populated 
 |---|---|---|---|
 | Employee Address | TEXT | `contact.employee_address` | `oY04FAeYxe1lXPfzOVXD` |
 | Employment Hours | NUMERICAL | `contact.employment_hours` | `0N2PK6Uh9EV0p88FilPn` |
+| Employment Legal Name | TEXT | `contact.employment_legal_name` | `wLtZCQqqyGVxueXWQ0gw` |
+| Employment Preferred Name | TEXT | `contact.employment_preferred_name` | `zALHt57bk4U5u1AUVNfu` |
 | Employment Pay Rate | NUMERICAL | `contact.employment_pay_rate` | `nYkUJACXpsE4NeKNrFf1` |
+| Employment Pay Effective Date | DATE | `contact.employment_pay_effective_date` | `yFHP4G9NFEmBGcefNpg7` |
 | Employment Start Date | DATE | `contact.employment_start_date` | `DynmzofeGHskNc25cVyH` |
 | Employment Type | SINGLE_OPTIONS | `contact.employment_type` | `VJr2a0xjrycSifKPSedE` |
+
+### Field population audit: 31 July 2026
+
+The complete 2,796-contact snapshot found six historical or current staff records with employment data. Employee Address, Employment Pay Rate, Employment Start Date and Employment Type each have six populated contacts; Employment Hours, Employment Legal Name and Employment Pay Effective Date each have three; Employment Preferred Name has one.
+
+The low counts are valid and none of the eight fields should be deleted. The single Preferred Name value correctly maps Alyssa Crighton to Piper Mae; the legal-name and pay-effective-date fields were only added in July 2026.
+
+Employee address and pay data are sensitive. Until a dedicated payroll or HR source of truth replaces them, access to these GHL fields should be limited to staff who genuinely require employment-contract information.
 
 ### Employment Type — Options
 
@@ -88,12 +124,30 @@ These fields store the employment details of hired trainers. They are populated 
 |---|
 | Casual - Level 3A |
 | Casual - Level 4A |
+| Part Time - Hybrid (Clerks L3/Fitness L2) |
 | Part Time - Level 3A |
 | Part Time - Level 4A |
 | Full Time - Level 3A |
 | Full Time - Level 4A |
 
-> **Note on employment classifications:** Level 3A and Level 4A refer to classifications under the Fitness Industry Award (Australia). Level 3 covers fitness instructors and personal trainers with a Certificate III qualification; Level 4 covers personal trainers with a Certificate IV qualification. The three engagement types (Casual, Part Time, Full Time) combined with two qualification levels gives six possible employment configurations tracked per trainer.
+> **Note on employment classifications:** Level 3A and Level 4A refer to classifications under the Fitness Industry Award (Australia). The live field contains six standard engagement/classification combinations plus the separate Part Time Hybrid option, for seven permitted values in total. Employment-law interpretation and contract suitability must be confirmed by the business's qualified adviser.
+
+### Remuneration variations
+
+Reusable remuneration variation templates are stored in GHL under **Payments → Documents & Contracts → Templates**:
+
+- `Trainer Remuneration Variation - Casual`
+- `Trainer Remuneration Variation - Part-Time Fitness`
+- `Trainer Remuneration Variation - Hybrid Fitness-Clerks`
+- `Trainer Bonus Incentive Variation - Template`
+
+The templates merge `contact.employment_legal_name`, `contact.employment_type`, `contact.employment_pay_rate`, and `contact.employment_pay_effective_date`. The applicable template is used to create a draft document for the employee, which is reviewed before sending for electronic signature.
+
+The bonus incentive variation replaces the former completed-assessment incentive with a $10 Level 4 pre-qualification completion bonus and limits the $60 sales bonus to eligible $399 or $599 membership-package sales completed at the Strength Assessment. Personal training sales are excluded. Its required signature fields follow the governed template pattern: the employee signs as `Contact` and Peter Brown signs as `Sender`.
+
+Employment documents must use `contact.employment_legal_name`. Staff-facing notifications may use `contact.employment_preferred_name` when populated, falling back to the contact's first name when it is blank.
+
+Updating the GHL pay-rate field does not itself instruct payroll. Payroll instructions are issued only after the signed variation has been received and checked.
 
 ---
 
@@ -131,7 +185,8 @@ These fields store the employment details of hired trainers. They are populated 
    → Onboarding tasks handled manually or externally
 
 8. Onboarding complete, trainer live in the business
-   → Contact moved to: Active Trainer [0848b410]
+   → Contact moved to: Hired / Commenced [0848b410]
+   → Opportunity closed as Won
    → Tag: trainer applied
    → Trainer added to relevant staff lists (coach options appear in other
      system fields, e.g. CS: Results/Value - Coach Contacted)
@@ -141,14 +196,15 @@ These fields store the employment details of hired trainers. They are populated 
 
 ## Relationship to Other Systems
 
-The Staff Hiring pipeline feeds into the broader operational structure of the gym. Once a contact reaches `Active Trainer` status, they appear across other GHL systems:
+The Staff Hiring pipeline records the completed hiring journey. A current trainer does not appear across other GHL systems automatically merely because their opportunity reaches `Hired / Commenced`:
 
-- **Cancellation System:** Active trainers are listed as options in `CS: Results/Value - Coach Contacted` (`rxxE4BpClaV7YBrvNLWy`) — currently: Megan, Leisa, Hannah, Beth, Piper
-- **Client-facing forms:** `Who is your personal trainer?` field (`YWkGI9PYbF8jP22NKpbQ`) lists active trainers — currently: Megan, Leisa, Marnie, Piper
-- **Strength Assessment / Workshop fields:** `Who was your trainer today?` (`8JSzaPXo9REKsnAXcOM5`) — currently: Megan, Leisa
+- **Canonical current trainer roster:** Megan, Piper, Nora, Katrina and Leisa
+- **Cancellation System:** `CS: Results/Value - Coach Contacted` (`rxxE4BpClaV7YBrvNLWy`) lists Megan, Piper, Nora, Katrina and Leisa
+- **Client-facing cancellation forms:** `Who is your personal trainer?` (`YWkGI9PYbF8jP22NKpbQ`) lists Megan, Piper, Nora, Katrina and Leisa
+- **Strength Assessment survey:** `Who was your trainer today?` (`8JSzaPXo9REKsnAXcOM5`) lists the same five trainers plus `I can't remember`
 - **Personal calendars:** All active trainers have individual booking calendars for PT sessions (30, 45, and 60 min variants per trainer)
 
-> These cross-system references are **hard-coded option lists** and are not dynamically linked to the hiring pipeline. When a new trainer is hired and reaches `Active Trainer`, these lists in other custom fields and forms must be manually updated.
+> These cross-system references are **hard-coded option lists** and are not dynamically linked to the hiring pipeline or GHL staff accounts. Update both live cancellation-related fields together whenever a trainer joins or leaves.
 
 ---
 
@@ -158,25 +214,19 @@ No calendar is directly dedicated to the hiring/interview process. The following
 
 | Calendar | Type | ID |
 |---|---|---|
-| 30 Min 1:1 - Beth | personal | `CYsooQLsfZNw654fuVkW` |
-| 30 Min 1:1 - Hannah | personal | `ga1masDAJAbY7Vg1p5C2` |
 | 30 Min 1:1 - Nora | personal | `zB8vInq5Hs44IrRKHkmx` |
 | 30 Min 1:1 - Piper | personal | `oSrXQVZhtv1tyL0bMFHe` |
+| 30 Min 1:1 PT - Katrina | personal | `eoL2TrbLGb8D5BA98Z7I` |
 | 30 Min 1:1 PT - Leisa | personal | `pOia47f6u6bDNvVMGWPo` |
-| 30 Min 1:1 PT - Marnie | personal | `MzmH5oZEAMI83SzuTFjg` |
 | 30 Min 1:1 PT - Megan | personal | `YT1U8WtmgGb5SO3BWE5n` |
-| 45 Min 1:1 - Hannah | personal | `rAV11ApEmTrpjmVorjPv` |
 | 45 Min 1:1 - Nora | personal | `5lHjOoGaVFdJPNReVDeg` |
-| 45 Min 1:1 PT - Beth | personal | `SAEvSLp0RBPlO4IywSUi` |
+| 45 Min 1:1 PT - Katrina | personal | `pLtfbopAKPgSGqDnwndF` |
 | 45 Min 1:1 PT - Leisa | personal | `xTF4OeRHi8vM8w7dcKuC` |
-| 45 Min 1:1 PT - Marnie | personal | `pBmOPV2MvBbclaLF8E0w` |
 | 45 Min 1:1 PT - Piper | personal | `skZi4KFJdJdoG2QqANoS` |
 | 45 Minute 1:1 PT - Megan | personal | `JFVV14qlUY1QeLO62SMc` |
-| 60 Min 1:1 - Hannah | personal | `u6q2Lr1V4R3y8uwY0qvA` |
 | 60 Min 1:1 - Nora | personal | `U1RSfH7BhPSSXdsBl61N` |
-| 60 Min 1:1 PT - Beth | personal | `b68CfIL98FnE0IyoU7OI` |
+| 60 Min 1:1 PT - Katrina | personal | `9QkeVcyoclQuWOmNlUup` |
 | 60 Min 1:1 PT - Leisa | personal | `HgRT8Vd7bsH2LZDeOzZz` |
-| 60 Min 1:1 PT - Marnie | personal | `fphAhWDG3nA27kxTNh0r` |
 | 60 Min 1:1 PT - Piper | personal | `EjHsuZD0s0vJUqPUXOMb` |
 | 60 Minute 1:1 PT - Megan | personal | `UIdP5AYIwUW00hC7e5mN` |
 
@@ -189,12 +239,15 @@ No calendar is directly dedicated to the hiring/interview process. The following
 # System Notes & Observations
 
 ### What's built and working
-- **Pipeline structure is sound** — the 7-stage progression from Applied through to Active Trainer covers the full hiring arc logically. No gaps in stage sequencing.
+- **Pipeline structure is sound** — the seven-stage progression from Applied through to Hired / Commenced covers the full hiring arc logically. No gaps in stage sequencing.
+- **Historical hiring outcomes are reconciled**: Meroe Mozakka, Katrina Parsons, Nora Silva, Joanne McDonald and Alyssa Crighton / Piper Mae are all genuine hires. On 31 July 2026 all five were placed in Hired / Commenced and closed as Won; fresh read-back found zero open opportunities.
 - **Employment Type field is well-designed** — capturing both engagement type (Casual/Part Time/Full Time) and qualification level (Level 3A/Level 4A) in a single SINGLE_OPTIONS field is efficient and aligns with Australian award compliance requirements.
-- **`Send Trainer Contract` workflow is live** — at minimum, contract delivery is automated. This is the highest-leverage automation point in the process as it handles a legally important document.
+- **`Send Trainer Contract` workflow is published** — contract delivery is automated for five of seven permitted Employment Type values: both casual levels, Part Time Hybrid and both part-time levels. Both full-time values and the None fallback are not safely covered.
 - **Employment data captured on the contact record** — having `Employment Hours`, `Employment Pay Rate`, `Employment Start Date`, and `Employee Address` on the GHL contact record means trainer details are centralised alongside all other contact history.
 
 ### Current gaps to address
+
+- **Hiring pipeline is not the staff roster**: Megan and Leisa are absent because the pipeline was introduced after their hiring journeys. Do not backfill them merely to force roster parity. Current employment and offboarding require a separate governed staff-lifecycle record.
 
 - **No application intake form in GHL** — there is no visible form or survey for capturing candidate applications. Applicants are likely coming in via email or an external job board, meaning their data is manually entered into GHL. A GHL application form would automate contact creation, stage entry, and initial tagging.
 
@@ -206,8 +259,8 @@ No calendar is directly dedicated to the hiring/interview process. The following
 
 - **No onboarding task automation** — there is no workflow visible for the `Onboarding` stage. Trainer setup tasks (system access, payroll setup, schedule configuration, uniform, etc.) are managed entirely outside GHL.
 
-- **Hard-coded trainer name lists across the account** — when a new trainer is hired and reaches `Active Trainer`, their name needs to be manually added to at least four separate custom field option lists (coach assignment in cancellation, trainer attribution in client forms, and strength assessment). This is a maintenance risk as the team grows.
+- **Hard-coded trainer name lists across the account** — when a new trainer is hired and reaches `Hired / Commenced`, their name needs to be manually added to at least four separate custom field option lists (coach assignment in cancellation, trainer attribution in client forms, and strength assessment). This is a maintenance risk as the team grows.
 
-- **Strength For Industry surveys lack documented context** — two surveys (`Employee Survey` and `Owner Survey`) exist but their relationship to the hiring or onboarding flow is unclear. They may be part of an external industry body program rather than a direct part of the internal hiring process.
+- **Strength For Industry surveys are dormant corporate assets** — the Employee and Owner surveys are intentionally retained for possible future corporate use and are not part of staff hiring. They require a current offer, owner and workflow audit before reactivation.
 
 - **No off-boarding / termination workflow** — there is no pipeline or automation visible for managing a trainer leaving the business. Termination, tag removal, calendar deactivation, and client reassignment would all be manual.

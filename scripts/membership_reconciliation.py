@@ -61,10 +61,15 @@ MEMBERSHIP_STAGES = {
 
 GHL_FIELDS = {
     "membership_type": "1SgYibtlIuophn9FYAh8",
+    "pt_block_trainer": "gSYaeeCF2iiRSzJhKePT",
     "cancellation_status": "vqTZezcOELXVjVLRTiCR",
     "cancellation_type": "VhxR2hI4B1GfvcZJiD9j",
     "final_access_date": "3mZzBYcUk7ZAvB9Fs7lH",
     "notice_end_date": "8Thl9yA4A7kwkbF8QL1Z",
+    "hold_status": "huVhp3xNLYJDtPA9JdFA",
+    "hold_type": "J54g7CqeVbOHo6CoYzMA",
+    "hold_start_date": "k40qV4w0HKj5KFbMnmq8",
+    "hold_end_date": "WOnR5XTn45YnSx9KsBGF",
 }
 
 STRIPE_ENTITLED_STATUSES = {"active", "trialing", "past_due", "unpaid"}
@@ -199,6 +204,8 @@ CREATE TABLE IF NOT EXISTS identity_register (
     membership_type TEXT,
     membership_stage TEXT,
     cancellation_status TEXT,
+    cancellation_type TEXT,
+    notice_end_date TEXT,
     final_access_date TEXT,
     stripe_statuses_json TEXT NOT NULL,
     latest_invoice_status TEXT,
@@ -375,6 +382,17 @@ def open_database(path: Path = DATABASE) -> sqlite3.Connection:
     connection = sqlite3.connect(path)
     connection.row_factory = sqlite3.Row
     connection.executescript(SCHEMA)
+    existing_identity_columns = {
+        str(row["name"])
+        for row in connection.execute(
+            "PRAGMA table_info(identity_register)"
+        ).fetchall()
+    }
+    for column in ("cancellation_type", "notice_end_date"):
+        if column not in existing_identity_columns:
+            connection.execute(
+                f"ALTER TABLE identity_register ADD COLUMN {column} TEXT"
+            )
     connection.commit()
     os.chmod(path, 0o600)
     return connection
@@ -619,6 +637,7 @@ def is_ghl_active(contact: dict[str, Any], opportunity: dict[str, Any] | None) -
     if cancellation_status == "cancelled" or tags & GHL_TERMINATED_TAGS:
         return False
     member_tag = "member" in tags and not tags & GHL_ENDED_MEMBER_TAGS
+    pt_only_tag = "pt only" in tags and not tags & GHL_ENDED_PT_TAGS
     live_stage = False
     if (
         opportunity
@@ -630,7 +649,7 @@ def is_ghl_active(contact: dict[str, Any], opportunity: dict[str, Any] | None) -
             live_stage = not bool(tags & GHL_ENDED_PT_TAGS)
         else:
             live_stage = not bool(tags & GHL_ENDED_MEMBER_TAGS)
-    return member_tag or live_stage
+    return member_tag or pt_only_tag or live_stage
 
 
 def is_stripe_entitled(subscription: dict[str, Any]) -> bool:
@@ -807,6 +826,9 @@ def build_identity_records(
                 ),
                 "trainerize_active_signal": bool(active_clients),
                 "membership_type": fields.get(GHL_FIELDS["membership_type"]),
+                "pt_block_trainer": fields.get(
+                    GHL_FIELDS["pt_block_trainer"]
+                ),
                 "membership_stage": MEMBERSHIP_STAGES.get(stage_id),
                 "cancellation_status": fields.get(
                     GHL_FIELDS["cancellation_status"]
@@ -814,6 +836,12 @@ def build_identity_records(
                 "cancellation_type": fields.get(GHL_FIELDS["cancellation_type"]),
                 "notice_end_date": fields.get(GHL_FIELDS["notice_end_date"]),
                 "final_access_date": fields.get(GHL_FIELDS["final_access_date"]),
+                "hold_status": fields.get(GHL_FIELDS["hold_status"]),
+                "hold_type": fields.get(GHL_FIELDS["hold_type"]),
+                "hold_start_date": fields.get(
+                    GHL_FIELDS["hold_start_date"]
+                ),
+                "hold_end_date": fields.get(GHL_FIELDS["hold_end_date"]),
                 "stripe_statuses": stripe_statuses,
                 "latest_invoice_status": latest_invoice.get("status"),
                 "selected_contact": selected_contact,
@@ -1305,11 +1333,27 @@ def insert_snapshots(
             "stripe_customer_count": len(identity["stripe_customers"]),
             "trainerize_active_count": len(identity["trainerize_active"]),
             "trainerize_deactivated_count": len(identity["trainerize_deactivated"]),
+            "pt_block_trainer": identity.get("pt_block_trainer"),
+            "cancellation_type": identity.get("cancellation_type"),
+            "notice_end_date": identity.get("notice_end_date"),
+            "hold_status": identity.get("hold_status"),
+            "hold_type": identity.get("hold_type"),
+            "hold_start_date": identity.get("hold_start_date"),
+            "hold_end_date": identity.get("hold_end_date"),
         }
         connection.execute(
             """
-            INSERT INTO identity_register VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            INSERT INTO identity_register (
+                run_id, identity_key, email, ghl_contact_ids_json,
+                stripe_customer_ids_json, stripe_subscription_ids_json,
+                trainerize_active_ids_json, trainerize_deactivated_ids_json,
+                ghl_active_signal, stripe_entitled_signal,
+                trainerize_active_signal, membership_type, membership_stage,
+                cancellation_status, cancellation_type, notice_end_date,
+                final_access_date, stripe_statuses_json,
+                latest_invoice_status, evidence_json
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
             """,
             (
@@ -1331,6 +1375,8 @@ def insert_snapshots(
                 identity.get("membership_type"),
                 identity.get("membership_stage"),
                 identity.get("cancellation_status"),
+                identity.get("cancellation_type"),
+                identity.get("notice_end_date"),
                 identity.get("final_access_date"),
                 json_text(identity.get("stripe_statuses") or []),
                 identity.get("latest_invoice_status"),
@@ -1395,6 +1441,8 @@ def write_outputs(
             "membership_type": row.get("membership_type"),
             "membership_stage": row.get("membership_stage"),
             "cancellation_status": row.get("cancellation_status"),
+            "cancellation_type": row.get("cancellation_type"),
+            "notice_end_date": row.get("notice_end_date"),
             "final_access_date": row.get("final_access_date"),
             "stripe_statuses": "|".join(row.get("stripe_statuses") or []),
             "latest_invoice_status": row.get("latest_invoice_status"),
@@ -1417,6 +1465,8 @@ def write_outputs(
             "membership_type",
             "membership_stage",
             "cancellation_status",
+            "cancellation_type",
+            "notice_end_date",
             "final_access_date",
             "stripe_statuses",
             "latest_invoice_status",
@@ -1539,6 +1589,7 @@ def run_reconciliation(
     *,
     database: Path = DATABASE,
     fetch_invoices: bool = False,
+    invoice_lookback_days: int = 90,
     identity_links: dict[str, str] | None = None,
     identity_record_links: dict[tuple[str, str], str] | None = None,
     account_classifications: dict[str, dict[str, Any]] | None = None,
@@ -1574,7 +1625,10 @@ def run_reconciliation(
         customers = stripe.collection("customers")
         subscriptions = stripe.collection("subscriptions", {"status": "all"})
         invoice_cutoff = int(
-            (datetime.now(UTC) - timedelta(days=90)).timestamp()
+            (
+                datetime.now(UTC)
+                - timedelta(days=max(1, invoice_lookback_days))
+            ).timestamp()
         )
         invoices = (
             stripe.collection(

@@ -1,0 +1,47 @@
+FRD001: Wave
+
+Status: Approved master
+Master version: v2
+Approved: 23 July 2026 by Peter Brown
+
+APPROVED STYLE-CORRECTION PROMPT
+
+Use case: style-transfer.
+
+Asset type: Evolved Heroine transparent master-art candidate.
+
+Input roles: The FRD001 Wave v1 image is the EDIT TARGET. Preserve its wave pose, full-body framing, peach character identity, black shorts, pink shoes, exact limb arrangement, friendly expression, and anatomical-left-shoe branding placement. CHR002, FND001, FUN003 and FITN001 are STYLE REFERENCES ONLY. They define the original official Evolved Heroine illustration treatment.
+
+Primary request: Restyle only FRD001 Wave from the recent glossy 3D animated rendering back into the original official 2D vintage athletic-mascot illustration style demonstrated by the four original references.
+
+STYLE LOCK
+
+Hand-inked 2D sports mascot illustration; bold dark-plum outer contours and internal linework; simplified graphic shapes; flat cel colours; limited two-to-three-tone cel shading; small hard-edged graphic highlights; subtle vintage screen-print or ink texture; slightly imperfect illustrated finish; original restrained eye, eyelash, cheek, glove, leaf, stem, sneaker and peach treatments. Maintain the original references' graphic flatness and line weight. This must read like the same artist and same asset library as CHR002, FND001, FUN003 and FITN001.
+
+POSE INVARIANTS
+
+One peach mascot only; one raised open waving glove with five readable cartoon fingers; other arm relaxed; two simple tube legs; shallow black athletic shorts; two pink sneakers; exactly two green leaves and one brown stem; full body visible; friendly expression.
+
+LOCKED FOOTWEAR BRANDING
+
+The exact white cursive word "Evolved", spelled E-V-O-L-V-E-D, appears once and only once on the outside side panel of the anatomical LEFT sneaker, which is the viewer-right shoe in this front-facing pose. The viewer-left shoe is blank. No other text.
+
+BACKDROP
+
+Perfectly flat solid chroma blue #0066FF edge to edge for removal. No floor, cast shadow, contact shadow, gradient, glow, vignette, texture, rays, badge, caption, border or scenery.
+
+AVOID ABSOLUTELY
+
+3D render, Pixar-like animation, Disney-like animation, CGI, clay, plush, vinyl toy, glossy plastic, soft studio lighting, volumetric shading, ambient occlusion, realistic depth, inflated rounded forms, cinematic polish, photoreal materials, oversized glossy eyes, soft gradients or airbrushed surfaces.
+
+Output one isolated FRD001 Wave v2 style-correction candidate only.
+
+TRANSPARENCY QA
+
+Genuine 1254 x 1254 RGBA PNG. Alpha range 0 to 255. Four transparent corners passed. Blue chroma pixels: none detected. Transparent pixels: 1,050,919; partial antialiasing pixels: 6,390.
+
+Character construction, gesture readability, shoe spelling, anatomical-left placement, one-shoe-only rule, and original 2D vintage rendering-style match passed visual inspection.
+
+APPROVAL RECORD
+
+Peter Brown approved the FRD001 v2 style correction on 23 July 2026. Version 1 remains preserved as a superseded style-drift record. The transparent v2 master was promoted to the Drive PNGs/Friendly library, this prompt was saved in Character Prompts/Friendly, and the master spreadsheet links were updated.

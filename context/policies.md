@@ -1,5 +1,5 @@
 # The Evolved — Member Policies
-**Last Updated:** 2026-04-25
+**Last Updated:** 2026-07-28
 
 These policies apply to all members and clients. They exist to protect trainer time and commitment, and to support member accountability and results.
 
@@ -10,6 +10,7 @@ These policies apply to all members and clients. They exist to protect trainer t
 ### Cancellation
 - Minimum **30 days paid notice** required from date of form submission
 - Submitted via The Evolved Membership Cancellation Form
+- A conversation expressing intent to cancel is not formal notice; the notice period begins when the form is submitted
 - No downgrades permitted during cancellation period
 - Holds and cancellations cannot run simultaneously — the 30-day period must always be paid in full
 - 30-day notice may only be waived if a medical professional explicitly recommends cessation of all training (supported by medical report)
@@ -19,6 +20,7 @@ These policies apply to all members and clients. They exist to protect trainer t
 - Minimum **14 days notice** required (waived if medical certificate supplied)
 - Standard holds: 1–4 weeks per calendar year
 - Extended holds: 5–12 weeks, require manager approval
+- An approved extension preserves the original hold start and updates the end, billing-resume and return dates
 - Cannot hold and cancel simultaneously
 - Submit via The Evolved Membership Hold Form
 
@@ -53,13 +55,14 @@ These policies apply to all members and clients. They exist to protect trainer t
 - All reschedule questions directed to gym phone: **0483 968 880**
 
 ### Cancellations (PT Sessions)
-- Cancelling a session at any time for any reason = **session forfeited**
-- Strictly non-refundable and non-creditable
+- Cancels with **24+ hours notice** → make-up session or account credit provided
+- Cancels within **24 hours** (or no-show) → session forfeited, non-refundable, non-creditable
 - Exception only at The Evolved's discretion under extraordinary circumstances
 - All questions directed to gym phone: **0483 968 880**
 
 ### PT Contract Cancellation
 - Minimum **30 days notice** via The Evolved Personal Training Cancellation Form
+- A conversation expressing intent to cancel is not formal notice; the notice period begins when the form is submitted
 - If on hold and choose to cancel: must complete 30-day paid cancellation period and return to training during that period
 - No downgrades during cancellation period
 - 30-day notice waived only if physician explicitly recommends avoiding all physical activity (medical report required)
@@ -67,6 +70,7 @@ These policies apply to all members and clients. They exist to protect trainer t
 ### PT Holds / Pauses
 - Minimum **14 days notice** before the debit date
 - Submit via The Evolved Personal Training Hold Form
+- An approved extension preserves the original hold start and updates the end, billing-resume and return dates
 
 ### Billing (PT)
 - Payments taken via Stripe (card/direct debit) or approved upfront session packs
@@ -87,6 +91,29 @@ These policies apply to all members and clients. They exist to protect trainer t
 - Sessions begin and end at scheduled times
 - Late arrivals do not extend session time
 - Trainer unavailability: replacement trainer provided where possible; if not, session rescheduled at client's convenience
+
+---
+
+## Evolved Anywhere Policies
+
+### Service and Billing
+- **$69 per week**, billed through the approved payment rail
+- Includes personalised Trainerize programming and one 30-minute 1:1 PT session every four weeks
+- The monthly PT session may be delivered in person or virtually by mutual agreement
+- Does not include routine group training or general facility access
+- Tania Stiles retains a personal grandfathered exception of up to three Strength Group PT sessions per month
+
+### Monthly PT Session
+- Must be used within its four-week service period and does not roll over
+- Reschedule with at least **24 hours notice**
+- Rescheduling with less than 24 hours notice, cancellation with less than 24 hours notice, or a no-show forfeits the session
+- A session cancelled by The Evolved is rescheduled and is not forfeited
+
+### Service Changes, Holds and Cancellation
+- A move into Evolved Anywhere requires **30 paid days notice**
+- The member's existing service, access and billing continue until the approved effective date
+- Standard membership hold and cancellation policies apply after the change
+- Every later service change requires a new signed Membership Service Change Variation
 
 ---
 

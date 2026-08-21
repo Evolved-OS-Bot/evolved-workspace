@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-RIG-three-quarter-candidate-v1-root-cover-canary-v1",
+  "executed_at": "2026-08-05T08:02:19+10:00",
+  "artifact_id": "PEACH-RIG-three-quarter-candidate-v1",
+  "scope": "Native Apple Motion anatomical-right leg-root canary: provisional upper-leg pivot, fixed body-space source-derived root-cover construction, neutral restoration, corrected five-angle sweep, and separate +15 degree overtravel diagnostic.",
+  "native_project": {
+    "path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-candidate-v1.motn",
+    "sha256": "2c8d35f350c681cb2d8253f5683a605c50bb9233f6986edba4083db763a924d4",
+    "motion_version": "6.3",
+    "canvas": [
+      1254,
+      1254
+    ],
+    "frame_rate_fps": 30,
+    "background": "transparent",
+    "status": "working_candidate_not_approved"
+  },
+  "approved_identity_reference": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+    "supported_motion_reference_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-neutral-reference-share-v1.png",
+    "supported_motion_reference_sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca",
+    "format": "1254 x 1254, 16-bit/color RGBA PNG, sRGB"
+  },
+  "pivot": {
+    "layer": "07-14-ANAT-R-LEG-UPPER",
+    "provisional_source_canvas_xy": [
+      582,
+      680
+    ],
+    "motion_anchor_xy": [
+      -45,
+      -53
+    ],
+    "motion_position_compensation_xy": [
+      -45,
+      -53
+    ],
+    "approval_status": "provisional_pending_complete_rig_review"
+  },
+  "root_cover": {
+    "source_layer": "07-14-ANAT-R-LEG-UPPER copy",
+    "source": "duplicate approved anatomical-right upper-leg pixels",
+    "mask_type": "direct native Bezier mask",
+    "intended_space": "fixed body space",
+    "intended_z_order": "above rotating anatomical-right leg chain and below shorts/body",
+    "intended_rotation_degrees": 0,
+    "structural_status": "constructed_but_failed_visual_stress_gate",
+    "failure_observation": "The corrected v2 sweep shows the masked duplicate as a rounded opaque peach-colour lobe around the lower upper-leg or knee seam instead of a hidden root socket. Positive angles also open a sharp triangular dark or transparent wedge below the shorts, and every nonzero angle shows a hard upper-leg to lower-leg discontinuity."
+  },
+  "neutral_parity": {
+    "candidate_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-root-cover-neutral-share-v4.png",
+    "candidate_sha256": "bf8724ffd447e9803d444e21937a6bbfefea4543c315f946cd49c653ec41eafa",
+    "reference_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-neutral-reference-share-v1.png",
+    "reference_sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca",
+    "comparison_decode": "Pillow RGBA 8-bit normalized decode of the two supported 16-bit PNG exports",
+    "changed_pixels": 0,
+    "rgb_changed_pixels": 0,
+    "alpha_changed_pixels": 0,
+    "byte_identical": false,
+    "status": "pass"
+  },
+  "corrected_v2_sweep": [
+    {
+      "angle_degrees": -12,
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-leg-root-minus12-share-v2.png",
+      "sha256": "d749bb032a4989eccc01bb68091c330e65c407eae97b66cfa7073886e509e039",
+      "status": "fail"
+    },
+    {
+      "angle_degrees": -6,
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-leg-root-minus6-share-v2.png",
+      "sha256": "6242af1d07af59797245a8d836cba80871188a5e83636931365c67ffdbdf5ec9",
+      "status": "fail"
+    },
+    {
+      "angle_degrees": 0,
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-root-cover-neutral-share-v4.png",
+      "sha256": "bf8724ffd447e9803d444e21937a6bbfefea4543c315f946cd49c653ec41eafa",
+      "status": "pass_neutral_only"
+    },
+    {
+      "angle_degrees": 6,
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-leg-root-plus6-share-v2.png",
+      "sha256": "1c58b9695cdbee700287693688151bc20103db87f8d1b799fa627329cca1d7ac",
+      "status": "fail"
+    },
+    {
+      "angle_degrees": 12,
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-leg-root-plus12-share-v2.png",
+      "sha256": "a20dd2aadd183b7219b374526925f72b8b3783168e4b19473bb447afc7d018f3",
+      "status": "fail"
+    }
+  ],
+  "overtravel_diagnostic": {
+    "angle_degrees": 15,
+    "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-leg-root-plus15-overtravel-share-v2.png",
+    "sha256": "0ae9e9521392833305acd885681b2b5a60e22f4a7e69f160567be2a1f68dd8c2",
+    "status": "fail",
+    "observation": "The root wedge and displaced opaque cover lobe are more pronounced at +15 degrees. This overtravel angle is diagnostic only and is not a published control range."
+  },
+  "attempt_history": [
+    {
+      "attempt": "initial_angle_capture_v1",
+      "status": "invalid_evidence",
+      "observation": "Motion displayed the requested angle values but the numeric field was not committed before Share. All labelled exports were byte-identical to neutral and were excluded from the final review sheets."
+    },
+    {
+      "attempt": "corrected_static_cover_sweep_v2",
+      "status": "fail",
+      "observation": "Committed -12, -6, +6, +12, and +15 degree captures produced distinct files and exposed the displaced cover lobe, root wedge, and leg-segment discontinuity."
+    },
+    {
+      "attempt": "linked_chain_minus12_control",
+      "status": "fail_diagnostic",
+      "covered_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-linked-minus12-share-v1.png",
+      "uncovered_path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-linked-minus12-no-cover-share-v1.png",
+      "shared_sha256": "55cc373d644528ab2e633c9daabfb40294406a974c7d6ab1709ec8f7a598ab17",
+      "observation": "Covered and no-cover exports are byte-identical, proving that this cover state contributed no rendered pixels to the exposed root gap."
+    },
+    {
+      "attempt": "moving_root_mask_neutral_v3",
+      "status": "neutral_only_pass",
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-moving-root-mask-neutral-share-v3.png",
+      "sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca",
+      "observation": "This later neutral export is byte-identical to the approved Motion reference, but no complete accepted rotated sweep was produced from it."
+    },
+    {
+      "attempt": "exact_path_inverted_complement_neutral_v1",
+      "status": "fail",
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-complement-neutral-share-v1.png",
+      "sha256": "3883e37bc984fa01339c3d7ea6dd96a1667a9710d03776678f11850f064cc54d",
+      "changed_rgba_pixels": 229,
+      "changed_bbox_xyxy": [
+        552,
+        748,
+        602,
+        835
+      ],
+      "extra_support_pixels": 0,
+      "missing_support_pixels": 0,
+      "observation": "The complement preserved alpha support topology but still changed neutral edge and texture pixels, so it did not satisfy exact neutral restoration."
+    }
+  ],
+  "review_evidence": {
+    "root_closeup_light_dark_checker": {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-candidate-v1-root-cover-canary-v1/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-root-cover-stress-grid-v1.png",
+      "sha256": "ca00389b5bbc331d7c5a5bf85b135a2d1c5ebd64851fa0e0b66867a0bbd7a306",
+      "format": "1800 x 1316, 8-bit RGB PNG review derivative",
+      "angles_degrees": [
+        -12,
+        -6,
+        0,
+        6,
+        12,
+        15
+      ],
+      "backgrounds": [
+        "checker",
+        "light",
+        "dark_plum"
+      ]
+    },
+    "full_body_checker_sweep": {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-candidate-v1-root-cover-canary-v1/PEACH-RIG-three-quarter-candidate-v1-ANAT-R-full-body-sweep-v1.png",
+      "sha256": "88f12e6a07dba67b329c174e154c07f23890c70364b485520afad6810116e46f",
+      "format": "1560 x 388, 8-bit RGB PNG review derivative",
+      "background": "checker"
+    }
+  },
+  "checks": [
+    {
+      "check_id": "NEUTRAL_DECODED_PIXEL_PARITY",
+      "status": "pass",
+      "observation": "The v4 supported neutral export has zero changed decoded RGBA pixels against the approved v11 Motion reference under the recorded normalized decode."
+    },
+    {
+      "check_id": "PIVOT_COORDINATE_AND_NEUTRAL_COMPENSATION",
+      "status": "pass_provisional",
+      "observation": "The anatomical-right upper-leg pivot remains at source coordinate (582, 680), stored as Motion anchor and matching position compensation (-45, -53). This does not approve the pivot."
+    },
+    {
+      "check_id": "CORRECTED_DISTINCT_ANGLE_CAPTURES",
+      "status": "pass_evidence_only",
+      "observation": "The corrected -12, -6, 0, +6, +12, and separate +15 degree files have distinct hashes where movement is expected. The earlier uncommitted capture set was excluded."
+    },
+    {
+      "check_id": "FIXED_BODY_SPACE_ROOT_COVER_STRESS",
+      "status": "fail",
+      "observation": "The static source-derived cover is visibly displaced from the leg root and forms a rounded opaque lobe near the lower upper-leg seam. It does not prevent a positive-angle root wedge."
+    },
+    {
+      "check_id": "LIGHT_DARK_CHECKER_REVIEW",
+      "status": "fail",
+      "observation": "The same construction defects remain visible on checkerboard, light neutral, and dark plum backgrounds."
+    },
+    {
+      "check_id": "LEG_CHAIN_CONTINUITY",
+      "status": "fail",
+      "observation": "The corrected v2 sweep rotates only the upper-leg segment and exposes a hard discontinuity against the unlinked lower leg. A later linked-chain diagnostic moved the lower leg and shoe but did not produce an accepted covered sweep."
+    },
+    {
+      "check_id": "OVERTRAVEL",
+      "status": "fail_diagnostic_only",
+      "observation": "The +15 degree diagnostic amplifies the same defects and is not an approved control limit."
+    },
+    {
+      "check_id": "HUMAN_RIG_APPROVAL",
+      "status": "not_requested",
+      "observation": "This failed canary is not eligible for human rig approval or promotion."
+    }
+  ],
+  "technical_result": "fail",
+  "passed_scope": "Provisional pivot placement and exact neutral restoration evidence only.",
+  "failed_scope": "Fixed body-space anatomical-right root-cover stress performance and complete leg-chain continuity across the requested rotation range.",
+  "next_safe_action": "Retain this run as failed evidence. Build a complete anatomical-right leg and shoe chain, then create a source-derived root socket whose covered export differs from the uncovered export only inside the exposed root gap, remains fully hidden at neutral, and passes a fresh -12, -6, 0, +6, +12 sweep before any rig promotion.",
+  "approval_scope_warning": "This report does not approve the provisional pivot, root-cover mask, leg chain, rig, motions, expressions, templates, exports as reusable assets, deployment, or external handoff. No human approval is claimed."
+}

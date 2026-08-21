@@ -3,6 +3,11 @@
 **Created:** 2026-04-30
 **Applies to:** theevolvedgym.com.au (post-migration)
 
+> **Historical guide:** Website V2 was subsequently built and expanded well
+> beyond this initial guide. Do not reconstruct the homepage from this file.
+> Use `outputs/systems/website-v2-release-manifest.md` and the governed source
+> mirror at `wordpress/website-v2/source/`.
+
 ---
 
 ## Stack

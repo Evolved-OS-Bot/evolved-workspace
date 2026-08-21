@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "approval_record_id": "APR-PEACH-LAYER-three-quarter-candidate-v1-VISUAL-TARGET-2026-08-04-01",
+  "record_status": "active",
+  "immutable": true,
+  "recorded_at": "2026-08-04T12:59:09+10:00",
+  "approver": {
+    "name": "Peter Brown",
+    "role": "owner"
+  },
+  "decision": "approved",
+  "approval_scope": "neutral_visual_target_for_full_layered_construction",
+  "approval_text_verbatim": "Approve PEACH-LAYER-three-quarter-candidate-v1 as the neutral visual target for full layered construction.",
+  "artifact": {
+    "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+    "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-candidate-v1-neutral.png",
+    "sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d",
+    "technical_qa_result_at_record_time": "pass"
+  },
+  "review_evidence": [
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-reconstruction/PEACH-LAYER-three-quarter-candidate-v1-review.md",
+      "sha256": "0363883a65e6a91873306c9d5bbd0d557a87519af722bc53626b03ffed2e358e"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-reconstruction/PEACH-LAYER-three-quarter-candidate-v1-light-dark-checker.png",
+      "sha256": "510240c4715295cd85c7977d82fc8a684a4d6610d1ce4e5b3615a7dc7dc87c3b"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-reconstruction/PEACH-LAYER-three-quarter-candidate-v1-source-comparison.png",
+      "sha256": "59440ab06344376df26f195d70d296b4850fb79a9ab13d6bd80426d4d5be1d55"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-candidate-v1/qa-report.json",
+      "sha256": "e718fad2cc54410aa6dcc134553ab6430f67cd9bc8af9c449cfb8fdb5ca3b216"
+    }
+  ],
+  "approval_scope_excludes": [
+    "completed_layered_source_approval",
+    "apple_motion_rig_approval",
+    "reusable_motion_approval",
+    "expression_approval",
+    "template_approval",
+    "export_path_approval",
+    "external_publication",
+    "contractor_handoff"
+  ],
+  "next_required_gate": {
+    "artifact_class": "completed_layered_source",
+    "requirement": "Technical QA and Peter Brown visual approval of the completed editable layered reconstruction before it becomes the rig source."
+  },
+  "provenance": {
+    "source_host_id": "slingshot:env_e_6a6e5522cfa48331922b805b3d4a94e7",
+    "source_thread_id": "019f6a36-089f-7622-aab9-9fe0e7a18f14",
+    "recorded_by_task": "/root/qa_architecture"
+  },
+  "supersedes_approval_record_id": null
+}

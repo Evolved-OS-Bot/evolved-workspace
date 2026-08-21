@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "analysis_type": "deterministic_component_separation_plan",
+  "analysis_status": "complete",
+  "source": {
+    "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-candidate-v1-neutral.png",
+    "sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d",
+    "width": 1254,
+    "height": 1254,
+    "pixel_format": "rgba",
+    "alpha_subject_bbox_xyxy_exclusive": [390, 104, 901, 1077],
+    "coordinate_convention": "origin_top_left; bboxes are [left, top, right, bottom) with right and bottom exclusive",
+    "source_mutated": false
+  },
+  "approval_context": {
+    "neutral_visual_target": "approved_in_current_implementation_thread",
+    "record_state_at_analysis_time": "project records still contained awaiting_human_review and require main-agent reconciliation",
+    "approval_does_not_cover": [
+      "component masks",
+      "hidden-pixel restoration",
+      "layered-source visual match",
+      "rig mechanics",
+      "motions",
+      "expressions"
+    ]
+  },
+  "feasibility": {
+    "result": "go_with_controls",
+    "summary": "A valid reviewable layered source can be produced deterministically with path masks, preserved source pixels, fixed clone and vector restoration, and reassembly QA. Automatic colour segmentation alone cannot produce a valid source because touching components share deep-plum, peach, cream and coral colours.",
+    "required_architecture_change": "Keep body paint, shading, outer ink and vintage texture as one locked clean body plate. Do not independently animate colour-region sublayers.",
+    "not_permitted": [
+      "generative fill",
+      "AI inpainting",
+      "horizontal mirroring",
+      "negative X scale",
+      "relocating or retyping the Evolved shoe artwork",
+      "automatic colour-key separation as the final mask source"
+    ]
+  },
+  "base_pivots_xy": {
+    "PEACH-3Q-ROOT": [642, 1075],
+    "BODY": [644, 440],
+    "STEM": [642, 230],
+    "LEAF-A-viewer-left": [614, 226],
+    "LEAF-B-viewer-right": [670, 226],
+    "ANAT-R-ARM-root": [469, 583],
+    "ANAT-R-ARM-bend": [460, 638],
+    "ANAT-R-GLOVE-cuff": [448, 690],
+    "ANAT-L-ARM-root": [796, 565],
+    "ANAT-L-ARM-bend": [812, 636],
+    "ANAT-L-GLOVE-cuff": [821, 693],
+    "ANAT-R-LEG-root": [582, 704],
+    "ANAT-R-LEG-bend": [582, 810],
+    "ANAT-R-SHOE-cuff": [579, 904],
+    "ANAT-L-LEG-root": [678, 704],
+    "ANAT-L-LEG-bend": [706, 811],
+    "ANAT-L-SHOE-cuff": [739, 910],
+    "ANAT-R-PALM-ATTACH": [450, 753],
+    "ANAT-L-PALM-ATTACH": [820, 753]
+  },
+  "layers": [
+    {
+      "name": "COMPOSITE-REFERENCE-NONRENDER",
+      "source_visible_bbox": [390, 104, 901, 1077],
+      "working_bbox": [0, 0, 1254, 1254],
+      "method": "unaltered full-canvas source copy",
+      "restoration": "none"
+    },
+    {
+      "name": "LEAF-A-viewer-left",
+      "source_visible_bbox": [425, 145, 634, 240],
+      "working_bbox": [412, 132, 648, 256],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Extend the root 18 pixels toward pivot [614,226] under the body-top cover patch. Rebuild only the hidden root with sampled greens and the existing deep-plum outline width."
+    },
+    {
+      "name": "LEAF-B-viewer-right",
+      "source_visible_bbox": [662, 141, 873, 232],
+      "working_bbox": [648, 128, 888, 250],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Extend the root 18 pixels toward pivot [670,226] under the body-top cover patch. Rebuild only the hidden root with sampled greens and the existing deep-plum outline width."
+    },
+    {
+      "name": "STEM",
+      "source_visible_bbox": [596, 105, 682, 241],
+      "working_bbox": [582, 92, 696, 256],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Extend the base 16 pixels below pivot [642,230]. The extension remains behind the restored body cleft and must not add a visible end cap."
+    },
+    {
+      "name": "ANAT-R-ARM-UPPER",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [430, 563, 501, 655],
+      "working_bbox": [405, 540, 515, 676],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 28 pixels beneath the body at root [469,583]. Extend 24 pixels beyond bend [460,638]. Use a no-outline overlap capsule at the bend so upper and lower sections do not create a double contour."
+    },
+    {
+      "name": "ANAT-R-ARM-LOWER",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [409, 622, 489, 709],
+      "working_bbox": [395, 608, 507, 728],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 24 pixels above bend [460,638] and 18 pixels beneath glove cuff [448,690]. Preserve the visible tube texture; rebuilt overlap pixels remain hidden at neutral."
+    },
+    {
+      "name": "ANAT-R-GLOVE-STATE-neutral",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [392, 668, 497, 831],
+      "working_bbox": [378, 652, 512, 846],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Complete the cuff interior and add 12 pixels of concealed cream fill above the cuff. Do not redraw finger silhouettes."
+    },
+    {
+      "name": "ANAT-L-ARM-UPPER",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [771, 544, 844, 657],
+      "working_bbox": [748, 520, 867, 680],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 30 pixels beneath the body at root [796,565]. Extend 24 pixels beyond bend [812,636]. Use a no-outline overlap capsule at the bend."
+    },
+    {
+      "name": "ANAT-L-ARM-LOWER",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [793, 620, 858, 712],
+      "working_bbox": [781, 606, 875, 731],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 24 pixels above bend [812,636] and 18 pixels beneath glove cuff [821,693]. Preserve the visible tube texture."
+    },
+    {
+      "name": "ANAT-L-GLOVE-STATE-neutral",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [752, 675, 881, 833],
+      "working_bbox": [738, 658, 895, 848],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Complete the cuff interior and add 12 pixels of concealed cream fill above the cuff. Do not redraw finger silhouettes."
+    },
+    {
+      "name": "ANAT-R-LEG-UPPER",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [539, 698, 636, 819],
+      "working_bbox": [522, 677, 653, 840],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 26 pixels beneath shorts at root [582,704] and 26 pixels beyond bend [582,810]. No anatomical thigh or knee shaping."
+    },
+    {
+      "name": "ANAT-R-LEG-LOWER",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [552, 786, 635, 923],
+      "working_bbox": [537, 774, 651, 947],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 26 pixels above bend [582,810] and 22 pixels beneath shoe cuff [579,904]. Use a simple tube overlap with no knee or ankle anatomy."
+    },
+    {
+      "name": "ANAT-L-LEG-UPPER",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [635, 698, 720, 823],
+      "working_bbox": [620, 677, 741, 842],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 26 pixels beneath shorts at root [678,704] and 26 pixels beyond bend [706,811]. No anatomical thigh or knee shaping."
+    },
+    {
+      "name": "ANAT-L-LEG-LOWER",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [682, 789, 767, 929],
+      "working_bbox": [666, 774, 782, 953],
+      "method": "path mask plus deterministic tube reconstruction",
+      "restoration": "Extend 26 pixels above bend [706,811] and 22 pixels beneath shoe cuff [739,910]. Use a simple tube overlap with no knee or ankle anatomy."
+    },
+    {
+      "name": "SHORTS-LOCKED",
+      "source_visible_bbox": [526, 640, 738, 727],
+      "working_bbox": [512, 626, 752, 744],
+      "method": "single hand-traced apparel layer; merge proposed SHORTS-REAR and SHORTS-FRONT unless an articulation test proves a split is necessary",
+      "restoration": "Extend the waistband 22 pixels beneath the body and each leg opening 18 pixels over the leg roots. Keep the garment shallow and preserve the pointed fruit underside."
+    },
+    {
+      "name": "BODY-CLEAN-PLATE-LOCKED",
+      "source_visible_bbox": [393, 219, 898, 662],
+      "working_bbox": [380, 205, 911, 686],
+      "method": "preserve body pixels as one locked composite; remove detachable features with fixed path masks; restore only concealed pixels using sampled raster clones and fixed Bezier contours",
+      "restoration": "Restore the face-clear zones, both side contours behind arm roots, the top cleft behind leaves and stem, and small lower-edge areas behind shorts. Keep OUTER-INK, PEACH-BASE, CORAL-MIDSHADOW, DEEP-PLUM-SHADOW, CREAM-HIGHLIGHT and VINTAGE-INK-TEXTURE baked together.",
+      "restoration_zones": {
+        "face_union": [420, 280, 735, 520],
+        "ANAT-R-arm_root_cover": [414, 542, 505, 641],
+        "ANAT-L-arm_root_cover": [760, 520, 850, 622],
+        "top_cleft_cover": [420, 132, 880, 266],
+        "shorts_overlap_cover": [515, 620, 751, 691]
+      }
+    },
+    {
+      "name": "BROW-R",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [490, 291, 544, 316],
+      "working_bbox": [482, 283, 552, 324],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the extracted brow."
+    },
+    {
+      "name": "BROW-L",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [621, 293, 680, 318],
+      "working_bbox": [613, 285, 688, 326],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the extracted brow."
+    },
+    {
+      "name": "EYE-R-WHITE-AND-LASH",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [451, 327, 566, 449],
+      "working_bbox": [441, 317, 576, 459],
+      "method": "path mask preserving eye white, outer ink and lashes",
+      "restoration": "Build a complete cream eye-white plate under the pupil by continuing the visible cream crescent. Restore warm-peach body pixels behind the complete eye group."
+    },
+    {
+      "name": "PUPIL-R",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [492, 347, 553, 445],
+      "working_bbox": [486, 341, 559, 451],
+      "method": "path mask preserving pupil, iris-black and highlight",
+      "restoration": "No generative restoration. The eye-white plate supplies concealed pixels. Clip movement inside EYE-R-WHITE-AND-LASH."
+    },
+    {
+      "name": "LID-R",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": null,
+      "working_bbox": [441, 317, 576, 459],
+      "method": "empty placeholder; no neutral lid artwork exists to extract",
+      "restoration": "Create later only from separately approved expression artwork."
+    },
+    {
+      "name": "EYE-L-WHITE-AND-LASH",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [596, 327, 718, 451],
+      "working_bbox": [586, 317, 728, 461],
+      "method": "path mask preserving eye white, outer ink and lashes",
+      "restoration": "Build a complete cream eye-white plate under the pupil by continuing the visible cream crescent. Restore warm-peach body pixels behind the complete eye group."
+    },
+    {
+      "name": "PUPIL-L",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [635, 348, 700, 447],
+      "working_bbox": [629, 342, 706, 453],
+      "method": "path mask preserving pupil, iris-black and highlight",
+      "restoration": "No generative restoration. The eye-white plate supplies concealed pixels. Clip movement inside EYE-L-WHITE-AND-LASH."
+    },
+    {
+      "name": "LID-L",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": null,
+      "working_bbox": [586, 317, 728, 461],
+      "method": "empty placeholder; no neutral lid artwork exists to extract",
+      "restoration": "Create later only from separately approved expression artwork."
+    },
+    {
+      "name": "CHEEK-R",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [434, 414, 487, 466],
+      "working_bbox": [426, 406, 495, 474],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the cheek."
+    },
+    {
+      "name": "CHEEK-L",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [661, 422, 725, 477],
+      "working_bbox": [653, 414, 733, 485],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the cheek."
+    },
+    {
+      "name": "NOSE-FIXED",
+      "source_visible_bbox": [534, 429, 581, 468],
+      "working_bbox": [526, 421, 589, 476],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the nose."
+    },
+    {
+      "name": "MOUTH-STATE-neutral",
+      "source_visible_bbox": [528, 461, 646, 510],
+      "working_bbox": [520, 453, 654, 518],
+      "method": "path mask preserving source pixels",
+      "restoration": "Restore warm-peach body texture beneath the complete mouth. Other mouths remain empty placeholders until separately approved."
+    },
+    {
+      "name": "ANAT-R-SHOE-BLANK",
+      "viewer_side_in_neutral": "left",
+      "source_visible_bbox": [420, 883, 650, 1046],
+      "working_bbox": [407, 869, 663, 1060],
+      "method": "hand-traced path mask preserving original RGBA pixels",
+      "restoration": "Complete the hidden collar beneath the leg by 18 pixels. This shoe must have no brand layer or text."
+    },
+    {
+      "name": "ANAT-L-SHOE",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [672, 888, 864, 1077],
+      "working_bbox": [659, 874, 878, 1088],
+      "method": "hand-traced shoe-group mask; preserve the approved FRD001-derived replacement pixels",
+      "restoration": "Complete the hidden collar beneath the leg by 18 pixels. Keep shoe artwork and brand in one locked transform group.",
+      "approved_replacement_diff_bbox": [673, 946, 863, 1060]
+    },
+    {
+      "name": "EVOLVED-BRAND-LOCKED",
+      "viewer_side_in_neutral": "right",
+      "source_visible_bbox": [704, 971, 784, 1021],
+      "working_bbox": [696, 963, 792, 1029],
+      "method": "audit-only child mask from approved FRD001 artwork",
+      "restoration": "None. Do not repaint, retype, move, rotate, scale or expose this child independently. It must inherit the ANAT-L-SHOE transform."
+    }
+  ],
+  "recommended_z_order_back_to_front": [
+    "LEAF-A-viewer-left",
+    "LEAF-B-viewer-right",
+    "STEM",
+    "ANAT-R-ARM-UPPER",
+    "ANAT-L-ARM-UPPER",
+    "ANAT-R-LEG-UPPER",
+    "ANAT-R-LEG-LOWER",
+    "ANAT-L-LEG-UPPER",
+    "ANAT-L-LEG-LOWER",
+    "SHORTS-LOCKED",
+    "BODY-CLEAN-PLATE-LOCKED",
+    "BODY-ROOT-COVER-PATCHES",
+    "FACE-GROUP",
+    "ANAT-R-ARM-LOWER",
+    "ANAT-L-ARM-LOWER",
+    "ANAT-R-GLOVE-STATE-neutral",
+    "ANAT-L-GLOVE-STATE-neutral",
+    "ANAT-R-SHOE-BLANK",
+    "ANAT-L-SHOE"
+  ],
+  "reassembly_acceptance": {
+    "visible_pixel_rule": "Every source-visible pixel outside explicitly documented restoration-only masks must reproduce the approved candidate RGBA values exactly.",
+    "alpha_rule": "No new alpha fringe, matte line or clipped antialiasing at 100, 200 and 400 percent inspection.",
+    "difference_test": "Flatten the layered source at neutral and compare with the approved candidate. Any non-zero visible difference outside approved seam masks fails.",
+    "articulation_test": [
+      "Move each arm 20 degrees away from body and inspect restored side contour and root overlap.",
+      "Bend each arm 20 degrees at tube-bend pivot and inspect for double outlines or gaps.",
+      "Move each leg 12 degrees and inspect shorts overlap and hidden leg roots.",
+      "Bend each leg 15 degrees and inspect tube continuity without anatomical knee shaping.",
+      "Rotate each leaf 8 degrees and stem 4 degrees and inspect restored cleft.",
+      "Move each pupil to four safe extremes and inspect the completed eye-white plate.",
+      "Confirm anatomical left remains viewer-right at neutral and the right shoe remains blank."
+    ],
+    "review_outputs_required": [
+      "neutral reassembly difference image",
+      "exploded-layer sheet",
+      "hidden-restoration exposure sheet",
+      "light background render",
+      "dark plum background render",
+      "checkerboard render"
+    ]
+  },
+  "visual_risks": [
+    "The approved anatomical-left FRD001 shoe is cleaner and more side-readable than the reconstructed blank shoe; separation must not increase this mismatch.",
+    "The left and right neutral gloves are newly reconstructed, asymmetrical and pose-specific. Automatic contour smoothing would alter their approved silhouettes.",
+    "The arm and leg tubes have no visible joint seams. Creating upper and lower layers requires concealed overlap capsules and a new layered-source review.",
+    "The body top, side contours and face field contain hidden pixels that do not exist in the flattened source. Their deterministic restoration is new artwork and must be reviewed.",
+    "The face uses shared black regions for pupils, lashes and outlines. Colour thresholding will merge unrelated parts.",
+    "Cream appears in eyes, gloves, laces, soles, highlights and the shoe word. Colour thresholding will cross-contaminate layers.",
+    "The candidate and layer sources have no embedded sRGB or ICC profile. The layered source and exports must be explicitly tagged sRGB.",
+    "Existing project and layer-map records still described the visual gate as awaiting review at analysis time and require main-agent status reconciliation."
+  ]
+}

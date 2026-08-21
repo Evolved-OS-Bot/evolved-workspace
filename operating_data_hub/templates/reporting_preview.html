@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CEO Dashboard Preview</title>
+  <style>
+    :root {
+      --ink: #172018;
+      --muted: #657066;
+      --paper: #f5f6f1;
+      --card: #fff;
+      --line: #dde2d8;
+      --lime: #d8ff54;
+      --amber: #8a5100;
+      --amber-soft: #fff1d5;
+      --green: #1d6b3d;
+      --green-soft: #e0f4e6;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .topbar { color: #fff; background: var(--ink); }
+    .topbar-inner, main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 800; letter-spacing: .15em; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: var(--ink); background: var(--lime); border-radius: 50%; letter-spacing: 0; }
+    .top-link { color: #e7ebe5; text-decoration: none; border: 1px solid #596159; border-radius: 10px; padding: 9px 13px; }
+    main { padding: 38px 0 70px; }
+    h1 { margin: 0; font-size: clamp(34px, 5vw, 54px); line-height: 1; letter-spacing: -.05em; }
+    h2 { margin: 0; font-size: 24px; letter-spacing: -.025em; }
+    h3 { margin: 0; font-size: 17px; }
+    p { line-height: 1.5; }
+    .eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .subhead { max-width: 760px; color: var(--muted); }
+    .warning { margin: 24px 0; padding: 14px 17px; color: var(--amber); background: var(--amber-soft); border-radius: 12px; font-weight: 700; }
+    .periods { display: inline-flex; gap: 6px; padding: 5px; margin: 8px 0 26px; background: #e7eae3; border-radius: 12px; }
+    .period { color: var(--muted); padding: 10px 16px; border-radius: 9px; font-weight: 750; text-decoration: none; }
+    .period.active { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(23,32,24,.08); }
+    .summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+    .pill, .tag { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+    .pill { color: var(--amber); background: var(--amber-soft); }
+    .tag { color: var(--muted); background: #edf0e8; white-space: nowrap; }
+    .panel, .widget { background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+    .panel { padding: 22px; margin-top: 18px; }
+    .cash-first { padding: 26px; color: #fff; background: var(--ink); border: 0; }
+    .cash-first .eyebrow, .cash-first .note { color: #cbd2c9; }
+    .cash-head, .widget-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .cash-head h2 { font-size: 28px; }
+    .goal-tag { color: var(--ink); background: var(--lime); }
+    .cash-grid { display: grid; grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+    .cash-stat { padding: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 13px; }
+    .cash-stat.primary { background: rgba(216,255,84,.12); border-color: rgba(216,255,84,.35); }
+    .cash-label { min-height: 35px; margin: 0; color: #cbd2c9; font-size: 12px; font-weight: 750; }
+    .cash-value { margin: 8px 0 0; font-size: clamp(24px, 3vw, 36px); font-weight: 850; letter-spacing: -.04em; }
+    .goal-progress { height: 8px; margin-top: 12px; overflow: hidden; background: rgba(255,255,255,.12); border-radius: 999px; }
+    .goal-progress span { display: block; height: 100%; background: var(--lime); border-radius: inherit; }
+    .accounting-check { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.15); }
+    .accounting-check div { padding: 12px 14px; background: rgba(255,255,255,.06); border-radius: 11px; }
+    .accounting-check strong { display: block; margin-top: 5px; font-size: 21px; }
+    .accounting-check span { color: #cbd2c9; font-size: 11px; }
+    .accounting-note { grid-column: 1 / -1; margin: 0; color: #cbd2c9; font-size: 11px; }
+    .accounting-status { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .accounting-status strong { font-size: 14px; }
+    .expense-breakdown { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .expense-breakdown summary { cursor: pointer; font-size: 12px; font-weight: 800; }
+    .expense-breakdown .row { padding: 8px 0; font-size: 12px; }
+    .ahead-panel { padding: 22px; }
+    .ahead-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .ahead-card { padding: 16px; background: #f8f9f5; border-radius: 13px; }
+    .ahead-card.ready { background: #f4f8e8; }
+    .ahead-card .metric-name { min-height: 0; }
+    .ahead-card .metric-value { font-size: 30px; }
+    .ahead-list { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .ahead-list summary { cursor: pointer; font-weight: 800; }
+    .readiness { display: inline-flex; padding: 4px 7px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+    .readiness.yes { color: var(--green); background: var(--green-soft); }
+    .readiness.no { color: var(--amber); background: var(--amber-soft); }
+    .note { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .pillar-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 18px 0 30px; }
+    .pillar-card { position: relative; min-height: 194px; padding: 18px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 16px; text-decoration: none; }
+    .pillar-number { display: inline-grid; width: 28px; height: 28px; place-items: center; margin-bottom: 24px; color: var(--ink); background: var(--lime); border-radius: 50%; font-size: 12px; font-weight: 850; }
+    .pillar-card h3 { font-size: 18px; }
+    .pillar-question { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+    .pillar-health { margin: 18px 0 0; font-size: 19px; font-weight: 850; line-height: 1.15; }
+    .pillar-evidence { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .rate-progress { height: 7px; margin-top: 12px; overflow: hidden; background: #e8ece4; border-radius: 999px; }
+    .rate-progress span { display: block; height: 100%; background: var(--green); border-radius: inherit; }
+    .pillar-status { display: inline-flex; margin-top: 12px; padding: 5px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+    .pillar-status.connected { color: var(--green); background: var(--green-soft); }
+    .pillar-status.waiting { color: var(--amber); background: var(--amber-soft); }
+    .pillar-arrow { position: absolute; right: 16px; bottom: 13px; color: var(--muted); font-weight: 850; }
+    .pillar-section { scroll-margin-top: 20px; margin-top: 38px; padding-top: 6px; }
+    .pillar-title { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+    .pillar-title .pillar-number { margin: 0; }
+    .pillar-section > p { margin: 0 0 15px; color: var(--muted); font-size: 14px; }
+    .widgets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .widget { min-width: 0; padding: 20px; }
+    .widget.full { grid-column: 1 / -1; }
+    .widget-head { margin-bottom: 16px; }
+    .widget-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .metric { padding: 14px; background: #f8f9f5; border-radius: 12px; }
+    .metric-name { min-height: 35px; margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .metric-value { margin: 7px 0 0; font-size: 26px; font-weight: 850; letter-spacing: -.03em; }
+    .metric-note { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+    .rows { display: grid; }
+    .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .row:last-child { border-bottom: 0; }
+    .row span { color: var(--muted); }
+    .row strong { text-align: right; }
+    .notice-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
+    .notice-summary div { padding: 11px 12px; background: #f8f9f5; border-radius: 11px; }
+    .notice-summary strong { display: block; font-size: 22px; }
+    .notice-summary span { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .notice-list { display: grid; gap: 10px; }
+    .notice-item { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .notice-person { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .notice-person strong { font-size: 15px; }
+    .notice-person small, .notice-detail { color: var(--muted); }
+    .notice-person small { display: block; margin-top: 2px; }
+    .notice-kind { display: inline-flex; padding: 5px 8px; border-radius: 999px; color: var(--amber); background: var(--amber-soft); font-size: 10px; font-weight: 850; text-align: right; }
+    .notice-change { margin: 12px 0 5px; font-weight: 850; }
+    .notice-detail { margin: 3px 0; font-size: 12px; }
+    .notice-date { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--line); font-size: 12px; font-weight: 750; }
+    .gap, .callout { padding: 14px; margin-top: 14px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+    .gap { color: var(--muted); background: #f8f9f5; border: 1px dashed #c7cec2; }
+    .gap strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .callout { color: var(--muted); background: #f4f8e8; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 11px 8px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; }
+    th { color: var(--muted); }
+    details.audit { margin-top: 30px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    details.audit summary { padding: 18px 20px; cursor: pointer; font-weight: 800; }
+    .audit-inner { padding: 0 20px 20px; }
+    .audit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .audit-card { padding: 15px; background: #f8f9f5; border-radius: 12px; }
+    .status { display: inline-block; margin-top: 8px; padding: 5px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .ready { color: var(--green); background: var(--green-soft); }
+    .blocked { color: var(--amber); background: var(--amber-soft); }
+    .accepted { color: #fff; background: var(--green); }
+    .legacy { color: var(--ink); background: #e7eae3; }
+    .rolled-back { color: #8b2f2b; background: #ffe5e3; }
+    .error { padding: 18px; color: #a63b38; background: #ffe5e3; border-radius: 12px; }
+    @media (max-width: 900px) {
+      .cash-grid, .metrics, .ahead-grid, .accounting-check { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pillar-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .widgets, .audit-grid { grid-template-columns: 1fr; }
+      .widget.full { grid-column: auto; }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner, main { width: min(100% - 24px, 1180px); }
+      .periods { display: flex; width: 100%; overflow-x: auto; }
+      .period { flex: 1; padding: 10px 12px; text-align: center; white-space: nowrap; }
+      .summary, .cash-head, .widget-head { align-items: flex-start; flex-direction: column; }
+      .cash-grid, .metrics, .pillar-nav, .ahead-grid, .accounting-check { grid-template-columns: 1fr; }
+      .notice-summary { grid-template-columns: 1fr; }
+      .notice-person { flex-direction: column; }
+      .pillar-card { min-height: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-mark">E</span><span>THE EVOLVED</span></div>
+      <a class="top-link" href="/dashboard">Accepted dashboard</a>
+    </div>
+  </header>
+  <main>
+    <p class="eyebrow">Controlled migration</p>
+    <h1>CEO Dashboard</h1>
+    <p class="subhead">Cash first, then the five pillars that explain the health of the business.</p>
+    <div class="warning">Preview only during metric-by-metric cutover: every replacement stays in shadow, legacy or unavailable until its own evidence gates and Peter's approval pass. The KPI workbook is not being cut over.</div>
+    <nav class="periods" aria-label="Reporting period">
+      <a class="period {{ 'active' if selected_period == 'week' else '' }}" href="/dashboard/reporting-preview?period=week">Last week</a>
+      <a class="period {{ 'active' if selected_period == '28d' else '' }}" href="/dashboard/reporting-preview?period=28d">Last 28 days</a>
+      <a class="period {{ 'active' if selected_period == '90d' else '' }}" href="/dashboard/reporting-preview?period=90d">Last 90 days</a>
+    </nav>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% else %}
+    {% set dm = delivery.metrics %}
+    {% set governed = delivery.governed %}
+    {% set mix = governed.get('service_breakdown', {}) if governed else {} %}
+    {% set pt = delivery.pt_roster_self_mending %}
+    {% set notices = delivery.active_notice_periods %}
+    {% set attendance = delivery.strength_assessment_attendance.get('summary', {}) %}
+    {% set performance = delivery.trainerize_performance %}
+    {% set metrics_by_id = scorecard.metrics_by_id %}
+    {% set bookings = metrics_by_id.get('sa_bookings_unique', {}) %}
+    {% set subscriber_booking_metric = metrics_by_id.get('subscriber_to_sa_booking_rate', {}) %}
+    {% set prequalified = metrics_by_id.get('prequalification_completion_rate', {}) %}
+    {% set show_rate = metrics_by_id.get('sa_show_rate', {}) %}
+    {% set conversion = metrics_by_id.get('assessment_conversion_unique', {}) %}
+    {% set onboarding_session = metrics_by_id.get('onboarding_completion_speed_days', {}) %}
+    {% set successful_week = metrics_by_id.get('successful_first_week_rate', {}) %}
+    {% set successful_week_speed = metrics_by_id.get('successful_first_week_speed_days', {}) %}
+    {% set activation = delivery.acquisition_funnel.get('successful_first_week', {}) %}
+    {% set sgpt = scorecard.sgpt_delivery %}
+    {% set standards = scorecard.evolved_standards %}
+    {% set attrition = scorecard.attrition %}
+    {% set lifecycle = scorecard.membership_lifecycle %}
+    {% set week_ahead = scorecard.week_ahead %}
+    {% set projected_income = scorecard.projected_income %}
+    {% set expenses = scorecard.expenses %}
+    {% set accounting = scorecard.accounting_validation %}
+    {% set website = scorecard.website_marketing %}
+    {% set subscriber_booking = scorecard.subscriber_booking %}
+
+    <div class="summary">
+      <div><p class="eyebrow">Selected period</p><h2>{{ scorecard.period.label }}</h2><p class="subhead">{{ scorecard.period.start }} to {{ scorecard.period.end }}</p></div>
+      <span class="pill">{{ scorecard.acceptance.ready_for_owner_acceptance }} of {{ scorecard.acceptance.required_metrics }} foundation metrics ready · {{ scorecard.acceptance.accepted_metrics }} accepted</span>
+    </div>
+
+    <section class="panel cash-first">
+      <div class="cash-head">
+        <div><p class="eyebrow">Cash and the goal</p><h2>Are we producing enough cash?</h2><p class="note">{% if scorecard.cash_goal.available %}Automatic Stripe and PT Minder cash, refunds included and GST excluded.{% else %}Accepted weekly cash remains visible while the automatic rolling cash feed is completed.{% endif %}</p></div>
+        <span class="tag goal-tag">$1,000,000 rolling goal · {{ scorecard.cash_goal.cutover.effective_state|replace('_', ' ') }}</span>
+      </div>
+      <div class="cash-grid">
+        <div class="cash-stat primary"><p class="cash-label">Total cash collected</p><p class="cash-value">{% if dm.get('cash_collected') is not none %}${{ "{:,.0f}".format(dm.get('cash_collected')) }}{% else %}—{% endif %}</p><p class="note">{{ dm.get('period', {}).get('label', 'Accepted KPI period') }}</p></div>
+        <div class="cash-stat"><p class="cash-label">Member cash collected</p><p class="cash-value">{% if dm.get('recurring_cash_collected') is not none %}${{ "{:,.0f}".format(dm.get('recurring_cash_collected')) }}{% else %}—{% endif %}</p><p class="note">Recurring member payments</p></div>
+        <div class="cash-stat"><p class="cash-label">New sale cash</p><p class="cash-value">{% if dm.get('new_cash_collected') is not none %}${{ "{:,.0f}".format(dm.get('new_cash_collected')) }}{% else %}—{% endif %}</p><p class="note">Cash collected with new sales</p></div>
+        <div class="cash-stat">
+          <p class="cash-label">Rolling 365-day cash</p>
+          {% if scorecard.cash_goal.available %}
+          {% set rolling_cash = scorecard.cash_goal.observation.numerator|float / 100 %}
+          {% set goal_percent = (rolling_cash / 1000000 * 100) %}
+          <p class="cash-value">${{ "{:,.0f}".format(rolling_cash) }}</p>
+          <p class="note">{{ "{:.1f}".format(goal_percent) }}% of $1,000,000; ${{ "{:,.0f}".format([1000000 - rolling_cash, 0]|max) }} remaining</p>
+          <div class="goal-progress" aria-label="{{ '{:.1f}'.format(goal_percent) }}% of the rolling goal"><span style="width: {{ [goal_percent, 100]|min }}%"></span></div>
+          {% else %}
+          <p class="cash-value">Connecting</p><p class="note">Waiting for complete automatic Stripe and PT Minder cash events</p>
+          {% endif %}
+        </div>
+      </div>
+      {% if accounting.available %}
+      <div class="accounting-check">
+        <div><span>Actual cash collected, excluding GST</span><strong>${{ "{:,.0f}".format(accounting.cash_collected_ex_gst|float) }}</strong></div>
+        <div><span>Income currently recorded in Xero</span><strong>${{ "{:,.0f}".format(accounting.xero_income_ex_gst|float) }}</strong></div>
+        <div><span>Still to reconcile in the accounts</span><strong>${{ "{:,.0f}".format(accounting.difference|float) }}</strong></div>
+        <div class="accounting-status">
+          <span>Accounting-close status</span>
+          <strong>{% if accounting.classification == 'review_required' %}Review required — {{ accounting.difference_percent_of_cash }}% differs{% else %}Directionally aligned{% endif %}</strong>
+        </div>
+        <p class="accounting-note">{{ accounting.explanation }} Xero remains a shadow comparison and cannot change the cash goal.</p>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="panel ahead-panel">
+      <div class="widget-head">
+        <div>
+          <p class="eyebrow">The next seven days</p>
+          <h2>What is coming up?</h2>
+          <p>Future commitments are kept separate from completed-period results.</p>
+        </div>
+        <span class="tag">Live operating view</span>
+      </div>
+      <div class="ahead-grid">
+        <div class="ahead-card">
+          <p class="metric-name">Strength Assessments booked</p>
+          <p class="metric-value">{{ week_ahead.booked if week_ahead.booked is not none else '—' }}</p>
+          <p class="metric-note">Upcoming confirmed appointments</p>
+        </div>
+        <div class="ahead-card ready">
+          <p class="metric-name">Assessments pre-qualified</p>
+          {% if week_ahead.prequalification_rate is not none %}
+          <p class="metric-value">{{ week_ahead.prequalified }} of {{ week_ahead.booked }}</p>
+          <p class="metric-note">{{ "{:.1f}".format(week_ahead.prequalification_rate|float * 100) }}% ready; {{ week_ahead.awaiting_prequalification }} still awaiting completion</p>
+          {% else %}
+          <p class="metric-value">—</p>
+          <p class="metric-note">{{ week_ahead.unavailable_reason or 'No upcoming assessments are currently booked.' }}</p>
+          {% endif %}
+        </div>
+        <div class="ahead-card">
+          <p class="metric-name">Projected recurring income</p>
+          {% if projected_income.available %}
+          <p class="metric-value">${{ "{:,.0f}".format(projected_income.projected_weekly_recurring_income|float) }}</p>
+          <p class="metric-note">Normalised weekly schedules; not guaranteed cash</p>
+          {% else %}
+          <p class="metric-value">—</p>
+          <p class="metric-note">{{ projected_income.unavailable_reason }}</p>
+          {% endif %}
+        </div>
+        <div class="ahead-card">
+          <p class="metric-name">Expenses</p>
+          {% if expenses.available %}
+          <p class="metric-value">${{ "{:,.0f}".format(expenses.amount|float) }}</p>
+          <p class="metric-note">Recorded business expenses; transfers and card repayments excluded</p>
+          {% if expenses.top_categories %}
+          <details class="expense-breakdown">
+            <summary>See the largest expense categories</summary>
+            <div class="rows">
+              {% for item in expenses.top_categories %}
+              <div class="row"><span>{{ item.category }}</span><strong>${{ "{:,.0f}".format(item.amount|float) }}</strong></div>
+              {% endfor %}
+              {% if expenses.category_count > expenses.top_categories|length %}
+              <div class="row"><span>Other expenses</span><strong>${{ "{:,.0f}".format(expenses.other_amount|float) }}</strong></div>
+              {% endif %}
+            </div>
+          </details>
+          {% endif %}
+          {% else %}
+          <p class="metric-value">—</p>
+          <p class="metric-note">{{ expenses.unavailable_reason }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% if week_ahead.appointments %}
+      <details class="ahead-list">
+        <summary>See all upcoming assessments and pre-qualification status</summary>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Client</th><th>Appointment</th><th>Pre-qualified</th></tr></thead>
+            <tbody>
+              {% for appointment in week_ahead.appointments %}
+              <tr>
+                <td>{{ appointment.client_name }}</td>
+                <td>{{ appointment.scheduled_label }}</td>
+                <td><span class="readiness {{ 'yes' if appointment.prequalified else 'no' }}">{{ 'Yes' if appointment.prequalified else 'No' }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      {% endif %}
+    </section>
+
+    <nav class="pillar-nav" aria-label="Business pillars">
+      <a class="pillar-card" href="#marketing">
+        <span class="pillar-number">1</span><h3>Marketing</h3>
+        <p class="pillar-question">Is attention becoming a booked assessment?</p>
+        {% if website.visitor_to_subscriber_rate is not none %}
+        <p class="pillar-health">{{ "{:.1f}".format(website.visitor_to_subscriber_rate|float * 100) }}%</p>
+        <p class="pillar-evidence">{{ website.new_subscribers }} new subscribers from {{ website.visitors }} website visitors</p>
+        <span class="pillar-status">Connected</span>
+        {% else %}
+        <p class="pillar-health">Subscribers booking an assessment</p>
+        <p class="pillar-evidence">Website analytics is connected and collecting</p>
+        <span class="pillar-status waiting">Full-period history not available yet</span>
+        {% endif %}
+        <span class="pillar-arrow">↓</span>
+      </a>
+      <a class="pillar-card" href="#sales">
+        <span class="pillar-number">2</span><h3>Sales</h3>
+        <p class="pillar-question">Are attended assessments becoming members?</p>
+        {% if conversion.value is not none %}
+        {% set conversion_percent = conversion.value|float * 100 %}
+        <p class="pillar-health">{{ "{:.1f}".format(conversion_percent) }}%</p>
+        <p class="pillar-evidence">{{ conversion.numerator|int }} of {{ conversion.denominator|int }} attended assessments became members</p>
+        <div class="rate-progress" aria-label="{{ '{:.1f}'.format(conversion_percent) }}% of attended assessments became members"><span style="width: {{ [[conversion_percent, 0]|max, 100]|min }}%"></span></div>
+        {% else %}
+        <p class="pillar-health">Connecting</p>
+        <span class="pillar-status waiting">Sales comparison incomplete</span>
+        {% endif %}
+        <span class="pillar-arrow">↓</span>
+      </a>
+      <a class="pillar-card" href="#onboarding">
+        <span class="pillar-number">3</span><h3>Onboarding</h3>
+        <p class="pillar-question">Are new members having a successful first week?</p>
+        {% if successful_week.value is not none %}
+        {% set successful_week_percent = successful_week.value|float * 100 %}
+        <p class="pillar-health">{{ "{:.1f}".format(successful_week_percent) }}%</p>
+        <p class="pillar-evidence">{{ successful_week.numerator|int }} of {{ successful_week.denominator|int }} mature sales completed their first week</p>
+        <div class="rate-progress" aria-label="{{ '{:.1f}'.format(successful_week_percent) }}% completed a successful first week"><span style="width: {{ [[successful_week_percent, 0]|max, 100]|min }}%"></span></div>
+        {% else %}
+        <p class="pillar-health">Connecting</p>
+        <span class="pillar-status waiting">No mature sales in this view</span>
+        {% endif %}
+        <span class="pillar-arrow">↓</span>
+      </a>
+      <a class="pillar-card" href="#delivery">
+        <span class="pillar-number">4</span><h3>Delivery</h3>
+        <p class="pillar-question">How quickly are members improving across the Evolved Standards?</p>
+        <p class="pillar-health">{% if standards.get('future_proofing_score_summary', {}).get('members_with_complete_score', 0) %}{{ standards.get('future_proofing_score_summary', {}).get('members_with_complete_score') }} complete Future-Proofing score{{ '' if standards.get('future_proofing_score_summary', {}).get('members_with_complete_score') == 1 else 's' }}{% else %}Future-Proofing Score: evidence incomplete{% endif %}</p>
+        <p class="pillar-evidence">{% if standards.status == 'available' %}Individual Live, Long and Perform progress is available. The 0–18 score appears only when all six primary standards are complete.{% else %}Trainerize component evidence is still unavailable.{% endif %}</p>
+        <span class="pillar-status waiting">Shadow: six-standard evidence required</span>
+        <span class="pillar-arrow">↓</span>
+      </a>
+      <a class="pillar-card" href="#attrition">
+        <span class="pillar-number">5</span><h3>Attrition</h3>
+        <p class="pillar-question">How many active members are we losing?</p>
+        <p class="pillar-health">{{ attrition.members_lost }} recorded member ending{{ '' if attrition.members_lost == 1 else 's' }}</p>
+        <span class="pillar-status waiting">Provisional history</span>
+        <span class="pillar-arrow">↓</span>
+      </a>
+    </nav>
+
+    <section id="marketing" class="pillar-section">
+      <div class="pillar-title"><span class="pillar-number">1</span><h2>Marketing</h2></div>
+      <p>From website attention to a genuine booked Strength Assessment.</p>
+      <div class="widgets">
+        <article class="widget">
+          <div class="widget-head"><div><h3>Website attention becoming subscribers</h3><p>The first conversion step in the marketing journey.</p></div><span class="tag">{{ 'Connected' if website.coverage_state != 'collecting' else 'First refresh pending' }}</span></div>
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Website page views</p><p class="metric-value">{{ "{:,.0f}".format(website.page_views|float) if website.page_views is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Website visitors</p><p class="metric-value">{{ "{:,.0f}".format(website.visitors|float) if website.visitors is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">New subscribers</p><p class="metric-value">{{ "{:,.0f}".format(website.new_subscribers|float) if website.new_subscribers is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Visitors becoming subscribers</p><p class="metric-value">{% if website.visitor_to_subscriber_rate is not none %}{{ "{:.1f}".format(website.visitor_to_subscriber_rate|float * 100) }}%{% else %}—{% endif %}</p></div>
+          </div>
+          {% if not website.coverage_complete %}
+          <div class="gap"><strong>Historical Analytics is connected</strong>{{ website.unavailable_reason }} Periods before 23 October 2024 stay blank rather than being presented as zero.</div>
+          {% else %}
+          <div class="callout">Website traffic comes from the business-owned Google Analytics property. Subscribers are unique GHL contacts from the 30-day email form, so repeat submissions count once.</div>
+          {% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Subscribers booking a Strength Assessment</h3><p>The marketing result that creates a genuine sales opportunity.</p></div><span class="tag">{{ scorecard.period.label }}</span></div>
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">New subscribers</p><p class="metric-value">{{ subscriber_booking_metric.denominator|int if subscriber_booking_metric.denominator is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Subscribers who booked</p><p class="metric-value">{{ subscriber_booking_metric.numerator|int if subscriber_booking_metric.numerator is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Subscriber to assessment</p><p class="metric-value">{% if subscriber_booking_metric.value is not none %}{{ "{:.1f}".format(subscriber_booking_metric.value|float * 100) }}%{% else %}—{% endif %}</p></div>
+            <div class="metric"><p class="metric-name">Still inside 30-day window</p><p class="metric-value">{{ subscriber_booking.open_booking_window|int if subscriber_booking.open_booking_window is not none else '—' }}</p></div>
+          </div>
+          {% if subscriber_booking_metric.value is not none %}
+          <div class="callout">Each subscriber and each resulting Strength Assessment count once by GHL contact. Repeated forms, rebooks and SGPT/PT service components cannot inflate this rate. Recent cohorts can still rise during their 30-day booking window.</div>
+          {% else %}
+          <div class="gap"><strong>No subscriber cohort is available for this period</strong>The rate stays blank instead of showing a false zero.</div>
+          {% endif %}
+        </article>
+      </div>
+    </section>
+
+    <section id="sales" class="pillar-section">
+      <div class="pillar-title"><span class="pillar-number">2</span><h2>Sales</h2></div>
+      <p>From the booked assessment to a unique new member, membership sold and new cash collected.</p>
+      <div class="widgets">
+        <article class="widget full">
+          <div class="widget-head"><div><h3>Strength Assessment journey</h3><p>Unique assessment bookings and their sales outcomes.</p></div><span class="tag">{{ scorecard.period.label }}</span></div>
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Strength Assessments booked</p><p class="metric-value">{{ "{:,.0f}".format(bookings.value|float) if bookings.value is not none else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Assessments prequalified</p><p class="metric-value">{% if prequalified.value is not none %}{{ "{:.1f}".format(prequalified.value|float * 100) }}%{% else %}—{% endif %}</p></div>
+            <div class="metric"><p class="metric-name">Assessment attendance rate</p><p class="metric-value">{% if show_rate.value is not none %}{{ "{:.1f}".format(show_rate.value|float * 100) }}%{% else %}—{% endif %}</p></div>
+            <div class="metric"><p class="metric-name">Assessments becoming new members</p><p class="metric-value">{% if conversion.value is not none %}{{ "{:.1f}".format(conversion.value|float * 100) }}%{% else %}—{% endif %}</p></div>
+          </div>
+          <div class="callout">One new member counts once, even when the sale contains both Strength & Sculpt and personal training.</div>
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Assessment outcomes</h3><p>Current attendance ledger while period-level outcome counts are completed.</p></div><span class="tag">Current ledger</span></div>
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Assessments attended</p><p class="metric-value">{{ attendance.get('showed', 0) }}</p></div>
+            <div class="metric"><p class="metric-name">Assessments cancelled</p><p class="metric-value">{{ attendance.get('cancelled', 0) }}</p></div>
+            <div class="metric"><p class="metric-name">Assessment no-shows</p><p class="metric-value">{{ attendance.get('no_show', 0) }}</p></div>
+            <div class="metric"><p class="metric-name">Outcome missing</p><p class="metric-value">{{ attendance.get('unresolved', 0) }}</p></div>
+          </div>
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>New members, memberships sold and cash</h3><p>One person may buy more than one service, but remains one new member.</p></div><span class="tag">Current KPI period</span></div>
+          <div class="rows">
+            <div class="row"><span>New members</span><strong>{{ dm.get('sales_total', '—') }}</strong></div>
+            <div class="row"><span>Strength & Sculpt memberships sold</span><strong>{{ dm.get('sgpt_sales', '—') }}</strong></div>
+            <div class="row"><span>Personal training memberships sold</span><strong>{{ dm.get('pt_sales', '—') }}</strong></div>
+            <div class="row"><span>New sale cash</span><strong>{% if dm.get('new_cash_collected') is not none %}${{ "{:,.0f}".format(dm.get('new_cash_collected')) }}{% else %}—{% endif %}</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="onboarding" class="pillar-section">
+      <div class="pillar-title"><span class="pillar-number">3</span><h2>Onboarding</h2></div>
+      <p>Two separate stages: the first onboarding session, then a successful first week.</p>
+      <div class="widgets">
+        <article class="widget">
+          <div class="widget-head"><div><h3>Time to first onboarding session</h3><p>Sale to an attended 1:1 onboarding appointment.</p></div><span class="tag">{{ scorecard.period.label }}</span></div>
+          {% if onboarding_session.value is not none %}
+          <p class="metric-value">{{ "{:.1f}".format(onboarding_session.value|float) }} days</p><p class="note">Current shadow evidence; Trainerize session matching will strengthen this before acceptance.</p>
+          {% else %}
+          <div class="gap"><strong>Not measured yet</strong>An attended appointment and matched Trainerize identity are required.</div>
+          {% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Time to a successful first week</h3><p>The full activation outcome, not just an appointment status.</p></div><span class="tag">{{ scorecard.period.label if activation.available else 'Connection required' }}</span></div>
+          {% if activation.available %}
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Successful first week</p><p class="metric-value">{% if successful_week.value is not none %}{{ "{:.1f}".format(successful_week.value|float * 100) }}%{% else %}—{% endif %}</p><p class="metric-note">{{ successful_week.numerator or 0 }} of {{ successful_week.denominator or 0 }} mature new members in this period</p></div>
+            <div class="metric"><p class="metric-name">Time to full activation</p><p class="metric-value">{% if successful_week_speed.value is not none %}{{ "{:.1f}".format(successful_week_speed.value|float) }} days{% else %}—{% endif %}</p></div>
+          </div>
+          <div class="rows">
+            <div class="row"><span>1:1 onboarding attended</span><strong>{{ activation.onboarding_attended or 0 }}</strong></div>
+            <div class="row"><span>Three completed training records</span><strong>{{ activation.three_training_records or 0 }}</strong></div>
+            <div class="row"><span>Positive check-in reply or confirmed call</span><strong>{{ activation.first_week_confirmed or 0 }}</strong></div>
+            <div class="row"><span>All three completed</span><strong>{{ activation.activated or 0 }}</strong></div>
+          </div>
+          <p class="note">Component totals cover the current 120-day activation evidence window. The rate follows the selected completed reporting period and excludes sales fewer than nine days old.</p>
+          {% else %}
+          <div class="rows">
+            <div class="row"><span>1:1 onboarding attended</span><strong>Required</strong></div>
+            <div class="row"><span>Three completed training records</span><strong>Required</strong></div>
+            <div class="row"><span>Positive check-in reply or confirmed call</span><strong>Required</strong></div>
+          </div>
+          <div class="gap"><strong>Successful first week is waiting for complete evidence</strong>GHL and Trainerize must both finish before a result is shown.</div>
+          {% endif %}
+        </article>
+      </div>
+    </section>
+
+    <section id="delivery" class="pillar-section">
+      <div class="pillar-title"><span class="pillar-number">4</span><h2>Delivery</h2></div>
+      <p>Who we serve, what is booked, how trainers are deployed and whether members are progressing.</p>
+      <div class="widgets">
+        <article class="widget full">
+          <div class="widget-head"><div><h3>Active members and membership mix</h3><p>Unique people, with Fast Track kept separate from Strength & Sculpt and 1:1 PT only.</p></div><span class="tag">Current snapshot</span></div>
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Active members</p><p class="metric-value">{{ governed.confirmed_active_clients if governed else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Strength & Sculpt only</p><p class="metric-value">{{ mix.get('strength_and_sculpt_only', '—') }}</p></div>
+            <div class="metric"><p class="metric-name">Fast Track</p><p class="metric-value">{{ mix.get('fast_track', '—') }}</p></div>
+            <div class="metric"><p class="metric-name">1:1 PT only</p><p class="metric-value">{{ mix.get('pt_only', '—') }}</p></div>
+          </div>
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Active PT roster</h3><p>The service roster and the quality of its supporting records.</p></div><span class="tag">Current snapshot</span></div>
+          <div class="rows">
+            <div class="row"><span>Active PT sheet records</span><strong>{{ pt.active_pt_rows if pt.active_pt_rows is not none else '—' }}</strong></div>
+            <div class="row"><span>Fully matched across newer systems</span><strong>{{ pt.confirmed_current_pt if pt.confirmed_current_pt is not none else '—' }}</strong></div>
+            <div class="row"><span>Valid historical continuation</span><strong>{{ pt.historical_sales_links if pt.historical_sales_links is not none else '—' }}</strong></div>
+            <div class="row"><span>Approved holds</span><strong>{{ pt.approved_holds if pt.approved_holds is not none else '—' }}</strong></div>
+            <div class="row"><span>Payment or account review</span><strong>{{ pt.pending_provisioning if pt.pending_provisioning is not none else '—' }}</strong></div>
+          </div>
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Small-group training delivery</h3><p>Bookings, explicit outcomes, capacity and trainer deployment from the governed Trainerize feed.</p></div><span class="tag">{{ scorecard.period.label if sgpt.available else 'Connection required' }}</span></div>
+          {% if sgpt.available %}
+          <div class="metrics">
+            <div class="metric"><p class="metric-name">Member class bookings</p><p class="metric-value">{{ sgpt.selected_period.member_bookings }}</p></div>
+            <div class="metric"><p class="metric-name">Unique members booked</p><p class="metric-value">{{ sgpt.selected_period.unique_members }}</p></div>
+            <div class="metric"><p class="metric-name">Explicit attendances</p><p class="metric-value">{{ sgpt.selected_period.attended if sgpt.selected_period.attendance_available else '—' }}</p></div>
+            <div class="metric"><p class="metric-name">Cancelled / no-show</p><p class="metric-value">{% if sgpt.selected_period.attendance_available %}{{ sgpt.selected_period.cancelled }} / {{ sgpt.selected_period.no_show }}{% else %}—{% endif %}</p></div>
+            <div class="metric"><p class="metric-name">Scheduled class sessions</p><p class="metric-value">{{ sgpt.selected_period.class_sessions }}</p></div>
+            <div class="metric"><p class="metric-name">Scheduled coaching hours</p><p class="metric-value">{{ "{:.1f}".format(sgpt.selected_period.coaching_hours) }}</p></div>
+            <div class="metric"><p class="metric-name">Booked fill</p><p class="metric-value">{{ "{:.1f}%".format(sgpt.selected_period.booked_fill_rate) if sgpt.selected_period.booked_fill_rate is not none else '—' }}</p><p class="metric-note">Against the governed 15-place delivery capacity; Trainerize's 18-place ceiling remains a configuration exception</p></div>
+            <div class="metric"><p class="metric-name">Active SGPT with no booking</p><p class="metric-value">{{ sgpt.selected_period.active_members_with_no_booking_count if sgpt.selected_period.active_members_with_no_booking_count is not none else '—' }}</p></div>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Trainer</th><th>Classes</th><th>Booked</th><th>Attended</th><th>Booked fill</th></tr></thead><tbody>
+            {% for row in sgpt.selected_period.trainer_breakdown %}
+            <tr><td>{{ row.trainer }}</td><td>{{ row.class_sessions }}</td><td>{{ row.booked }}</td><td>{{ row.attended if sgpt.selected_period.attendance_available else '—' }}</td><td>{{ "{:.1f}%".format(row.booked_fill_rate) if row.booked_fill_rate is not none else '—' }}</td></tr>
+            {% else %}<tr><td colspan="5">No SGPT bookings occurred in this completed period.</td></tr>{% endfor %}
+          </tbody></table></div>
+          <div class="callout">{{ sgpt.selected_period.attendance_note }}</div>
+          {% else %}
+          <div class="gap"><strong>Trainerize class bookings are not available yet</strong>The next accepted performance refresh will promote the timetable booking events into the hub.</div>
+          {% endif %}
+        </article>
+        <article class="widget full">
+          <div class="widget-head"><div><h3>Personal training delivery</h3><p>Booked 1:1 sessions and hours by trainer.</p></div><span class="tag">Current week</span></div>
+          <div class="metrics"><div class="metric"><p class="metric-name">PT sessions booked</p><p class="metric-value">{{ dm.get('pt_bookings', '—') }}</p></div><div class="metric"><p class="metric-name">PT hours booked</p><p class="metric-value">{{ dm.get('pt_booked_hours', '—') }}</p></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Trainer</th><th>Sessions</th><th>Hours</th></tr></thead><tbody>
+            {% for trainer, utilisation in dm.get('pt_trainer_breakdown', {}).items() %}
+            <tr><td>{{ trainer }}</td><td>{{ utilisation.bookings if utilisation.bookings is not none else '—' }}</td><td>{{ utilisation.booked_hours if utilisation.booked_hours is not none else '—' }}</td></tr>
+            {% else %}<tr><td colspan="3">The trainer delivery split has not populated yet.</td></tr>{% endfor %}
+          </tbody></table></div>
+          <div class="callout">Booked utilisation is added only when genuine available trainer hours exist for the same period.</div>
+        </article>
+        <article class="widget full">
+          <div class="widget-head"><div><h3>Strength improvement</h3><p>Median improvement with the number of women included in each result.</p></div><span class="tag">Trainerize snapshot</span></div>
+          {% if performance.strength_improvement %}
+          <div class="metrics">
+            {% for key, label in [('fourWeeks', 'First 4 weeks'), ('twelveWeeks', 'First 12 weeks'), ('sixMonths', 'First 6 months'), ('overall', 'Overall')] %}
+            {% set result = performance.strength_improvement.get(key, {}) %}
+            <div class="metric"><p class="metric-name">{{ label }}</p><p class="metric-value">{{ "{:.1f}%".format(result.get('medianPercent')) if result.get('medianPercent') is not none else '—' }}</p><p class="metric-note">{{ result.get('women') or 0 }} women with comparable records</p></div>
+            {% endfor %}
+          </div>
+          {% else %}<div class="gap"><strong>Strength improvement not connected</strong>No estimate is shown until baseline and follow-up records use consistent rules.</div>{% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Top strength performers</h3><p>Performance results, separate from workout-count milestones.</p></div><span class="tag">Trainerize snapshot</span></div>
+          {% if performance.top_performers %}<div class="rows">{% for member in performance.top_performers %}<div class="row"><span>{{ member.name }}</span><strong>{{ member.result }}</strong></div>{% endfor %}</div>
+          {% else %}<div class="gap"><strong>Performance ranking not connected</strong>Potential results remain in review until confidence and outlier rules pass.</div>{% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Workout milestones</h3><p>Members reaching meaningful completed-workout totals.</p></div><span class="tag">Trainerize snapshot</span></div>
+          {% if performance.workout_milestones %}<div class="rows">{% for member in performance.workout_milestones %}<div class="row"><span>{{ member.name }}</span><strong>{{ member.milestone }}</strong></div>{% endfor %}</div>
+          {% else %}<div class="gap"><strong>No current workout milestones</strong>Upcoming milestones will appear once the period-aware feed is connected.</div>{% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Time to Live, Long and Perform</h3><p>Progression from effective membership start to each Evolved level.</p></div><span class="tag">Component evidence</span></div>
+          <div class="metrics">
+            {% for level in ['Live', 'Long', 'Perform'] %}
+            {% set result = standards.time_to_standard.summary.get(level, {}) %}
+            <div class="metric"><p class="metric-name">Median time to a {{ level }} component</p><p class="metric-value">{{ "{:.0f}".format(result.get('median_days')|float) ~ ' days' if result.get('median_days') is not none else '—' }}</p><p class="metric-note">{{ result.get('components', 0) }} component achievements with an effective membership start</p></div>
+            {% endfor %}
+          </div>
+          <div class="callout">Live, Long and Perform remain per-standard results. The overall framework is the separate six-standard Future-Proofing Score, never an invented overall member level.</div>
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Evolved Standard components</h3><p>Highest fully attained Live, Long or Perform result by agreed exercise.</p></div><span class="tag">Shadow components</span></div>
+          {% if standards.status == 'available' %}
+          <div class="rows">
+            <div class="row"><span>Current component results with sufficient evidence</span><strong>{{ standards.coverage.current_components_sufficient }}</strong></div>
+            <div class="row"><span>Components approaching the next level</span><strong>{{ standards.approaching|length }}</strong></div>
+            <div class="row"><span>New component achievements in 30 days</span><strong>{{ standards.newly_achieved|length }}</strong></div>
+            <div class="row"><span>Identity or evidence exceptions</span><strong>{{ standards.exceptions|length }}</strong></div>
+          </div>
+          <div class="callout">Each component is scored independently from exact exercise aliases. Partial, ambiguous or missing evidence remains unavailable.</div>
+          {% else %}<div class="gap"><strong>Standards component evidence is unavailable</strong>{{ standards.reason }}. {{ performance.reassessment_due or 0 }} active clients currently need an assessment review.</div>{% endif %}
+        </article>
+        <article class="widget">
+          {% set future_summary = standards.get('future_proofing_score_summary', {}) %}
+          {% set future_scores = standards.get('future_proofing_scores', []) %}
+          <div class="widget-head"><div><h3>Future-Proofing Score</h3><p>Six primary standards, scored only when every required result is sufficiently evidenced.</p></div><span class="tag">Maximum 18</span></div>
+          {% if future_summary.get('members_with_complete_score', 0) %}
+          <div class="rows">
+            {% for result in future_scores %}
+            {% if result.get('status') == 'available' %}
+            <div class="row"><span>{{ result.get('name') }}</span><strong>{{ result.get('score') }}/18 · {{ result.get('band') }}</strong></div>
+            {% endif %}
+            {% endfor %}
+          </div>
+          <div class="callout">{{ future_summary.get('members_with_incomplete_score', 0) }} member assessments remain unscored because one or more of Deadlift, paired ATG Split Squat, DB Farmer Walk, Core, Running or Rowing, and Push Ups lacks sufficient evidence.</div>
+          {% else %}
+          <div class="gap"><strong>No complete six-standard score yet</strong>The four initial Strength Assessment results are retained individually. They are never extrapolated into a Future-Proofing Score without Deadlift, work-capacity and Push Up evidence.</div>
+          {% endif %}
+        </article>
+      </div>
+    </section>
+
+    <section id="attrition" class="pillar-section">
+      <div class="pillar-title"><span class="pillar-number">5</span><h2>Attrition</h2></div>
+      <p>Members in notice, memberships ending and the resulting effect on growth.</p>
+      <div class="widgets">
+        <article class="widget full">
+          <div class="widget-head"><div><h3>Members currently in notice</h3><p>Who is changing, whether they are cancelling or downgrading, and when the change takes effect.</p></div><span class="tag">Current snapshot</span></div>
+          {% if notices.periods %}
+          <div class="notice-summary">
+            <div><strong>{{ notices.full_cancellation_count }}</strong><span>Full membership cancellations</span></div>
+            <div><strong>{{ notices.downgrade_count }}</strong><span>Membership downgrades</span></div>
+            <div><strong>{{ notices.pt_cancellation_count }}</strong><span>PT-only cancellations</span></div>
+          </div>
+          <div class="notice-list">
+            {% for item in notices.periods %}
+            <div class="notice-item">
+              <div class="notice-person">
+                <div><strong>{{ item.client_name or item.email }}</strong>{% if item.client_name %}<small>{{ item.email }}</small>{% endif %}</div>
+                <span class="notice-kind">{{ item.notice_type }}</span>
+              </div>
+              <p class="notice-change">{{ item.transition }}</p>
+              <p class="notice-detail"><strong>Current:</strong> {{ item.current_service }}</p>
+              <p class="notice-detail"><strong>After notice:</strong> {{ item.future_service }}</p>
+              {% if item.state == 'active' %}
+              <p class="notice-date">Effective {{ item.effective_end_date }}{% if item.days_remaining is not none %} · {{ item.days_remaining }} day{{ '' if item.days_remaining == 1 else 's' }} remaining{% endif %}</p>
+              {% elif item.state == 'date_missing' %}
+              <p class="notice-date">Effective date missing — GHL needs a notice-end or final-access date.</p>
+              {% else %}
+              <p class="notice-date">Overdue — recorded effective date was {{ item.effective_end_date }} and the services need reconciling.</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}<div class="gap"><strong>No active notice periods recorded</strong>Nothing is currently waiting to change after a notice or final-access date.</div>{% endif %}
+        </article>
+        <article class="widget">
+          <div class="widget-head"><div><h3>Members lost and net member growth</h3><p>Unique people, not separate SGPT and PT service rows.</p></div><span class="tag">Shadow lifecycle contract</span></div>
+          <div class="rows">
+            <div class="row"><span>Members joined</span><strong>{{ lifecycle.members_joined }}</strong></div>
+            <div class="row"><span>Recorded final membership endings</span><strong>{{ lifecycle.final_membership_endings }}</strong></div>
+            <div class="row"><span>Net unique-member growth</span><strong>{{ lifecycle.net_unique_member_growth }}</strong></div>
+            <div class="row"><span>PT-only downgrades kept out of member loss</span><strong>{{ lifecycle.downgrade_only_transitions }}</strong></div>
+            <div class="row"><span>Approved holds kept separate</span><strong>{{ lifecycle.approved_holds }}</strong></div>
+            <div class="row"><span>Attrition rate</span><strong>{{ "{:.1f}%".format(lifecycle.attrition_rate|float * 100) if lifecycle.attrition_rate is not none else '—' }}</strong></div>
+          </div>
+          <div class="gap"><strong>The loss count is visible, but the rate is not accepted yet</strong>{{ attrition.coverage_note }}</div>
+          <div class="callout">V1 service movement remains available for delivery review: Strength &amp; Sculpt {{ dm.get('sgpt_net', '—') }}, personal training {{ dm.get('pt_net', '—') }}, overall service movement {{ dm.get('net_service_movement', '—') }}. These are service rows, not unique-member attrition.</div>
+        </article>
+      </div>
+    </section>
+
+    <details class="audit">
+      <summary>Reporting checks and metric readiness</summary>
+      <div class="audit-inner">
+        <p class="note">These are build and acceptance checks, not the CEO first fold.</p>
+        <div class="audit-grid">
+          {% for metric in scorecard.metrics %}
+          <article class="audit-card">
+            <p class="metric-name">{{ metric.plain_english_name }}</p>
+            <p class="metric-value">{% if metric.value is none %}—{% elif metric.unit == 'percentage' or metric.unit == 'percent' %}{{ "{:.1f}".format(metric.value|float * 100) }}%{% elif metric.unit == 'days' %}{{ "{:.1f}".format(metric.value|float) }} days{% else %}{{ "{:,.0f}".format(metric.value|float) }}{% endif %}</p>
+            {% set state = metric.effective_publication_state %}
+            <span class="status {{ 'accepted' if state == 'v2_accepted' else ('ready' if state == 'eligible_for_owner_approval' else ('legacy' if state == 'legacy' else ('rolled-back' if state == 'rolled_back' else 'blocked'))) }}">{{ state|replace('_', ' ') }}</span>
+            <p class="note">{{ metric.cutover.blocked_reasons|first or ('Peter approved this exact V2 definition and the metric is live.' if state == 'v2_accepted' else 'All technical checks passed; Peter’s exact metric-level approval is still required.') }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </details>
+    {% endif %}
+  </main>
+</body>
+</html>

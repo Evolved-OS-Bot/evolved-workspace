@@ -28,6 +28,18 @@ def _cell(row: list[Any], index: dict[str, int], name: str) -> str:
     return str(row[position]).strip() if position < len(row) else ""
 
 
+def _optional_cell(
+    row: list[Any],
+    header: list[Any],
+    name: str,
+) -> str:
+    cleaned = [str(item).strip() for item in header]
+    if name not in cleaned:
+        return ""
+    position = cleaned.index(name)
+    return str(row[position]).strip() if position < len(row) else ""
+
+
 def _header_index(
     header: list[Any], required: Iterable[str], aliases: dict[str, str] | None = None
 ) -> dict[str, int]:
@@ -83,6 +95,12 @@ def parse_active_sgpt(rows: list[list[Any]]) -> list[RosterRecord]:
                 weekly_allocation=decimal_value(raw_debit),
                 payment_marker=raw_debit.upper(),
                 product=_cell(row, index, "Membership Tier"),
+                contract_length=_optional_cell(
+                    row, rows[0], "Length of contract"
+                ),
+                renewal_date=_optional_cell(
+                    row, rows[0], "Renewal Date"
+                ),
             )
         )
     return records
@@ -146,7 +164,7 @@ def parse_active_pt(rows: list[list[Any]]) -> list[RosterRecord]:
 def load_live_roster(
     read_sheet: Callable[[str, str], list[list[Any]]]
 ) -> list[RosterRecord]:
-    sgpt = read_sheet("Active SGPT", "A1:K500")
+    sgpt = read_sheet("Active SGPT", "A1:Z500")
     pt = read_sheet("Active PT", "A1:K500")
     return parse_active_sgpt(sgpt) + parse_active_pt(pt)
 
@@ -522,7 +540,10 @@ def load_approved_account_classifications(
 ) -> dict[str, LegacyPaymentEvidence]:
     if path is None or not path.exists():
         return {}
-    approved_classes = {"prepaid_credit_client"}
+    approved_classes = {
+        "prepaid_credit_client",
+        "external_payment_client",
+    }
     result: dict[str, LegacyPaymentEvidence] = {}
     with path.open(newline="", encoding="utf-8-sig") as handle:
         for row in csv.DictReader(handle):
@@ -533,10 +554,16 @@ def load_approved_account_classifications(
             ).strip().lower() in {"1", "true", "yes"}
             if not email or not approved or classification not in approved_classes:
                 continue
+            status = (
+                "paid_in_advance"
+                if classification == "prepaid_credit_client"
+                else "collecting"
+            )
             result[email] = LegacyPaymentEvidence(
                 email=email,
                 rail="owner-approved prepaid evidence",
-                status="paid_in_advance",
+                status=status,
+                last_receipt_date=str(row.get("confirmed_date") or "").strip(),
                 notes=str(row.get("note") or "").strip(),
             )
     return result

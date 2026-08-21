@@ -1,14 +1,14 @@
 # Metabolic Classification System
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-05-06 (split from strength-assessment-metabolic.md)
+**Last Updated:** 2026-07-17 (active pathway retired; form retained for future review)
 
 ---
 
 ## Overview
 
-The Metabolic Classification System is a scored survey (15 questions, each weighted) that classifies a prospect's metabolic type as Class A, B, or C. It functions as a **lead magnet and nurture tool** — delivered via the 30DNNC (30 Days No Nonsense Challenge) email sequences — and as a **retention pathway** for cancelling members (MC: Results/Value reason).
+The Metabolic Classification System is a scored survey developed in 2011. Its 15 weighted questions classify a prospect's metabolic type as Class A, B, or C and were historically used to convert training clients into full transformation packages with nutrition coaching.
 
-It is **not currently attached to a conversion mechanism** as a standalone funnel. The classification is offered contextually inside 30DNNC sequences and the cancellation retention path. A dedicated Women Over 40 — Metabolic Reboot workflow exists in draft but is not yet published.
+The form remains published as a potentially useful future asset, but its CTA was removed from the 30DNNC sequences on 16 July 2026 and the `Metabolic Blueprint` delivery workflow was unpublished on 17 July 2026. Full transformation packages with nutrition coaching are not currently being offered. Before reactivation, compare this 2011 framework against more current diagnostic and personalisation tools and review its scoring validity.
 
 ---
 
@@ -66,7 +66,7 @@ A 15-question scored survey. Produces a numeric score stored in `Metabolic Class
 
 ## Flow Diagrams
 
-### Flow 1: 30DNNC → Metabolic Classification → Nurture → Offer
+### Historical Flow 1: 30DNNC → Metabolic Classification → Nurture → Offer
 
 ```
 Lead enters via 30DNNC opt-in form (segmented by life stage)
@@ -117,7 +117,7 @@ If Peri/Post Menopause: 7 Day Reset product offered
 
 ---
 
-### Flow 2: Metabolic Classification as Cancellation Retention Offer
+### Historical Flow 2: Metabolic Classification as Cancellation Retention Offer
 
 ```
 Member cancellation reason: "Not seeing the results or value I expected"
@@ -163,14 +163,16 @@ targeting hormonal metabolic changes for this demographic]
 
 ## System Notes
 
-### What's working well
-- **30DNNC segmentation by life stage** is sophisticated — separate tracks for teen, 20/30s, planning pregnancy, perimenopause, and postmenopause, each with organic and paid variants
-- **Metabolic Blueprint as a retention offer** (inside MC: Results/Value cancellation pathway) repurposes a lead-gen asset as a retention tool
-- **Tag taxonomy** (`met class: a/b/c`) enables list segmentation for offer personalisation
+### Assets worth preserving
+- **The published assessment form** can be revisited without rebuilding the full questionnaire from scratch
+- **Tag taxonomy** (`met class: a/b/c`) supports segmentation if a validated replacement pathway is developed
+- **Historical scoring and content** provide a comparison point for a more modern diagnostic tool
 
 ### Current gaps / things to review
 - **Women Over 40 — Metabolic Reboot workflow is in draft** — core demographic but not yet published
+- **The Results/Value cancellation pathway referenced the retired Metabolic Blueprint workflow** — do not treat this as an available retention offer until that branch is redesigned
+- **Both Blueprint delivery workflows are inactive** — any future reuse requires a deliberate redesign and revalidation, not simply republishing the old sequence
 - **Duplicate Q6 fields** — CHECKBOX and RADIO variants with different keys; scoring logic risk
 - **Duplicate metabolic class tags** — `met class a` and `met class: a` both exist; workflows filtering on one miss contacts tagged with the other
 - **Scoring logic not documented** — the mapping from question answers to score, and from score to Class A/B/C, is not captured in GHL. Lives in workflow logic or externally
-- **No active standalone conversion mechanism** — the system currently feeds into the SA booking offer at the end of the Metabolic Blueprint sequence, but is not a standalone sales funnel
+- **No active conversion mechanism** — the form is retained, but the delivery and offer pathway is intentionally inactive

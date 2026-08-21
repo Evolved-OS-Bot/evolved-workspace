@@ -1,6 +1,6 @@
 # Personal Training Sales & Delivery System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-04-01
+**Last Updated:** 2026-07-23
 
 ---
 
@@ -30,6 +30,8 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 
 > There is no standalone PT pipeline. PT frequency (1x, 2x, 3x per week) is tracked by which Membership Pipeline stage the contact occupies. PT Only is for clients on PT without an SGPT membership.
 
+> **30 July 2026 audit warning:** this describes the intended legacy design, not a reliable live roster. The Membership Pipeline currently reports 43 opportunities that are not attached to any visible stage, while all four PT stages display zero. The published PT onboarding workflow still records a successful `PT Only / Won` opportunity action, but recent contacts including Vaishnavi Vakacharla are returned by pipeline search without appearing in a visible stage. Use the governed operating-data hub and booking, payment and lifecycle evidence for current PT service until the opportunity model and orphaned records are repaired.
+
 ---
 
 ## Tags
@@ -50,6 +52,8 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 
 ## Calendars
 
+> **Live audit note, updated 23 July 2026:** The canonical current trainer roster is Megan, Piper, Nora, Katrina and Leisa. The detailed tables below are the April system snapshot and deliberately retain former or inactive configurations as historical evidence. The current GHL settings UI is authoritative for booking. Marnie's three PT calendars and all three Meroe PT calendars were deleted. Live name and ID searches also confirmed that all four documented Beth calendars and all four documented Hannah calendars are already absent; no further deletion was required. Before Meroe's final calendar was removed, Kanika's replacement schedule was created in Nora's 30-minute calendar as 26 verified recurring instances through 28 October and all 22 future Meroe event records were deleted. Removing the final calendar also removed Kanika's completed 23 June Meroe appointment from GHL's active contact-appointment feed; the audit retains the occurrence as historical evidence. Katrina's and Leisa's 30-, 45- and 60-minute PT calendars remain active; their Intro Session calendars are inactive.
+
 ### Intro Session Calendars
 
 | Calendar | Type | ID |
@@ -67,7 +71,7 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 | Injury Triage - Hannah | personal | `4asZ1oldru57moSFEKdB` |
 | Injury Triage - Megan | personal | `Knee8V0fRcHxmpu3W0Fb` |
 
-> Injury Triage is only available for Hannah and Megan. No triage calendar exists for Beth, Leisa, Marnie, or Piper.
+> This April snapshot shows triage calendars for Hannah and Megan. Live verification on 23 July 2026 confirmed Hannah's calendar is already absent. Megan is the intentional sole Injury Triage owner for now.
 
 ### 30-Minute 1:1 PT Calendars
 
@@ -135,7 +139,7 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 | Workflow | Status | ID |
 |---|---|---|
 | Intro Session Nurture | **published** | `566e6e14-ce07-4f98-b198-579f801667b0` |
-| 5. New Personal Training Client | **published** | `b5d32a65-1983-40fb-bc35-e53dfaa482ad` |
+| 3.1. New Personal Training Client | **published; upstream-enrolled** | `b5d32a65-1983-40fb-bc35-e53dfaa482ad` |
 | PT Agreement Form: Email | **published** | `f8c76dc6-907d-4e69-9f23-6989e2b10447` |
 
 ---
@@ -152,7 +156,7 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 ```
 1. PT lead captured → intro session booked on trainer-specific Intro Session calendar
 2. "Intro Session Nurture" workflow fires
-3. Contact tagged: intro
+3. Workflow sends the booking-confirmation email and 24-hour SMS reminder
 4. Intro session delivered by trainer
 5. Post-session: client agrees to start PT
 6. "PT Agreement Form: Email" workflow fires → agreement form sent
@@ -160,12 +164,14 @@ PT clients occupy the following stages within the shared Membership Pipeline:
    - PT Agreement Date Signed field populated
    - Two initials fields signed
    - Signature captured
-8. "5. New Personal Training Client" workflow fires
+8. An upstream workflow enrols the contact into "3.1. New Personal Training Client"
 9. Contact moves to PT stage in Membership Pipeline (PT Only / PT 1 p.wk / PT 2 p.wk / PT 3 p.wk)
 10. PT block fields populated: PT Block Service, PT Block Start, PT Block Trainer
 11. Contact tagged: personal training, pt block – 13wk tracking or pt block – 24wk tracking
 12. Ongoing sessions booked against trainer's 30/45/60 min PT calendar
 ```
+
+The live workflow history on 22 July showed nine enrolments in the available 30-day window, including four contacts still waiting for appointment-relative steps. Some completed histories name an older `After Session Check In SMS` action that is absent from the current builder. The current published workflow contains only the booking email and 24-hour SMS; it creates no post-session, no-show or staff handoff.
 
 ---
 
@@ -178,7 +184,7 @@ PT clients occupy the following stages within the shared Membership Pipeline:
 | Workflow | Status | ID |
 |---|---|---|
 | PT Agreement Form: Email | **published** | `f8c76dc6-907d-4e69-9f23-6989e2b10447` |
-| 5. New Personal Training Client | **published** | `b5d32a65-1983-40fb-bc35-e53dfaa482ad` |
+| 3.1. New Personal Training Client | **published; upstream-enrolled** | `b5d32a65-1983-40fb-bc35-e53dfaa482ad` |
 
 ---
 
@@ -195,15 +201,45 @@ This is the upgrade path for existing members adding PT to their current members
 
 ```
 1. Existing gym member agrees to add PT
-2. "PT Agreement Form: Email" workflow fires → Membership Change: PT Agreement Form sent
+2. Staff manually sends Membership Change: PT Agreement Form
 3. Member completes survey:
    - MCPT: PT Choice — selects package
    - MCPT: Signature — signs agreement
-4. "5. New Personal Training Client" workflow fires
-5. Contact stage updated to appropriate PT stage (PT 1 p.wk / PT 2 p.wk / PT 3 p.wk)
-6. PT block fields populated
-7. Sessions booked against trainer calendars
+4. No verified notification or fulfilment workflow fires
+5. Staff must notice and manually process the change
 ```
+
+### Membership-change PT survey audit: 30 July 2026
+
+The survey has zero submissions from 1 January 2024 through 30 July 2026. Its native email notification and autoresponder are both off.
+
+The live `PT Agreement Form: Email` workflow does not send or process this survey; it triggers only after the separate `Personal Training Agreement Form` is submitted. The survey's two package choices, `$120 p/wk` Standard Strength and `$180 p/week` Optimal Results, do not define session duration or frequency and must not be automated while the PT pricing framework remains proposed.
+
+The survey also displays placeholder `https://www.example.com` Privacy Policy and Terms of Service links. Resolve the intended offer, pricing, legal links and Admin Eve processing ownership before using or connecting this survey.
+
+### Live onboarding audit: 22 July 2026
+
+`3.1. New Personal Training Client` has no native trigger, but it is deliberately entered through Add to Workflow actions elsewhere. Recent history proves production use: Emma Spowart entered on 30 June, and Grace Arnell entered twice on 13 July with the enrolment reason `Another workflow action`.
+
+The observed execution removed the contact from the Studio Appointment and Strength Assessment nurture workflows, attempted to remove a sales opportunity, added `personal training` and `strength assessment showed`, updated a contact field, sent an SMS, added the Review Request tag, enrolled the contact in `Membership: First 7 Days`, and created or updated a Membership Pipeline opportunity. One Remove Opportunity step returned an error because no matching opportunity existed, but the remaining onboarding actions completed.
+
+The exact upstream source was resolved on 29 July. Grace submitted the Personal Training Agreement Form twice, at 1:22:13 pm and 1:25:09 pm on 13 July. Each `PT Agreement Form: Email` execution finished by adding her to `3.1`, producing destination executions at 1:22:24 pm and 1:30:57 pm.
+
+`3.1. New Personal Training Client` is now reserved for one-time welcome and account setup. Allow re-entry was disabled, multiple-opportunity entry remains disabled, the workflow was saved and its published state was verified. A later legitimate PT agreement can still run its agreement-specific processing, but it cannot repeat the New PT Client SMS, lifecycle removals, review-request tag, First 7 Days enrolment or pipeline setup.
+
+### PT agreement worksheet mapping defect: 28 July 2026
+
+Live read-only builder inspection confirmed that `PT Agreement Form: Email` creates incomplete rows by configuration. Its Sales action maps identity, source, salesperson and attribution, but leaves Product, Trainer Assigned, Cash Taken, Added to Trainerize and Debits Set Up empty. Its Active PT action maps identity and `{{user.first_name}}` as Personal Trainer, but leaves Session Length, Sessions per week, Session Rate and Weekly Debit empty.
+
+This is not an intermittent Sheets failure. The action is successfully appending exactly what it is configured to append. Erica Asler's 27 July rows exposed the defect: Stripe and Trainerize were correct, while the unmapped columns remained blank until owner-authorised correction on 28 July.
+
+On 29 July, the exact duplicate cause was confirmed. Vaishnavi entered the Fast Track membership-agreement workflow once and the PT-agreement workflow once; both workflows appended Sales and Active PT rows for the same 28 July service date. The membership workflow created the complete records, while the PT workflow created the incomplete repeats.
+
+Peter approved removal of the incomplete repeats. The published PT-agreement workflow now runs its worksheet actions only when Membership Type does not include `Fast Track Package`; Fast Track clients skip those writes but still enter `3.1. New Personal Training Client`. This preserves all onboarding functions and gives the membership workflow sole ownership of Fast Track worksheet creation.
+
+The longer-term target remains a two-stage, idempotent write: capture structured agreed terms first, then enrich the same row only when Stripe proves the subscription or first paid invoice and Trainerize proves provisioning. Missing required terms should create an Admin exception instead of an operationally incomplete row.
+
+The implementation-ready source authority, state model, allowlisted columns, exception reasons, rollout gates and acceptance tests are documented in `outputs/systems/pt-roster-self-mending.md`.
 
 ---
 
@@ -217,9 +253,9 @@ Once a client is on a PT block, all sessions are booked directly against per-tra
 
 **Session durations available per trainer:**
 
-| Duration | Megan | Leisa | Marnie | Beth | Piper |
+| Duration | Megan | Piper | Nora | Katrina | Leisa |
 |---|---|---|---|---|---|
-| 30 min | Yes | Yes | Yes | No | No |
+| 30 min | Yes | Yes | Yes | Yes | Yes |
 | 45 min | Yes | Yes | Yes | Yes | Yes |
 | 60 min | Yes | Yes | Yes | Yes | Yes |
 
@@ -232,14 +268,13 @@ If a client sustains an injury during their PT block, the injury triage pathway 
 ```
 1. Injury identified during session or reported by client
 2. Triage session booked:
-   - Injury Triage - Megan (Knee8V0fRcHxmpu3W0Fb) or
-   - Injury Triage - Hannah (4asZ1oldru57moSFEKdB)
+   - Injury Triage - Megan (Knee8V0fRcHxmpu3W0Fb)
 3. Triage determines whether client can continue modified training or requires hold/cancellation
 4. If hold required → PT Hold workflow initiated (see Hold System documentation)
 5. If cancellation required → PT Cancellation workflow initiated (see Cancellation System documentation)
 ```
 
-> Only Megan and Hannah have injury triage calendars. Clients with other trainers must be routed to one of these two for triage.
+> Megan is the intentional sole Injury Triage owner. Clients working with another trainer should be routed to Megan when triage is required.
 
 ---
 
@@ -258,6 +293,42 @@ Active PT blocks are tracked via tags and custom fields:
 | PT Block Service | TEXT | `contact.pt_block_service` | `Upyxa5ORrkYuzKmB9ikp` |
 | PT Block Start | DATE | `contact.pt_block_start` | `qoSPND4o6aOmyMesj6Xs` |
 | PT Block Trainer | TEXT | `contact.pt_block_trainer` | `gSYaeeCF2iiRSzJhKePT` |
+
+### Live booking-field repair: 23 July 2026
+
+The workflow is now named `PT: Block Tracking & 13-Week Rebooking` (`280a2ca3-0f51-4f03-b5dc-c271c2ef8075`). When one of the 15 current PT calendars receives a booking, it adds `pt block – 13wk tracking` if absent and writes:
+
+- PT Block Start: current date
+- PT Block Trainer: `{{appointment.user.name}}`
+- PT Block Service: `{{calendar.name}}`
+
+It then waits 10 weeks, notifies the contact owner, creates a `Re-book {{contact.first_name}}` task assigned to Admin Eve and sends Admin Eve a separate notification. All task and notification copy now requests the next 13 weeks. The workflow waits a further 21 days, emails the contact owner with `info@theevolvedgym.com.au` copied as the Week 13 check, then removes the tracking tag.
+
+General re-entry and multiple-opportunity execution are disabled. Appointment triggers can still re-enter after the previous execution ends, which permits a later block to begin. The tracking tag remains in place for the full 91 days, so routine appointments during the current block cannot rewrite the block fields.
+
+Final coverage is Megan, Piper, Nora, Katrina and Leisa at 30, 45 and 60 minutes: 15 triggers in total. All six former Marnie and Wileen dependencies were removed or converted, and the workflow remained published. The fields now explicitly describe the current 13-week PT block, beginning with the first qualifying booking while the tracking tag is absent.
+
+### Live booking-continuity shadow pilot: 23 July 2026
+
+`pt_booking_shadow` is deployed to Railway as a structurally read-only audit service. It reconciles the active PT cohort every Monday at 5:30 am Brisbane time against the complete 15-calendar registry, infers each client's canonical pattern, checks 13-week coverage and records evidence in persistent SQLite history.
+
+The Admin Eve report separates healthy coverage, internal gaps, no future bookings, hypothetical top-ups, pattern-confirmation cases, active holds and cancellation-boundary exceptions. The first audit read 107 contacts and made no GHL changes.
+
+`SHADOW_MODE=true` is enforced at startup, and the GHL client contains no appointment write or delete methods. The existing Week 10 rebooking workflow remains the live operational fallback while four weekly reports are reviewed. The authenticated targeted-recheck endpoint exists, but optional GHL event-trigger workflows are not yet connected.
+
+### Active roster, payment and booking reconciliation: 25 July 2026
+
+`reference/sops/active-client-payment-and-booking-reconciliation.md` is the canonical Admin procedure for reconciling `Active PT`, `Active SGPT`, payment evidence, holds, cancellations and GHL bookings.
+
+The procedure separates actual bank cash, confirmed current weekly PT income, scheduled PT run-rate and prepaid PT sales. Stripe remains the default payment rail, while completed PTMinder/EziDebit receipts may evidence approved legacy payers through manual review because the booking-continuity controller does not connect to that processor.
+
+Standard Fast Track is one $149 weekly payment allocated across both active-client sheets: $99 in `Active SGPT` and $50 in `Active PT`. The full receipt is counted once as cash, and a Fast Track audit is incomplete unless both allocation rows are present and the PT allocation agrees with the recorded session count and rate.
+
+An approved Fast Track PT add-on increases only the `Active PT` component. Shelley Wilson's service from 3 August 2026 is $99 SGPT plus two weekly 30-minute PT sessions at $50 each, producing one $199 weekly receipt; GHL holds the current `Fast Track Package` and `PT 2 p.wk` service state, while booking continuity verifies both weekly appointments.
+
+Trainerize remains Shelley's active training-program account and does not receive separate PT session credits. PT booking entitlement is governed by the Active PT row and GHL appointments, so changing Trainerize would create a competing balance.
+
+The 25 July audit rule also requires every cancelled, deleted or no-show appointment to be checked against its scheduled start, GHL activity timestamp, nearby conversation history and any approved hold evidence. A no-show or cancellation within 24 hours remains chargeable and consumes the session; an administrative deletion for an approved hold does not become chargeable merely because staff removed the calendar event later.
 
 ---
 
@@ -307,9 +378,9 @@ Active PT blocks are tracked via tags and custom fields:
 
 | Field | Type | Options | Key | ID |
 |---|---|---|---|---|
-| Who is your personal trainer? | RADIO | Megan / Leisa / Marnie / Piper | `contact.who_is_your_personal_trainer` | `YWkGI9PYbF8jP22NKpbQ` |
+| Who is your personal trainer? | RADIO | Megan / Piper / Nora / Katrina / Leisa | `contact.who_is_your_personal_trainer` | `YWkGI9PYbF8jP22NKpbQ` |
 
-> Note: Beth and Hannah are absent from this field's options. This may be an oversight or reflect their current role (e.g. Hannah as triage-only, Beth as newer to the roster).
+> Corrected 23 July 2026: both trainer option fields use the canonical roster supplied by the owner: Megan, Piper, Nora, Katrina and Leisa.
 
 ---
 
@@ -323,7 +394,7 @@ These fields are part of the Cancellation System but are referenced within PT wo
 | CS: PT Package Offer - Declined | RADIO | I've paid for the Reset & I'm ready to continue with my cancellation / No thanks, I'll continue without help | `contact.mc_pt_package_offer__declined` | `sl0xCbukOJzcgvwGALEz` |
 | CS: Schedule/Time - PT Interest | RADIO | No thanks, continue with cancellation | `contact.mc_scheduletime__pt_interest` | `IzejdzAxvG64C320Mldv` |
 | CS: Style/Gym - PT Interest | RADIO | Yes please, show me the offer / No, continue with my cancellation | `contact.mc_rescue_package` | `3rTck8l7mW1UmhN4x1Hj` |
-| CS: Results/Value - Coach Contacted | SINGLE_OPTIONS | Megan / Leisa / Hannah / Beth / Piper | `contact.mc_resultsvalue__coach_contacted` | `rxxE4BpClaV7YBrvNLWy` |
+| CS: Results/Value - Coach Contacted | SINGLE_OPTIONS | Megan / Piper / Nora / Katrina / Leisa | `contact.mc_resultsvalue__coach_contacted` | `rxxE4BpClaV7YBrvNLWy` |
 
 > PT upsell offers appear in three membership cancellation reason pathways: Schedule/Time, Results/Value, and New Style/New Gym. These use MCPT package pricing to present PT as a retention alternative to cancellation.
 
@@ -353,9 +424,9 @@ See Hold System documentation for full field reference.
 | PT Hold Form | Survey | `dXxuFDDTK6OkdvHKvurU` |
 | Extended PT Hold Form | Survey | `bvz7PVsqRY5akgHfOHkH` |
 | PT Cancellation Form | Survey | `JnwGk9ttNxiSAuqBxuBs` |
-| Pre-Exercise Form | Form | `tUmSYWgC90QLMHycVotC` |
+| PAR-Q | Current health-screening form | `yziUG4EO90xQMtBx5xU1` |
 
-> The Pre-Exercise Form captures PAR-Q health screening questions (chest pain, dizziness, bone/joint problems, medication, etc.). It is likely completed prior to or at the intro session. See the custom fields group `JwbflBU2YDUaZb9godHU` for the full question set.
+> The current PAR-Q captures health screening before the physical assessment. The obsolete zero-submission Pre-Exercise Form (`tUmSYWgC90QLMHycVotC`) was deleted on 31 July 2026; its ten historical field definitions and the values held on three River-to-Rooftop contacts were preserved.
 
 ---
 
@@ -387,15 +458,16 @@ See Hold System documentation for full field reference.
 - **Dual onboarding paths** (new client intro session vs. existing member upgrade) are handled by separate forms and surveys, keeping flows clean
 - **PT upsell built into membership cancellation** — three cancellation reason pathways (Schedule/Time, Results/Value, Style/New Gym) actively present PT packages as alternatives, with specific MCPT package options and pricing embedded in the offer
 - **Block tracking tags** (13wk, 24wk) provide a lightweight way to monitor block progress without a dedicated PT pipeline
-- **Injury triage pathway exists** with dedicated calendars — but only for Megan and Hannah, creating a coverage gap
+- **Injury triage ownership is intentionally clear**: Megan is the sole triage owner for now, and the former Hannah calendar is already absent
 
 ### Current gaps / things to review
+- **Membership Pipeline opportunity records are orphaned:** 43 of 135 pipeline opportunities are not attached to a visible stage. The published `3.1. New Personal Training Client` action targets `PT Only / Won`, but a 28 July successful execution still produced a search-visible, stage-invisible result. Decide whether the pipeline is historical sale classification or current service ownership before repairing the action and reconciling records. Current PT service must come from the governed operating-data hub, payment, booking and lifecycle evidence.
 - **No dedicated PT pipeline** — PT clients sit in Membership Pipeline stages (PT Only, PT 1 p.wk, PT 2 p.wk, PT 3 p.wk). There is no pipeline tracking intro session → agreement → active → renewal → churn specifically for PT. This makes it difficult to see where PT prospects are in the sales process before they sign
-- **PT Block Trainer is a TEXT field** — not a dropdown or linked record, so trainer assignment is free-text and prone to inconsistency. Compare to `Who is your personal trainer?` which is a RADIO field with four options (Megan, Leisa, Marnie, Piper)
-- **Trainer options inconsistency** — `Who is your personal trainer?` has four options (Megan, Leisa, Marnie, Piper). `CS: Results/Value - Coach Contacted` has five options (Megan, Leisa, Hannah, Beth, Piper). Beth and Hannah are missing from the trainer assignment field but present in the coach contacted field
-- **Injury triage coverage gap** — only Megan and Hannah have triage calendars. Clients training with Beth, Leisa, Marnie, or Piper must be routed to Megan or Hannah for any triage assessment
-- **Beth and Piper have no 30-minute PT calendar** — these trainers can only offer 45 or 60-minute sessions. If a package requires 30-minute sessions, they cannot fulfil it
-- **No PT renewal workflow visible** — there is no workflow for approaching the end of a 13-week or 24-week PT block to prompt renewal. The tracking tags exist but there is no automated trigger documented
+- **PT Block Trainer remains an automation-fed TEXT field**: retain it while the repaired block-tracking workflow writes `{{appointment.user.name}}` from the first qualifying booking of each 13-week block. The field itself is not the governed staff roster
+- **Cover-session attribution is an accepted low-frequency limitation**: live inspection on 24 July 2026 confirmed that `PT Block Trainer` is written from `{{appointment.user.name}}`. If the first qualifying appointment after the 91-day lock clears is delivered by a temporary cover coach, that coach becomes the recorded block trainer. Rebooking now belongs to Admin Eve and is intended to become continuity-controller automation, so this rare attribution edge case does not justify another ownership field or a published-workflow change
+- **Trainer option inconsistency resolved on 23 July 2026**: both cancellation fields and the Strength Assessment survey now contain Megan, Piper, Nora, Katrina and Leisa; the survey also retains `I can't remember`
+- **Beth and Hannah calendar cleanup is closed**: live searches by name and all eight documented IDs returned no calendars on 23 July 2026; no deletion was required
+- **Live fulfilment remains reminder-led while continuity is audited in shadow mode**: `PT: Block Tracking & 13-Week Rebooking` remains the operational fallback. The Railway shadow pilot now inspects booked-through dates, future coverage, holds and cancellation boundaries, but deliberately creates, changes and deletes nothing until its accuracy gate is met
 - **No PT client retention/check-in sequence visible** — unlike SGPT members who have Day 8-28, Day 29-90, Day 91-180 sequences, there is no equivalent ongoing engagement workflow for PT clients
 - **Draft hold workflow copies** — `Copy - HS: PT Hold Form Submitted` and `Copy - HS: Extended PT Hold Form Submitted` are both in draft. Purpose unclear — may be testing new versions or may be abandoned
-- **Pre-Exercise Form linkage unclear** — the PAR-Q form (tUmSYWgC90QLMHycVotC) exists but no workflow is visible that explicitly sends or triggers it as part of PT onboarding
+- **Health-screening dependency resolved**: the production Strength Assessment path uses current `PAR-Q` (`yziUG4EO90xQMtBx5xU1`). The unrelated legacy Pre-Exercise Form was deleted after zero-submission and dependency verification.

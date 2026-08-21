@@ -1,0 +1,13 @@
+Use case: strict Evolved Heroine character style correction and style transfer.
+
+Image 1 is the edit target for CEL007: Dancing. Preserve its pose, anatomy, gesture, expression, apparel, props, camera angle, silhouette and crop. Images 2–5 are original-style calibration references only; ignore their poses and backgrounds.
+
+Restyle only into the original official Evolved Heroine look: a charming hand-drawn 2D vintage athletic mascot illustration with heavy dark-plum ink outlines, flat cel colours, only two to three shading tones, hard graphic highlights and subtle rough screen-print texture.
+
+The body is one complete peach fruit serving as both head and torso, with exactly two green leaves and one short brown stem, original oval eyes and rosy cheeks, cream gloves, simple tube limbs, dark-plum or black shorts or tights, and pink sneakers. Do not add a human torso, breasts, waist, hips, realistic skin anatomy or extra leaves.
+
+Shoe branding lock: the character faces the viewer unless the target pose dictates otherwise. Write the exact word "Evolved" once, only on the outside-facing side panel of the character's anatomical LEFT sneaker. In a front-facing pose this is the sneaker on the RIGHT side of the finished image. The other sneaker must be completely blank. If the outside panel is hidden, do not relocate the word.
+
+Produce the full character isolated on a perfectly uniform flat chroma-blue #0066FF background. No floor, shadow, halo, gradient or scenery. Prohibit 3D, CGI, Pixar-like or Disney-like rendering, glossy plastic, photorealism, airbrushed gradients, soft volumetric lighting or overly refined animation styling.
+
+Style calibration references: CHR002 Standing Relaxed, FND001 Deadlift, FUN003 Single Arm Dumbbell Overhead Press and FITN001 Running. The wider approved calibration set also includes CHR005 Walking, FND004 Overhead Press, FITN004 Pistol Squat and FITN007 ATG Split Squat.

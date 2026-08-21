@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-RIG-three-quarter-v11-pivot-canary-v1",
+  "executed_at": "2026-08-04T21:16:00+10:00",
+  "artifact_id": "PEACH-RIG-three-quarter-v11-pivot-canary-v1",
+  "scope": "Approved v11 identity-base relink, supported transparent neutral export parity, and preservation of the reversible anatomical-right upper-leg pivot canary. Root-cover construction and rotated stress testing are not complete.",
+  "native_project": {
+    "path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-v11-pivot-canary-v1.motn",
+    "sha256": "9b045a558a94b403690f4e8cb303e326bbce88cbe5278e89fa64ba77a3c3cfe9",
+    "motion_version": "6.3",
+    "canvas": [1254, 1254],
+    "frame_rate_fps": 30,
+    "background": "transparent",
+    "approved_v11_media_references": 29,
+    "v10_media_references": 0
+  },
+  "approved_identity_base": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+    "approved_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v11",
+    "approval_index_path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v11-approval-index.json",
+    "approval_index_sha256": "24ecd1d6f25ae0805c87b82676aafb34f0ec11e7ed00e9d01eabee8f1f4dc4d8",
+    "approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v11-EDITABLE-SOURCE-2026-08-04-01",
+    "approval_record_sha256": "c04da4c8cc342910182aa6f94fad37ef991fb343ec35d52d80411b5dcd1752ba",
+    "neutral_recomposite_sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536"
+  },
+  "pivot": {
+    "layer": "07-14-ANAT-R-LEG-UPPER",
+    "provisional_source_canvas_xy": [582, 680],
+    "motion_anchor_xy": [-45, -53],
+    "motion_position_compensation_xy": [-45, -53],
+    "rotation_degrees": 0,
+    "approval_status": "provisional_pending_complete_rig_review"
+  },
+  "supported_neutral_exports": {
+    "layered_stack": {
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-pivot-canary-v1-neutral-share-v1.png",
+      "sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca"
+    },
+    "single_image_reference": {
+      "native_project_path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-v11-neutral-reference-canary-v1.motn",
+      "native_project_sha256": "c842df727d32c433404dd76d89c61d765eceac5c2a6a99f33965f2518470400f",
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-v11-neutral-reference-share-v1.png",
+      "sha256": "6b1d7fed335a6c841866a77f6cb15976b91b4015347b6f5c4b25fe40a1e528ca"
+    },
+    "format": "1254 x 1254, 16-bit/color RGBA PNG, sRGB",
+    "byte_identical": true,
+    "rgb_differing_pixels": 0,
+    "alpha_differing_pixels": 0
+  },
+  "shoe_opacity_repair_evidence": {
+    "approved_v11_repair_pixels": 4755,
+    "pixels_by_layer": {
+      "26-52-ANAT-R-SHOE-BLANK": 3822,
+      "27-53-ANAT-L-SHOE-ART": 933
+    },
+    "preservation_basis": "The layered v11 export is byte-identical to the independently rendered approved-v11 neutral reference.",
+    "preserved_pixels": 4755,
+    "status": "pass"
+  },
+  "brand_evidence": {
+    "locked_layer": "28-54-EVOLVED-BRAND-LOCKED",
+    "locked_asset_sha256": "1d860384a579b5ad633a49f21fabc481ab65d11184c4433af5d1b321e22493da",
+    "placement": "anatomical-left shoe only",
+    "horizontal_flip": false,
+    "status": "pass"
+  },
+  "checks": [
+    {
+      "check_id": "V11_APPROVED_MEDIA_RELINK",
+      "status": "pass",
+      "observation": "All 29 native Motion media paths reference the immutable approved v11 package; no v10 media path remains."
+    },
+    {
+      "check_id": "SUPPORTED_TRANSPARENT_EXPORT",
+      "status": "pass",
+      "observation": "Motion Save Current Frame used PNG Image, Color + Alpha, canvas color space, and produced a 1254 x 1254 16-bit/color RGBA PNG."
+    },
+    {
+      "check_id": "SUPPORTED_NEUTRAL_EXPORT_PARITY",
+      "status": "pass",
+      "observation": "The 29-layer v11 stack export and the independent single-image v11 neutral-reference export are byte-identical."
+    },
+    {
+      "check_id": "V11_SHOE_OPACITY_REPAIR_PRESERVED",
+      "status": "pass",
+      "observation": "Strict supported-reference parity proves all 4,755 approved shoe opacity repair pixels survive the Motion render path."
+    },
+    {
+      "check_id": "PIVOT_COORDINATE_AND_NEUTRAL_COMPENSATION",
+      "status": "pass",
+      "observation": "The anatomical-right upper-leg anchor remains at source (582, 680), stored as Motion anchor (-45, -53), with matching position compensation and exact supported neutral parity."
+    },
+    {
+      "check_id": "SOURCE_DERIVED_ROOT_COVER",
+      "status": "pending",
+      "observation": "The fixed body-space source-derived root cover has not yet been constructed in the v11 candidate."
+    },
+    {
+      "check_id": "ROTATED_STRESS_GRID",
+      "status": "pending",
+      "observation": "Do not promote the pivot or rig until the fixed cover exists and the prescribed -12, -6, 0, +6, +12 degree sweep passes."
+    }
+  ],
+  "technical_result": "partial_pass",
+  "passed_scope": "Approved-v11 relink, transparent neutral export parity, shoe-opacity repair preservation, and provisional right-upper-leg pivot neutral compensation.",
+  "next_safe_action": "Save a native v11 candidate copy, create the complete rig group topology, then construct the fixed body-space anatomical-right leg root cover before any rotation stress test.",
+  "approval_scope_warning": "This evidence does not approve the pivot, root-cover mask, rig, motions, expressions, templates, exports beyond the neutral test, or deployment."
+}

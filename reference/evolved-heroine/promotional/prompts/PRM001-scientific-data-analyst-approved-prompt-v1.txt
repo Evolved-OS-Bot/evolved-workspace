@@ -1,0 +1,23 @@
+PRM001 — Scientific Data Analyst
+
+Create one new Evolved Heroine Peach character who looks like a friendly scientist analysing scientific data. She wears a white lab coat and dark-plum framed glasses and holds a notebook with a yellow pencil poised as if reviewing and recording results.
+
+Use approved CUT001 v3 as the primary authority for Peach's identity, tapered fruit-body construction, proportions, face treatment, palette, vintage shading, leaves, stem, simple tube limbs, gloves, black shorts, pink sneakers, and finish. Use FND004 as the authority for bold vintage value separation and deep-plum shadow. Use FUN003 and FND001 to support the original warm Foundation Strength colour family, large deep-plum fruit shadow, and carved-print ink accents.
+
+Peach stands in a confident three-quarter or near-front view. Her expression is intelligent, warmly focused, and slightly curious, with attentive eyes directed toward the notebook, a gently raised eyebrow, and a small thoughtful smile. The glasses must sit naturally across her eyes without hiding the expression or enlarging the eyes.
+
+The crisp white lab coat uses cream highlights, pale-grey cel shadows, dark-plum outlines, simple lapels, and two small pockets. It wraps around the existing fruit body as mascot apparel. Peach remains the entire body; never create a human torso, shoulders, chest, waist, hips, or pelvis. Keep the coat open enough at the lower front to preserve the tapered peach point and reveal a shallow band of fitted black athletic shorts.
+
+One cream-gloved hand supports a small open notebook at lower-chest height. The other holds one yellow pencil poised over the page. The notebook contains only simple graphic scientific-data marks: a tiny rising line chart, two or three dots or bars, and short non-readable notation lines. Do not add legible words, equations, labels, or pseudo-text.
+
+Preserve the locked peach construction: full rounded upper lobes, visible top cleft, sides tapering below the widest point, two subtle fruit lobes, and a distinct pointed lower centre. Use natural fruit anatomy only.
+
+Use four clearly separated flat graphic shading regions: hard cream highlight, warm peach base, coral-red mid-shadow, and a substantial almost-black deep-plum shadow along the lower and viewer-right fruit perimeter. Add two to four sparse tapered dark-plum carved-print slashes at the lower-right shadow transition. Strong value contrast is mandatory; texture remains secondary and subtle.
+
+Use the original hand-inked 2D vintage athletic-mascot style with heavy dark-plum contours, hard cel colours, and restrained screen-print texture. Do not use 3D, Pixar-like, Disney-like, CGI, glossy plastic, inflated-toy, airbrushed, softly lit, or cinematic rendering.
+
+The exact word `Evolved` appears once only on the outward-facing side panel of Peach's anatomical left shoe, usually viewer-right. The anatomical right shoe remains blank. Add no other words or pseudo-text.
+
+Show the entire character, leaves, notebook, pencil, and shoes with generous padding on a perfectly flat solid #0066FF chroma-key background. Add no gradient, floor, cast shadow, scenery, border, badge, or caption.
+
+Peter Brown approved PRM001 on 23 July 2026.

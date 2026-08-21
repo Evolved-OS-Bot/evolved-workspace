@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-LAYER-three-quarter-layered-source-v7-qa-v1",
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v7",
+  "executed_at": "2026-08-04T13:00:00+10:00",
+  "technical_result": "pass",
+  "visual_result": "pending_human_review",
+  "checks": [
+    {
+      "check_id": "APPROVED_TARGET_HASH",
+      "status": "pass"
+    },
+    {
+      "check_id": "UNASSIGNED_VISIBLE_PIXELS",
+      "status": "pass",
+      "value": 0
+    },
+    {
+      "check_id": "NEUTRAL_VISIBLE_PIXEL_MATCH",
+      "status": "pass",
+      "differing_pixels": 0
+    },
+    {
+      "check_id": "FULL_CANVAS_RGBA_SRGB_LAYERS",
+      "status": "pass",
+      "layer_count": 29
+    },
+    {
+      "check_id": "HORIZONTAL_FLIP_CONTROL",
+      "status": "pass",
+      "observation": "No flip or negative-X operation is present in the deterministic build route."
+    },
+    {
+      "check_id": "LEFT_SHOE_BRAND_LOCK",
+      "status": "pass",
+      "observation": "EVOLVED-BRAND-LOCKED is a child audit layer only on anatomical-left shoe; anatomical-right shoe remains blank."
+    },
+    {
+      "check_id": "HUMAN_LAYERED_SOURCE_APPROVAL",
+      "status": "pending"
+    }
+  ],
+  "layer_checks": [
+    {
+      "name": "01-LEAF-A",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/00-01-LEAF-A.png",
+      "sha256": "26f8fcab8fd37bddd28522f71107d7793e9a2f387b2eea654db6d2da9c94c85f",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "02-LEAF-B",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/01-02-LEAF-B.png",
+      "sha256": "b8fa7c5524596a0161a29fff8da2b89d7e1f4bf2348f33093ffb989c5f1e3c55",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "03-STEM",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/02-03-STEM.png",
+      "sha256": "4952c9f9d1dbfc118b13e8f8f5766f7b52ca23a5fe6f4218d7bdfb8c0080798f",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "10-ANAT-R-ARM-UPPER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/03-10-ANAT-R-ARM-UPPER.png",
+      "sha256": "b5113ce161cb5dc0125417f831d4985b0145940f382719dc7c2687d50e3f6dad",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "11-ANAT-R-ARM-LOWER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/04-11-ANAT-R-ARM-LOWER.png",
+      "sha256": "6b5179ee0ef80fda2ca0e0514180bb329453cb54d1067ea830e404dbb0b8f582",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "12-ANAT-L-ARM-UPPER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/05-12-ANAT-L-ARM-UPPER.png",
+      "sha256": "c1025586649c5e42c91177a97a1e1bfd309982227f9ce93aaf932905e44339d6",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "13-ANAT-L-ARM-LOWER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/06-13-ANAT-L-ARM-LOWER.png",
+      "sha256": "93f8f449ccab59b5c848c75d85014729eea62e60669a9f1fdc6ffa1a44f390dc",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "14-ANAT-R-LEG-UPPER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/07-14-ANAT-R-LEG-UPPER.png",
+      "sha256": "eb59708071701f471551bdd41d1b6edba3ac80fa35191fce8535514bacef7c5c",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "15-ANAT-R-LEG-LOWER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/08-15-ANAT-R-LEG-LOWER.png",
+      "sha256": "aec8b12fbc232850e0511097c601363dae9d72530a3346b947bc4e2f4288c1f9",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "16-ANAT-L-LEG-UPPER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/09-16-ANAT-L-LEG-UPPER.png",
+      "sha256": "86010c29154d5b3016fcf4841ca55e601025085d8956515db845a287f40f3d02",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "17-ANAT-L-LEG-LOWER",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/10-17-ANAT-L-LEG-LOWER.png",
+      "sha256": "8af094a7b62496eec093778dc418fc16ab1d7bc7062b4e8f9636d66431b16e51",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "20-SHORTS",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/11-20-SHORTS.png",
+      "sha256": "bf5a96fe78027ac0e96c1300bc787fc2baecd5abfdb58aeeaee085bf3a1c2eaf",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "30-PEACH-BODY-AND-SHADING-LOCKED",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/12-30-PEACH-BODY-AND-SHADING-LOCKED.png",
+      "sha256": "3d6516267021039f3fb4beb60167823af33c378b49a6b19dcfdda07a9a568fa0",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "31-FACE-FIELD-TEXTURE-LOCKED",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/13-31-FACE-FIELD-TEXTURE-LOCKED.png",
+      "sha256": "5d39bc6f7903528291470f51f370cd7b2781ed91fe230e82b0c7d70906873ef6",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "40-ANAT-R-EYE",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/14-40-ANAT-R-EYE.png",
+      "sha256": "9daedadb03c0651dede68eb1f067a3e9d9ab74757fcf154a3e2a4a5440053ff3",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "41-ANAT-L-EYE",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/15-41-ANAT-L-EYE.png",
+      "sha256": "350ba8049098c28ccfdafce59cc281bd60b8af7983d6f22341d1bab6ad22fede",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "42-ANAT-R-PUPIL",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/16-42-ANAT-R-PUPIL.png",
+      "sha256": "eb771aca13d6df40fc1bac021b20e3b3ae3259397119b71ed6dde72e82397a2a",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "43-ANAT-L-PUPIL",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/17-43-ANAT-L-PUPIL.png",
+      "sha256": "8e26d480180b6334fc97f1bb9d5135865aa38d7c6bd52a6b8f1e35a6778f1fde",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "44-ANAT-R-BROW",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/18-44-ANAT-R-BROW.png",
+      "sha256": "58ebf614b02367d599f3193dfdff767c0dba4baf0b4803824660f649c1c521c6",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "45-ANAT-L-BROW",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/19-45-ANAT-L-BROW.png",
+      "sha256": "8e55a0bafdadd401d0fbc1c07847432a6b56f9ac378b6f5fd2b78fd678df8e45",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "46-ANAT-R-CHEEK",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/20-46-ANAT-R-CHEEK.png",
+      "sha256": "03361953909fee86fddfb09bac23a912db8f41b8c43552fee1187286744bbb78",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "47-ANAT-L-CHEEK",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/21-47-ANAT-L-CHEEK.png",
+      "sha256": "8fe19fb5160c76343e1a759c664c42aff1df19bdbda6b0b58e6ccf8ae4d9e00f",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "48-NOSE-FIXED",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/22-48-NOSE-FIXED.png",
+      "sha256": "181448acd2ff108898004fa7ef9311d942f67afe34ebfca72492b10a7d56235f",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "49-MOUTH-NEUTRAL",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/23-49-MOUTH-NEUTRAL.png",
+      "sha256": "060386026c92a6f7363c56ef9647713f52f87a88e91e71306b2be491d8841898",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "50-ANAT-R-GLOVE-NEUTRAL",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/24-50-ANAT-R-GLOVE-NEUTRAL.png",
+      "sha256": "24ce8ebba8e056129ef62107a04e67776edd3dbf9ddea6b4a10bc43400012f68",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "51-ANAT-L-GLOVE-NEUTRAL",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/25-51-ANAT-L-GLOVE-NEUTRAL.png",
+      "sha256": "ec709d167c7700f800888d5bd1563da87b1f798332c4d9115a10933e565e4763",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "52-ANAT-R-SHOE-BLANK",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/26-52-ANAT-R-SHOE-BLANK.png",
+      "sha256": "d35452b3aaa8f637059c482056ea2deacdc4a9be42a6eff732eabe7c8cf0abb3",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "53-ANAT-L-SHOE-ART",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/27-53-ANAT-L-SHOE-ART.png",
+      "sha256": "a14416a710f50245d91f4e6560a7511d58f039395a4978370eb74127b8ee2740",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    },
+    {
+      "name": "54-EVOLVED-BRAND-LOCKED",
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v7/layers/28-54-EVOLVED-BRAND-LOCKED.png",
+      "sha256": "90a127d58b1461126084bb5d8cd427ca1f7f556d87784cef5c5bd99c44f3766f",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "icc_profile_present": true,
+      "status": "pass"
+    }
+  ],
+  "review_evidence": [
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v7-light-dark-checker.png",
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v7-neutral-difference.png",
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v7-exploded-components.png",
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v7-hidden-restoration-exposure.png"
+  ]
+}

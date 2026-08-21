@@ -81,6 +81,24 @@ class MembershipReconciliationTests(unittest.TestCase):
         }
         self.assertFalse(is_ghl_active(contact, None))
 
+    def test_pt_only_tag_is_current_pt_lifecycle_signal(self):
+        contact = {
+            "id": "ghl-1",
+            "email": "current-pt@example.com",
+            "tags": ["pt only"],
+            "customFields": [],
+        }
+        self.assertTrue(is_ghl_active(contact, None))
+
+    def test_old_pt_client_overrides_pt_only_tag(self):
+        contact = {
+            "id": "ghl-1",
+            "email": "former-pt@example.com",
+            "tags": ["pt only", "old pt client"],
+            "customFields": [],
+        }
+        self.assertFalse(is_ghl_active(contact, None))
+
     def test_ghl_contact_search_collects_numbered_pages(self):
         reader = GHLReader("test-key", "test-location")
         reader.session.post = Mock(

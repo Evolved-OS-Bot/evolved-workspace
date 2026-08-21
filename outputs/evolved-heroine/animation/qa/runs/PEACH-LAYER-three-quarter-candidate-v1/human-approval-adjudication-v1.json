@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "adjudication_id": "PEACH-LAYER-three-quarter-candidate-v1-human-approval-adjudication-v1",
+  "artifact_id": "PEACH-LAYER-three-quarter-candidate-v1",
+  "artifact_sha256": "3be0feb142374ba4ae9b1bf1dcdfde549cc56cde16188b3479548cce89b7ac9d",
+  "recorded_at": "2026-08-04T12:59:09+10:00",
+  "technical_qa_report": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-candidate-v1/qa-report.json",
+  "approval_record": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-candidate-v1-visual-target-approval-2026-08-04.json",
+  "checks": [
+    {
+      "check_id": "HUMAN_VISUAL_APPROVAL",
+      "status": "pass",
+      "observation": "Peter Brown approved the exact-hash candidate as the neutral visual target for full layered construction."
+    }
+  ],
+  "visual_result": "approved_visual_target",
+  "scope_excludes": [
+    "completed_layered_source_approval",
+    "apple_motion_rig_approval",
+    "reusable_motion_approval",
+    "expression_approval",
+    "template_approval",
+    "export_path_approval",
+    "external_publication",
+    "contractor_handoff"
+  ],
+  "next_required_gate": "Technical QA and Peter Brown visual approval of the completed editable layered source before it becomes the rig source."
+}

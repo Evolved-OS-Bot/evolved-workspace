@@ -14,6 +14,7 @@ from flask import Flask, jsonify, request
 from .config import BRISBANE_TZ, Settings, load_local_env
 from .service import ShadowAuditService
 from revenue_gap_control.railway_runtime import RailwayRevenueRuntime
+from reporting_control.hub_client import publish_summary
 
 
 load_local_env(Path(__file__).parent / ".env")
@@ -42,8 +43,26 @@ def _authorised() -> bool:
 
 def _start_full_audit(send_email: bool) -> None:
     try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
         run_id, findings = service.run_full(send_email=send_email)
         log.info("Full shadow audit complete: run=%s contacts=%s", run_id, len(findings))
+        try:
+            publish_summary(
+                "pt_booking_continuity",
+                {
+                    "runId": run_id,
+                    "findingCount": len(findings),
+                    "lastSuccessfulRun": service.store.last_successful_run(),
+                },
+            )
+        except Exception as exc:
+            log.warning("Hub PT publish failed: %s", type(exc).__name__)
     except Exception:
         log.exception("Full shadow audit failed")
 
@@ -62,6 +81,10 @@ def health():
                 "kind": revenue_state.get("kind"),
                 "completedAt": revenue_state.get("completedAt"),
             },
+            "hubPtMinder": revenue_service.hub_pt_minder_status(),
+            "ptRosterSelfMending": (
+                revenue_service.pt_roster_self_mending_status()
+            ),
         }
     )
 
@@ -77,6 +100,13 @@ def _revenue_window(kind: str) -> tuple[str, str]:
 def _start_revenue_audit(kind: str, send_email: bool) -> None:
     window_start, window_end = _revenue_window(kind)
     try:
+        try:
+            revenue_service.refresh_hub_pt_minder_shadow()
+        except Exception as exc:
+            log.warning(
+                "Hub PT Minder shadow comparison failed: %s",
+                type(exc).__name__,
+            )
         state = revenue_service.run(
             kind=kind,
             window_start=window_start,
@@ -84,8 +114,32 @@ def _start_revenue_audit(kind: str, send_email: bool) -> None:
             send_email=send_email,
         )
         log.info("Revenue-gap audit complete: %s", state)
+        try:
+            publish_summary(
+                "revenue_control",
+                state,
+                observed_at=state.get("completedAt"),
+            )
+        except Exception as exc:
+            log.warning("Hub revenue publish failed: %s", type(exc).__name__)
     except Exception:
         log.exception("Revenue-gap audit failed")
+
+
+def _start_pt_roster_self_mending() -> None:
+    try:
+        result = revenue_service.refresh_pt_roster_self_mending_shadow()
+        log.info("PT roster self-mending shadow complete: %s", result)
+    except Exception:
+        log.exception("PT roster self-mending shadow failed")
+
+
+def _start_roster_acceptance_refresh() -> None:
+    try:
+        result = revenue_service.refresh_roster_candidate_shadow()
+        log.info("Roster acceptance refresh complete: %s", result)
+    except Exception:
+        log.exception("Roster acceptance refresh failed")
 
 
 @app.post("/run")
@@ -134,6 +188,57 @@ def latest_revenue_run():
     return jsonify(summary or {"status": "not_found"}), (200 if summary else 404)
 
 
+@app.post("/revenue/roster-candidate/refresh")
+def refresh_roster_candidate():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    try:
+        return jsonify(revenue_service.refresh_roster_candidate_shadow())
+    except Exception as exc:
+        log.exception("Roster candidate refresh failed")
+        return jsonify({"error": type(exc).__name__}), 500
+
+
+@app.post("/revenue/commercial-evidence/refresh")
+def refresh_commercial_evidence():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    try:
+        return jsonify(
+            revenue_service.refresh_commercial_evidence_shadow()
+        )
+    except Exception as exc:
+        log.exception("Commercial evidence refresh failed")
+        return jsonify({"error": type(exc).__name__}), 500
+
+
+@app.post("/revenue/pt-roster-self-mending/refresh")
+def refresh_pt_roster_self_mending():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    try:
+        return jsonify(
+            revenue_service.refresh_pt_roster_self_mending_shadow()
+        )
+    except Exception as exc:
+        log.exception("PT roster self-mending refresh failed")
+        return jsonify({"error": type(exc).__name__}), 500
+
+
+@app.get("/revenue/pt-roster-self-mending/status")
+def pt_roster_self_mending_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    identified = (
+        str(request.args.get("identified", "false")).lower() == "true"
+    )
+    return jsonify(
+        revenue_service.pt_roster_self_mending_status(
+            identified=identified
+        )
+    )
+
+
 @app.get("/revenue/evidence/legacy/status")
 def legacy_evidence_status():
     if not _authorised():
@@ -151,6 +256,61 @@ def replace_legacy_evidence():
     rows = payload.get("rows") if isinstance(payload, dict) else None
     try:
         result = revenue_service.replace_legacy_evidence(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.get("/revenue/evidence/shared/status")
+def shared_evidence_status():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.shared_evidence_status())
+
+
+@app.get("/revenue/evidence/purchased-service-terms")
+def purchased_service_terms():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    return jsonify(revenue_service.purchased_service_terms())
+
+
+@app.post("/revenue/evidence/identity-links")
+def replace_identity_links():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_identity_links(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/revenue/evidence/account-classifications")
+def replace_account_classifications():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_account_classifications(rows)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/revenue/evidence/purchased-service-terms")
+def replace_purchased_service_terms():
+    if not _authorised():
+        return jsonify({"error": "unauthorised"}), 401
+    if request.content_length and request.content_length > 256_000:
+        return jsonify({"error": "payload too large"}), 413
+    payload = request.get_json(silent=True)
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    try:
+        result = revenue_service.replace_purchased_service_terms(rows)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     return jsonify(result)
@@ -201,6 +361,16 @@ def start_scheduler() -> None:
         replace_existing=True,
     )
     scheduler.add_job(
+        _start_roster_acceptance_refresh,
+        "cron",
+        hour=settings.roster_refresh_hours,
+        minute=15,
+        id="twice-daily-roster-acceptance",
+        max_instances=1,
+        coalesce=True,
+        replace_existing=True,
+    )
+    scheduler.add_job(
         _start_revenue_audit,
         "cron",
         day_of_week="mon",
@@ -208,6 +378,16 @@ def start_scheduler() -> None:
         minute=30,
         args=["monday", True],
         id="monday-revenue-audit",
+        max_instances=1,
+        coalesce=True,
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _start_pt_roster_self_mending,
+        "cron",
+        hour=6,
+        minute=20,
+        id="daily-pt-roster-self-mending-shadow",
         max_instances=1,
         coalesce=True,
         replace_existing=True,

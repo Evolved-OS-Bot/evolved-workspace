@@ -25,6 +25,9 @@ class Appointment:
     status: str
     assigned_user_id: str | None = None
     deleted: bool = False
+    title: str = ""
+    description: str = ""
+    notes: str = ""
 
     @property
     def duration_minutes(self) -> int:

@@ -1,7 +1,7 @@
 # Marketing Playbook — The Evolved All Female Gym
 
 **Source:** Marketing Knowledge Base
-**Last updated:** 2026-05-02
+**Last updated:** 2026-08-04
 
 ---
 
@@ -35,6 +35,24 @@ Four recurring themes that all content should map to:
 - Promotional posts for challenges ("6-Week Challenge Starting Soon!")
 - CTAs for trial memberships
 - Posts addressing objections (time, cost, intimidation)
+
+## Evolved Heroine Visual System
+
+Peach is an approved supporting marketing asset across all four content pillars. Use her selectively as a guide, demonstrator, encourager, or celebrator—not as the default hero image or invented member proof. She may appear subtly with member photography but must never replace or obscure the member.
+
+| Content need | Recommended visual route |
+| --- | --- |
+| Member result, testimonial, transformation, community proof | Real member or trainer photography leads; Peach may support |
+| Education, exercise, science, healthy habits, FAQs | Peach or an information graphic may lead |
+| Community event and behind-the-scenes | Real photography leads; Peach may host or celebrate |
+| Milestone, announcement, seasonal, or reminder | Peach may lead |
+| Offer, trial, or conversion message | Clear offer and appropriate real-world imagery lead; Peach supports attention or CTA |
+
+Before commissioning a new illustration, search the approved Heroine library by category and pose. Use only approved masters and create a channel-specific derivative.
+
+Full rules: `reference/evolved-heroine/marketing-usage-guide.md`
+
+Reusable animation and rigging: `reference/evolved-heroine/animation-system.md`
 
 ---
 
@@ -134,8 +152,8 @@ For emails, social, and website testimonials.
 
 1. **Goal** — Define the objective (membership sign-ups, challenge promotion, brand awareness). Set success metrics.
 2. **Audience** — Reference Ally's avatar. What pain point does this solve? What result will she achieve?
-3. **Plan** — Core message, which content pillars to activate, deliverables (email sequence, social posts, landing page, ads)
-4. **Create** — Email (3–5 sequence: intro → objections → success story → offer reminder), Instagram posts, landing page
+3. **Plan** — Core message, which content pillars to activate, visual route (real photography, Peach, information graphic, or a deliberate combination), deliverables (email sequence, social posts, landing page, ads)
+4. **Create** — Search existing approved Heroine assets when Peach is appropriate, then create channel-specific derivatives alongside the email sequence, Instagram posts, landing page, or ads
 5. **Distribute** — Email at peak times (mornings or early evenings), schedule social via Buffer/Later, stories daily during campaign, Facebook Ads targeting women in West End Brisbane
 6. **Engage** — Respond promptly to DMs, comments, email inquiries. Use objection handling scripts.
 7. **Analyze** — Track email open/click rates, social engagement/reach, landing page conversion. Document what worked.

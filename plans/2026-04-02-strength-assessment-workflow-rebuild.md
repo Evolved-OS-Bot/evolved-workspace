@@ -87,7 +87,7 @@ Rebuild the `2. Strength Assessment` GHL workflow to reflect The Evolved's curre
 15. **[AI INTEGRATION POINT]** Webhook → fires to SA Pre-Qual AI Agent with contact ID + goals reply
     - _Until agent is live: admin + coach run manual pre-qual SOP_
 16. **Wait for tag: `pre-qual complete`** (timeout: 7 days → continue without)
-17. Move pipeline stage → Pre-Qualified (on tag received)
+17. Admin Eve manually moves the opportunity to Pre-Qualified after completing the pre-qualification SOP and trainer summary. Future automation may replace this only after the pre-qualification bot is verified.
 
 ---
 
@@ -221,7 +221,7 @@ Time-based logic preferred over manual `no sale` tagging — reduces reliance on
 | 13 | Pre-session reminder sequence simplified | ✅ Done — removed Goals/No Goals conditional, single Reminder/Confirmation SMS to all. READY reply path → Wait 1hr → How to Find Us → END. No Reply path → nudge → 2hr wait → escalate to tasks/notifications → Wait 1hr → How to Find Us → END. Go To on late reply loops back to READY path. |
 | 14 | 2. Strength Assessment workflow — structurally complete | ✅ Done |
 | 15 | Build SA: PAR-Q Received (2.1 PARQ Complete) workflow | ✅ Done — Trigger: PAR-Q form submitted → Add tag `parq complete` → Admin task (Admin Eve): write pre-qual summary to contact field → Admin internal notification → Wait 2hrs → Coach task (Assigned User): check Pre-qual Summary field → Coach internal notification. Pre-qual Summary custom field created (ID: j5eRYc16qSm49xE8VOx3, key: contact.prequal_summary) in 2. Strength Assessment folder. |
-| 16 | Post-session Show path → separate workflow `3. Post Assessment` | ✅ Decided — not building. `2.4 Consultation Feedback Complete` is the authoritative trigger for no-sale follow-up (form-driven, consultant has the outcome). Time-based backstop adds complexity without meaningful coverage gain. Trust consultant to complete feedback form. |
+| 16 | Post-session Show path → separate workflow `3. Post Assessment` | ⚠️ Reopened 18 July 2026. `2.4 Consultation Feedback Complete` is intended to be authoritative, but the live workflow has no visible trigger and its Sale/No Sale branches are empty. Repair and test the form-driven path before deciding whether a time-based backstop is unnecessary. |
 | 17 | Build No Show rebook sequence | ✅ Done — `2.2 SA: No Show Rebook` built and published. Final timeout: Abandoned Opportunity → Remove Opportunity → END |
 | 18 | Build Cancelled rebook sequence | ✅ Done — `2.3 SA: Cancelled Rebook` built and published. Filter blocks deadline-path auto-cancels (tag present → END). Final timeout: Update Opportunity → FUM → END |
 | 19 | Add webhook step + wait for `pre-qual complete` tag (AI integration point) | ⬜ Blocked — depends on Pre-Qual AI Agent service being live first. Wire in as final step of that build. |
@@ -229,17 +229,23 @@ Time-based logic preferred over manual `no sale` tagging — reduces reliance on
 | 21 | Create consultation feedback fields in `2. Strength Assessment` folder | ✅ Done — 12 fields: SA: Sales Outcome (SINGLE_OPTIONS), SA: Main Objection (TEXT), SA: Secondary Objection 1-3 (TEXT), SA: Discovery, SA: Qualification, SA: Presentation Fit, SA: Objection Handling, SA: The Ask (all SINGLE_OPTIONS: Yes/Partially/No) |
 | 22 | Build SA consultation feedback form | ✅ Done — Form ID: `Z83KtjAPMclhe8bsFJwS`. 3 sections: Who did you assess (First Name, Last Name, Email), What was the result (Sales Outcome, Main Objection, Secondary Objection 1), How did they perform (benchmarks), How did you go (Discovery, Qualification, Presentation Fit, Objection Handling, The Ask, Help Needed). Workflow sends pre-filled link: `?email={{contact.email}}&first_name={{contact.first_name}}&last_name={{contact.last_name}}` |
 | 23 | Add consultation feedback steps to end of `2. Strength Assessment` workflow | ✅ Done — after "How to Find Us Video SMS": Wait 2hr 15min → Consultant Feedback Form SMS ({{appointment.user.phone}}) + Task → Wait 2hrs → Check SA: Sales Outcome → Filled: END / Not Filled: Reminder SMS + Admin Chase Task → END. Form URL: https://links.theevolvedgym.com.au/widget/form/Z83KtjAPMclhe8bsFJwS |
-| 24 | Build `SA: Consultation Feedback Received` workflow | ✅ Done — `2.4 Consultation Feedback Complete`. Trigger: SA: Coach Consultation Feedback form submitted → Append row to Consultant Performance sheet → If SA: Sales Outcome = Sale → END / No Sale → Add `no sale` tag → Enrol in `2.3 No Sale - Follow Up` → END |
+| 24 | Build `SA: Consultation Feedback Received` workflow | ⚠️ Live audit correction 18 July 2026: `2.4 Consultation Feedback Complete` exists and is published, but no trigger is visible and neither the Sale nor No Sale branch contains actions. The originally documented handoff is not present live. |
+
+### Live reconciliation: 17 July 2026
+
+The documented PAR-Q chase was found missing during the live GHL audit. It was restored as published supporting workflow `2.1A SA: PAR-Q Chase` (`f1b784dd-5c78-41fc-84af-0e636115a68d`) and connected immediately after `Reminder/Confirmation SMS` in `2. Strength Assessment`.
+
+The verified live sequence is: wait three hours, exit if the `parq complete` tag exists, otherwise send the reminder SMS, wait four hours, check the tag again, then create `CHASE PAR-Q: {{contact.first_name}} - session tomorrow` for Admin Eve, due in one day, only when the form is still incomplete. This restores the intended behaviour recorded in build item 11 without adding the chase logic back into the already-complex main workflow.
 | 24b | Document `2.5 No Sale - Follow Up` workflow (V1) | ✅ Done — see workflow structure below |
 | 25 | Add two tabs to Blog Topic Queue Google Sheet — Pre-Qual Insights and Objections Log | ✅ Done — tabs created via API with headers. Sheet ID: `1HU1O_U547pTLgA2977YPpNcVcxOdrujamUVWCwOU_Sw` |
-| 26 | Add No Sale branch in `2.4 Consultation Feedback Complete` → append row to Objections Log | ✅ Done — Create Spreadsheet Row action on No Sale branch: Date, First Name, Life Stage (`{{contact.lead_life_stage}}`), Main Objection (`{{contact.sa_main_objection}}`), Secondary Objection 1 (`{{contact.sa_secondary_objection_1}}`). Secondary Objection 2 column reserved but not used yet. |
+| 26 | Add No Sale branch in `2.4 Consultation Feedback Complete` → append row to Objections Log | ⚠️ Live audit correction 18 July 2026: a general spreadsheet action exists before the outcome branch, but the No Sale branch itself is empty and does not enrol `2.5. No Sale - Follow Up`. |
 | 27 | Build GHL workflow triggered by `goals submitted` tag → append row to Pre-Qual Insights tab | ⬜ Deferred — raw SMS reply is unstructured. Build when pre-qual AI agent is live to capture structured field data. |
 
 ---
 
 ### `2.5 No Sale - Follow Up` workflow (V1)
 
-**Trigger:** Enrolled by `2.4 Consultation Feedback Complete` → No Sale branch (SA: Sales Outcome ≠ Sale)
+**Intended trigger:** Enrolled by `2.4 Consultation Feedback Complete` → No Sale branch (SA: Sales Outcome ≠ Sale). This live handoff is currently missing and must be repaired.
 
 ```
 1. Remove from 'SA: Nurture' Workflow

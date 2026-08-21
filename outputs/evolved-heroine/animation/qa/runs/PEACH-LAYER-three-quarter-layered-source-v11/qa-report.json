@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-LAYER-three-quarter-layered-source-v11-qa-v1",
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+  "executed_at": "2026-08-04T19:46:47+10:00",
+  "technical_result": "pass",
+  "visual_result": "pending_human_review",
+  "repair_method": {
+    "alpha_thresholds": [
+      1,
+      248
+    ],
+    "topology": "Only low-alpha pixels enclosed from the exterior within each audited shoe ROI",
+    "pixels_by_layer": {
+      "52-ANAT-R-SHOE-BLANK": 3822,
+      "53-ANAT-L-SHOE-ART": 933
+    },
+    "total_pixels": 4755
+  },
+  "checks": [
+    {
+      "check_id": "V10_APPROVED_SOURCE_HASH",
+      "status": "pass",
+      "sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180"
+    },
+    {
+      "check_id": "ALPHA_ONLY_SHOE_LAYER_CHANGE",
+      "status": "pass"
+    },
+    {
+      "check_id": "EXTERIOR_ALPHA_PRESERVED",
+      "status": "pass",
+      "differences_outside_repair_mask": 0,
+      "repair_mask_constraint": "Audited inset shoe-interior polygons only"
+    },
+    {
+      "check_id": "RGB_OUTSIDE_REPAIR_PRESERVED",
+      "status": "pass",
+      "differences_outside_repair_mask": 0
+    },
+    {
+      "check_id": "NON_SHOE_LAYERS_BYTE_IDENTICAL",
+      "status": "pass",
+      "unchanged_layer_count": 27
+    },
+    {
+      "check_id": "LEFT_SHOE_BRAND_LOCK_BYTE_IDENTICAL",
+      "status": "pass",
+      "sha256": "1d860384a579b5ad633a49f21fabc481ab65d11184c4433af5d1b321e22493da"
+    },
+    {
+      "check_id": "HUMAN_LAYERED_SOURCE_APPROVAL",
+      "status": "pending"
+    }
+  ],
+  "review_evidence": [
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v11-shoe-opacity-review.png",
+    "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v11-light-dark-checker.png"
+  ]
+}

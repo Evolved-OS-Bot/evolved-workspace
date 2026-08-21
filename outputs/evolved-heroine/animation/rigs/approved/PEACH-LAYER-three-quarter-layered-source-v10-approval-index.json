@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+  "status": "approved_animation_identity_base",
+  "approved_at": "2026-08-04T15:26:56+10:00",
+  "approved_copy": {
+    "path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10",
+    "file_count": 33,
+    "verification": "byte_identical_to_source_package_at_promotion"
+  },
+  "approved_source_snapshot": {
+    "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v10",
+    "source_package_record_sha256": "d4e46a00e8f4cb9f0cff02e3946eeb2640a870e98806aa473a11247a3b8a775b",
+    "layer_manifest_sha256": "18753d3c2d08e0fe697e3400bf4477f2b79acbc74abd16699437afdafba0d3f2",
+    "openraster_sha256": "8e59ad7579a5e93bd084b17832972d5bfe6577e3ce7dd0fcf68dc8222d1cdc2f",
+    "neutral_recomposite_sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180"
+  },
+  "approval": {
+    "record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01",
+    "path": "outputs/evolved-heroine/animation/qa/approvals/PEACH-LAYER-three-quarter-layered-source-v10-editable-source-approval-2026-08-04.json",
+    "sha256": "35cc8fd90f3f7ca4a4c6721a578cdfe5575ee4214fcd8844e5fd988f1a000cb6"
+  },
+  "historical_record_note": "The copied source-package-record.json retains its pre-approval status because it is immutable evidence of the package at creation. This index and the approval record govern its current approved status.",
+  "scope_exclusions": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ]
+}

@@ -1,0 +1,14 @@
+.git/
+.venv/
+.pytest_cache/
+data/
+output/
+outputs/
+plans/
+reference/
+wordpress/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.log
+.DS_Store

@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS roster_snapshot (
     sessions_per_week TEXT,
     session_cost TEXT,
     notes TEXT,
+    contract_length TEXT,
+    renewal_date TEXT,
     classification TEXT NOT NULL,
     PRIMARY KEY (run_id, service, source_row)
 );
@@ -152,6 +154,22 @@ class AuditStore:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as connection:
             connection.executescript(SCHEMA)
+            columns = {
+                row["name"]
+                for row in connection.execute(
+                    "PRAGMA table_info(roster_snapshot)"
+                ).fetchall()
+            }
+            if "contract_length" not in columns:
+                connection.execute(
+                    "ALTER TABLE roster_snapshot "
+                    "ADD COLUMN contract_length TEXT"
+                )
+            if "renewal_date" not in columns:
+                connection.execute(
+                    "ALTER TABLE roster_snapshot "
+                    "ADD COLUMN renewal_date TEXT"
+                )
 
     def connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.path)
@@ -182,8 +200,14 @@ class AuditStore:
             }
             connection.executemany(
                 """
-                INSERT INTO roster_snapshot VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                INSERT INTO roster_snapshot (
+                    run_id, service, source_row, email, phone, name,
+                    product, status, weekly_allocation, payment_marker,
+                    trainer, session_length, sessions_per_week,
+                    session_cost, notes, contract_length, renewal_date,
+                    classification
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
                 """,
                 [
@@ -203,6 +227,8 @@ class AuditStore:
                         row.sessions_per_week,
                         str(row.session_cost) if row.session_cost is not None else None,
                         row.notes,
+                        row.contract_length,
+                        row.renewal_date,
                         assessment_by_key[(row.service, row.row_number)].classification,
                     )
                     for row in inputs.roster

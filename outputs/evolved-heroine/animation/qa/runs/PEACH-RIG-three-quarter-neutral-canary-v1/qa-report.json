@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "run_id": "PEACH-RIG-three-quarter-neutral-canary-v1",
+  "executed_at": "2026-08-04T17:49:11+10:00",
+  "artifact_id": "PEACH-RIG-three-quarter-neutral-canary-v1",
+  "native_stack_project": {
+    "path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-neutral-canary-v1.motn",
+    "sha256": "fd388a4e817b605e3fd3d4d7728e7a106f1ae5e6a5958c34e02e4fa434dd7a30"
+  },
+  "native_reference_project": {
+    "path": "outputs/evolved-heroine/animation/rigs/working/PEACH-RIG-three-quarter-candidate-v1/PEACH-RIG-three-quarter-neutral-reference-canary-v1.motn",
+    "sha256": "88fa81f5d498b8978fa641fdc1b37293908224c89295177b45a311c74c0cff48"
+  },
+  "environment": {
+    "motion_version": "6.3",
+    "frame_rate_fps": 30,
+    "canvas": [1254, 1254],
+    "pixel_aspect": "square",
+    "scan": "progressive",
+    "background": "transparent",
+    "working_gamut": "Standard Gamut SDR"
+  },
+  "renders": {
+    "supported_share_ordered_29_layer_stack": {
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-neutral-share-v1.png",
+      "sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+      "format": "1254 x 1254, 16-bit/color RGBA PNG, sRGB"
+    },
+    "supported_share_single_approved_neutral_reference": {
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-neutral-reference-share-v1.png",
+      "sha256": "17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2",
+      "format": "1254 x 1254, 16-bit/color RGBA PNG, sRGB"
+    },
+    "ordered_29_layer_stack": {
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-candidate-v1-neutral-canary.png",
+      "sha256": "10d20898aca10a8180042631a093da689eb4a933a7242b1dd96302efbaecb466",
+      "role": "isolated 8-bit linear-renderer diagnostic only"
+    },
+    "single_approved_neutral_reference": {
+      "path": "outputs/evolved-heroine/animation/renders/transparent/png-sequences/PEACH-RIG-three-quarter-neutral-reference-canary-v1.png",
+      "sha256": "e3d59c0137f4781e7aa73ceeb87e63088d71d151af823a4f4716f287e9901c3c",
+      "role": "isolated 8-bit linear-renderer diagnostic only"
+    },
+    "approved_srgb_neutral_source": {
+      "path": "outputs/evolved-heroine/animation/rigs/approved/PEACH-LAYER-three-quarter-layered-source-v10/PEACH-LAYER-three-quarter-layered-source-v10-neutral-recomposite.png",
+      "sha256": "e0693adf9bc2f694f8e01c0e109f44268c3c8c5d9a667f801b382d3643dd4180"
+    }
+  },
+  "checks": [
+    {
+      "check_id": "NATIVE_PROJECT_LOAD",
+      "status": "pass",
+      "observation": "Motion 6.3 loaded and saved both projects created through the graphical interface."
+    },
+    {
+      "check_id": "SEPARATE_STILL_IMPORT",
+      "status": "pass",
+      "observation": "All 29 approved PNGs were selected in Motion with Image Sequence disabled and are stored as 29 distinct media clips and 29 distinct image scene nodes."
+    },
+    {
+      "check_id": "MANIFEST_LAYER_ORDER",
+      "status": "pass",
+      "observation": "The native scene-node order exactly matches the approved manifest in front-to-back order, equivalent to the declared back-to-front stack."
+    },
+    {
+      "check_id": "PROTECTED_LAYER_LOCKS",
+      "status": "pass",
+      "observation": "Motion's native Lock state is active on the left-shoe brand, face-field texture, and body/shading layers."
+    },
+    {
+      "check_id": "TRANSPARENT_PNG_RENDER",
+      "status": "pass",
+      "observation": "Motion's supported Save Current Frame path produced a 1254 x 1254, 16-bit/color RGBA sRGB PNG with Color + Alpha, canvas color, full frame, and Best render quality."
+    },
+    {
+      "check_id": "ALPHA_AND_SILHOUETTE_PARITY",
+      "status": "pass",
+      "observation": "The ordered 29-layer Motion render and the single approved-neutral Motion render have zero differing alpha pixels."
+    },
+    {
+      "check_id": "SUPPORTED_SHARE_ZERO_PIXEL_PARITY",
+      "status": "pass",
+      "observation": "The supported 16-bit RGBA PNG exports from the ordered 29-layer stack and the single approved-neutral reference are byte-identical. Both have SHA-256 17dd880b122313934b403d116756643219c89e3c209d75c848861a52e054b2b2; normalized pixel comparison found zero RGB or alpha differences."
+    },
+    {
+      "check_id": "SUPPORTED_SHARE_PANEL",
+      "status": "pass",
+      "observation": "The stale PNG-document alert was dismissed. Save Current Frame completed for both native projects as PNG Image, Use canvas setting, Color + Alpha, full frame, and Best quality."
+    },
+    {
+      "check_id": "ISOLATED_8_BIT_RENDERER_DIAGNOSTIC",
+      "status": "diagnostic_only",
+      "observation": "The isolated 8-bit linear renderer produced 35,292 RGB differences, zero alpha differences, and maximum channel delta 5/255. Because the supported 16-bit Motion Share outputs are byte-identical, this is retained only as evidence of diagnostic-path quantization and is not an acceptance failure."
+    }
+  ],
+  "difference_evidence": {
+    "mask": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-neutral-canary-v1/motion-to-motion-difference-mask.png",
+    "amplified_64x": "outputs/evolved-heroine/animation/qa/runs/PEACH-RIG-three-quarter-neutral-canary-v1/motion-to-motion-difference-amplified-64x.png"
+  },
+  "technical_result": "pass",
+  "next_safe_action": "Build and test one reversible upper-leg pivot plus fixed source-derived body-space root cover.",
+  "approval_scope_warning": "This technical pass covers neutral native ingest and its supported transparent still export only. It does not approve the rig, pivots, root-cover masks, motions, expressions, templates, further exports, or deployment."
+}

@@ -4,7 +4,7 @@ triage_bot/triage.py
 Pulls unread GHL conversations, classifies each with Claude,
 and posts a triage report to Discord.
 
-Runs daily at 6am AEST via Railway cron.
+Runs at 6am and 6pm AEST via Railway cron.
 """
 
 import os
@@ -15,6 +15,20 @@ from zoneinfo import ZoneInfo
 
 BRISBANE_TZ = ZoneInfo("Australia/Brisbane")
 from anthropic import Anthropic
+try:
+    from triage_bot.hub_contract import (
+        TriageHubContext,
+        compare_conversation_contacts,
+        publish_conversation_parity,
+        triage_cutover_authority,
+    )
+except ModuleNotFoundError:
+    from hub_contract import (
+        TriageHubContext,
+        compare_conversation_contacts,
+        publish_conversation_parity,
+        triage_cutover_authority,
+    )
 
 GHL_API_KEY         = os.environ["GHL_API_KEY"]
 GHL_LOCATION_ID     = os.environ["GHL_LOCATION_ID"]
@@ -177,6 +191,35 @@ CATEGORY_HEADERS = {
 }
 
 
+def publish_hub_summary(total, classifications):
+    """Publish aggregate triage state without blocking existing delivery."""
+    base_url = os.getenv("HUB_INGEST_BASE_URL", "").rstrip("/")
+    secret = os.getenv("HUB_WEBHOOK_SECRET", "")
+    if not base_url or not secret:
+        return {"status": "not_configured"}
+    counts = {}
+    for item in classifications:
+        category = item.get("category", "Not Important Not Urgent")
+        counts[category] = counts.get(category, 0) + 1
+    response = requests.post(
+        f"{base_url}/conversation_triage",
+        headers={"X-Hub-Secret": secret},
+        json={
+            "schema_version": 1,
+            "observed_at": datetime.now(timezone.utc).isoformat(),
+            "status": "complete",
+            "summary": {
+                "record_count": total,
+                "unreadCount": total,
+                "categories": counts,
+            },
+        },
+        timeout=20,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
 def format_discord_messages(convos, classifications):
     """Format triage report as a list of Discord messages (max 1950 chars each)."""
     today = datetime.now(BRISBANE_TZ).strftime("%A, %-d %B")
@@ -329,6 +372,15 @@ def post_to_discord(messages):
 
 def main():
     print(f"Running conversation triage — {datetime.now(BRISBANE_TZ).isoformat()}")
+    comparison_cycle = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    try:
+        hub_context = TriageHubContext.fetch()
+    except Exception as exc:
+        hub_context = None
+        print(
+            "Hub current-person shadow read unavailable; "
+            f"legacy delivery retained ({type(exc).__name__})."
+        )
 
     print("Fetching unread conversations...")
     raw_convos = fetch_unread_conversations()
@@ -336,26 +388,73 @@ def main():
 
     if not raw_convos:
         post_to_discord(format_discord_messages([], []))
+        try:
+            publish_hub_summary(0, [])
+        except Exception as e:
+            print(f"Hub publish failed: {type(e).__name__}")
         return
 
     convos = []
     for c in raw_convos:
         contact_id                              = c.get("contactId", "")
         name, is_sa_prequel, is_sgpt, is_pt     = fetch_contact_info(contact_id) if contact_id else ("Unknown", False, False, False)
+        hub_flags = (
+            hub_context.flags(contact_id)
+            if hub_context is not None and contact_id
+            else {
+                "is_sgpt_member": False,
+                "is_pt_client": False,
+                "identity_review_required": True,
+            }
+        )
         channel             = CHANNEL_LABELS.get(c.get("type", ""), c.get("type", "Unknown"))
         last_msg            = c.get("lastMessageBody", "").strip() or "(no message body)"
         recent              = fetch_recent_messages(c.get("id", ""))
 
         convos.append({
             "id":              c.get("id"),
+            "contact_id":      contact_id,
             "contact_name":    name,
             "is_sa_prequel":   is_sa_prequel,
             "is_sgpt_member":  is_sgpt,
             "is_pt_client":    is_pt,
+            "legacy_is_sgpt_member": is_sgpt,
+            "legacy_is_pt_client": is_pt,
+            "hub_is_sgpt_member": hub_flags["is_sgpt_member"],
+            "hub_is_pt_client": hub_flags["is_pt_client"],
+            "hub_identity_review_required": hub_flags[
+                "identity_review_required"
+            ],
             "channel":         channel,
             "last_message":    last_msg,
             "recent_messages": recent,
         })
+
+    if hub_context is not None and convos:
+        try:
+            current_parity = compare_conversation_contacts(convos)
+            authority = triage_cutover_authority()
+            if (
+                authority.promotion_authorised
+                and current_parity.equivalent
+            ):
+                for convo in convos:
+                    convo["is_sgpt_member"] = convo[
+                        "hub_is_sgpt_member"
+                    ]
+                    convo["is_pt_client"] = convo["hub_is_pt_client"]
+                print("Hub current-person contract is authoritative.")
+            else:
+                print(
+                    "Legacy contact flags remain authoritative; "
+                    f"cutover={authority.effective_state} "
+                    f"parity={current_parity.equivalent}."
+                )
+        except Exception as exc:
+            print(
+                "Hub cutover status unavailable; legacy contact flags "
+                f"retained ({type(exc).__name__})."
+            )
 
     print("Classifying with Claude...")
     classifications = classify_conversations(convos)
@@ -374,6 +473,24 @@ def main():
         send_email(convos, classifications)
     except Exception as e:
         print(f"Email failed: {e}")
+
+    try:
+        publish_hub_summary(len(convos), classifications)
+    except Exception as e:
+        print(f"Hub publish failed: {type(e).__name__}")
+    if hub_context is not None:
+        try:
+            parity = publish_conversation_parity(
+                context=hub_context,
+                conversations=convos,
+                comparison_cycle=comparison_cycle,
+            )
+            print(f"Hub person-contract parity: {parity.get('status')}")
+        except Exception as e:
+            print(
+                "Hub person-contract parity publish failed: "
+                f"{type(e).__name__}"
+            )
 
     print("Done.")
 

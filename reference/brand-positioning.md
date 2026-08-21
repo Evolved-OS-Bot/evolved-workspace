@@ -1,7 +1,7 @@
 # Brand Positioning — The Evolved All Female Gym
 
 **Sources:** Position Statements Document, Marketing Knowledge Base
-**Last updated:** 2026-05-02
+**Last updated:** 2026-08-04
 
 ---
 
@@ -113,6 +113,16 @@ Extended version:
 - Showcase diversity (different ages, body types)
 - Action shots, community-focused images, and transformation visuals
 - Balance professional graphics with a personal, relatable feel
+
+### Evolved Heroine
+
+Peach, the Evolved Heroine, is the approved supporting brand character for education, encouragement, coaching, healthy habits, progress, celebrations, reminders, and selected campaign creative. She is not the logo or the default hero image and should appear selectively rather than across every marketing item.
+
+Real members, trainers, the gym environment, and verified evidence remain the primary trust and results imagery. Peach may appear subtly beside member photography but must never replace, compete with, or obscure the member. She supports the message; she does not replace real proof, imitate a testimonial, or act as a clinician.
+
+Peach expresses the existing Evolved voice and remains separate from the official Evolved logo.
+
+Use only approved masters and follow `reference/evolved-heroine/marketing-usage-guide.md` for asset selection, composition, editing, channels, derivatives, accessibility, and prohibited uses.
 
 ---
 

@@ -1,0 +1,13 @@
+issue,impact,treatment
+Women's cohort definition,"Trainerize records 34 non-test profiles with sex missing, 7 as male and 3 as other; these 44 profiles contain 1,118 tracked programmed workouts","The owner reports that non-female labels reflect onboarding errors, but the audit does not infer or overwrite sex. Outcomes remain restricted to 529 profiles explicitly recorded as female until each exception is business-verified; the 26,304-workout all-account total is labelled operational only"
+Incomplete former-member detail,Workout summaries exist for more former members than detailed set-level results,Report coverage by status; do not generalise detailed outcomes to all former members
+Survivor and engagement bias,Members who train and log more are more likely to appear at later horizons,Use paired samples and show n for every horizon and movement
+Non-standardised testing,"Most outcomes are best training performances, not scheduled reassessments",Label all results as training-log proxies; V2 must standardise tests
+Estimated 1RM,Loaded lifts use Epley estimates from 1-12 rep sets,Retain raw weight and reps; do not present estimates as measured 1RM
+Farmer Walk load convention,Historical entries may mean total load or per-hand load,Include only explicit 60-second targets and treat load interpretation as provisional
+Bodyweight timing,Relative standards require bodyweight within 45 days,Leave ratios and standards unavailable when no nearby bodyweight exists
+Exercise variants,Different exercise names and equipment are not normally interchangeable,"Keep exact names separate except for the coach-confirmed Nexus, Barbell Front Squat and Barbell Back Squat aliases"
+Squat recording aliases,The same Nexus squat was unintentionally recorded under three Trainerize exercise names,Combine all three names into one canonical Nexus Point Squat outcome and one progression stage
+Movement-family stages,Goblet and Nexus squat loads are not directly comparable,Measure Goblet-to-Nexus stage transitions separately from canonical Nexus load improvement
+Zero-load split squats,Bodyweight-only entries may be stored as 0kg,Retain 0kg rows but require positive baseline for percentage-change calculations
+Public result use,A statistical candidate is not automatically a publishable story,Coach validation plus explicit member consent required

@@ -1,0 +1,5 @@
+horizon,paired_participants,advanced_stage_n,advanced_stage_pct,confirmed_goblet_to_nexus_n,confirmed_goblet_to_nexus_pct,same_highest_stage_n,lower_stage_only_n,median_stage_change,interpretation
+6 months (120-240d),168,6,3.6,6,3.6,151,11,0.0,"Exercise-stage transition, not a cross-exercise load comparison"
+12 months (300-450d),91,3,3.3,3,3.3,84,4,0,"Exercise-stage transition, not a cross-exercise load comparison"
+24 months (600-900d),24,2,8.3,2,8.3,22,0,0.0,"Exercise-stage transition, not a cross-exercise load comparison"
+Beyond 24 months (901d+),7,0,0.0,0,0.0,6,1,0,"Exercise-stage transition, not a cross-exercise load comparison"

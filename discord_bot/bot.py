@@ -40,6 +40,8 @@ REPORT_TIMES = [
 ]
 
 SENT_LOG = Path(__file__).parent / "sent_reports.json"
+METRICS_JSON = Path(__file__).parent.parent / "context" / "current-data.json"
+METRICS_REFRESH_LOCK = asyncio.Lock()
 
 def _load_sent_log() -> dict:
     if SENT_LOG.exists():
@@ -52,21 +54,42 @@ def _load_sent_log() -> dict:
 def _mark_sent(key: str, date_str: str):
     log = _load_sent_log()
     log[key] = date_str
-    SENT_LOG.write_text(json.dumps(log))
+    temporary = SENT_LOG.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(log, sort_keys=True))
+    temporary.replace(SENT_LOG)
 
 def _already_sent(key: str, date_str: str) -> bool:
     return _load_sent_log().get(key) == date_str
 
-async def _refresh_metrics():
-    try:
-        await asyncio.to_thread(
-            subprocess.run,
-            [sys.executable, str(Path(__file__).parent.parent / "scripts" / "update_metrics.py")],
-            check=True, capture_output=True, text=True,
-            cwd=str(Path(__file__).parent.parent),
-        )
-    except subprocess.CalledProcessError:
-        pass  # Continue with last known data if refresh fails
+async def _refresh_metrics(*, force=False, max_age_minutes=90):
+    """Refresh once, then let all report views reuse the same completed contract."""
+    async with METRICS_REFRESH_LOCK:
+        if not force and METRICS_JSON.exists():
+            age = (
+                datetime.datetime.now().timestamp()
+                - METRICS_JSON.stat().st_mtime
+            )
+            if age <= max_age_minutes * 60:
+                return True
+        try:
+            await asyncio.to_thread(
+                subprocess.run,
+                [
+                    sys.executable,
+                    str(
+                        Path(__file__).parent.parent
+                        / "scripts"
+                        / "update_metrics.py"
+                    ),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=str(Path(__file__).parent.parent),
+            )
+            return True
+        except subprocess.CalledProcessError:
+            return False  # Continue with the last completed contract.
 
 
 intents                 = discord.Intents.default()
@@ -189,16 +212,14 @@ async def on_message(message):
         if is_refresh_request(message.content):
             await message.channel.send("Pulling fresh KPI data...")
             try:
-                await asyncio.to_thread(
-                    subprocess.run,
-                    [sys.executable, str(Path(__file__).parent.parent / "scripts" / "update_metrics.py")],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    cwd=str(Path(__file__).parent.parent),
+                refreshed = await _refresh_metrics(force=True)
+            except Exception as e:
+                await message.channel.send(f"Refresh failed: {e}")
+                return
+            if not refreshed:
+                await message.channel.send(
+                    "Refresh failed; the last completed KPI snapshot remains active."
                 )
-            except subprocess.CalledProcessError as e:
-                await message.channel.send(f"Refresh failed: {e.stderr or e}")
                 return
 
         system_prompt = build_system_prompt()

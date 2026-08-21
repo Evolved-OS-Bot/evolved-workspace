@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="320" viewBox="0 0 940 320">
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="24" y="28" fill="#F5F0EB" font-size="22" font-weight="700" letter-spacing="1.4">MEDIAN ESTIMATED STRENGTH (KG)</text>
+    <line x1="70" y1="240" x2="870" y2="240" stroke="#383536" stroke-width="3"/>
+    <rect x="145" y="103" width="210" height="137" rx="8" fill="#783658"/>
+    <rect x="585" y="90" width="210" height="150" rx="8" fill="#E18449"/>
+    <text x="250" y="85" fill="#F5F0EB" font-size="38" font-weight="700" text-anchor="middle">60.9 kg</text>
+    <text x="690" y="72" fill="#F5F0EB" font-size="38" font-weight="700" text-anchor="middle">66.7 kg</text>
+    <text x="250" y="280" fill="#A9A6A0" font-size="20" font-weight="700" letter-spacing="1.6" text-anchor="middle">BASELINE</text>
+    <text x="690" y="280" fill="#E18449" font-size="20" font-weight="700" letter-spacing="1.6" text-anchor="middle">6 MONTHS</text>
+    <text x="470" y="314" fill="#A9A6A0" font-size="15" font-weight="600" letter-spacing="0.8" text-anchor="middle">GROUP MEDIANS SHOWN · % ABOVE IS MEDIAN INDIVIDUAL CHANGE</text>
+  </g>
+</svg>

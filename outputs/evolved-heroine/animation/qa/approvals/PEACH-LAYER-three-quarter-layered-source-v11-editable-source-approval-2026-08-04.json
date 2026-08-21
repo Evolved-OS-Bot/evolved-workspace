@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v11-EDITABLE-SOURCE-2026-08-04-01",
+  "record_status": "active",
+  "immutable": true,
+  "recorded_at": "2026-08-04T20:46:32+10:00",
+  "approver": {
+    "name": "Peter Brown",
+    "role": "owner"
+  },
+  "decision": "approved",
+  "approval_scope": "corrected_editable_layered_source_and_identity_base_for_apple_motion_rig_construction",
+  "approval_text_verbatim": "Approve PEACH-LAYER-three-quarter-layered-source-v11 as the corrected editable layered source and identity base for Apple Motion rig construction.",
+  "artifact": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+    "approved_package_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/source-package-record.json",
+      "sha256": "674c384f591f249c400b73e0c105a50605a799e50c38b0a4db59039e64414c76"
+    },
+    "layer_manifest": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/layer-manifest.json",
+      "sha256": "b6c76d06bb4656683b4d9dbaaea7af5849fbbfa425cf625267f44d5c75e5e58f"
+    },
+    "openraster_package": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/PEACH-LAYER-three-quarter-layered-source-v11.ora",
+      "sha256": "10dc97f922a9932507b2bd12850ffc91fca2b7a60b20d280d7f85928d890bc42"
+    },
+    "neutral_recomposite": {
+      "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11/PEACH-LAYER-three-quarter-layered-source-v11-neutral-recomposite.png",
+      "sha256": "de9648269ca5aad75812ad86403de6ee40ff25061a84f79b3c2ce1caed9ff536",
+      "intentional_corrective_pixels_from_v10": 4755
+    },
+    "layer_count": 29,
+    "technical_qa_result_at_record_time": "pass"
+  },
+  "correction_control": {
+    "superseded_artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+    "approved_v10_snapshot_overwritten": false,
+    "shoe_internal_opacity_repair_pixels": 4755,
+    "all_non_shoe_layers_byte_identical_to_v10": true,
+    "locked_evolved_brand_layer_byte_identical_to_v10": true,
+    "exterior_alpha_preserved": true
+  },
+  "qa_evidence": [
+    {
+      "path": "outputs/evolved-heroine/animation/qa/runs/PEACH-LAYER-three-quarter-layered-source-v11/qa-report.json",
+      "sha256": "397bac2f118cd79b26589fc498d792e85be5c553d2bf97a34ca328135d56f4f6"
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v11-review.md",
+      "sha256": "29a1f4fc47c11da2f349df46d4692f0f7c8d577a77423440de5f5c5d71dad03d"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v11-shoe-opacity-review.png",
+      "sha256": "7b499bb17394f7ffab44a8fa2516c008ebed9d7d4d4abe2dc97ac63e0a30648c"
+    },
+    {
+      "path": "outputs/evolved-heroine/animation/review/layered-source/PEACH-LAYER-three-quarter-layered-source-v11-light-dark-checker.png",
+      "sha256": "3826db7060786291d0610716079c8f52ef781e966b92fd7aa8f38f6f23791786"
+    }
+  ],
+  "approval_scope_excludes": [
+    "rig",
+    "provisional_pivots",
+    "root_cover_masks",
+    "motions",
+    "expressions",
+    "templates",
+    "exports",
+    "deployment"
+  ],
+  "identity_authority_limit": "This artifact is the corrected approved animation identity base. It does not replace or modify any approved static master.",
+  "next_required_gate": {
+    "artifact_class": "apple_motion_rig",
+    "requirement": "Technical QA and Peter Brown visual approval of the editable Apple Motion rig built from v11, including resolved root-cover behavior and final pivots, before reusable motion production."
+  },
+  "provenance": {
+    "source_host_id": "slingshot:env_e_6a6e5522cfa48331922b805b3d4a94e7",
+    "source_thread_id": "019f6a36-089f-7622-aab9-9fe0e7a18f14",
+    "recorded_by_task": "/root"
+  },
+  "supersedes_approval_record_id": "APR-PEACH-LAYER-three-quarter-layered-source-v10-EDITABLE-SOURCE-2026-08-04-01"
+}

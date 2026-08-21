@@ -1,6 +1,6 @@
 # Cancellation System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-07-23 (trainer-field option lists reconciled)
+**Last Updated:** 2026-08-04 (contact-evidence and owner-escalation hardening live)
 
 ---
 
@@ -74,6 +74,7 @@ This data should inform how assertively retention offers are positioned across t
 |---|---|---|
 | Send Membership Cancellation Form | **published** | `f203b01c-f7d3-486a-baf7-8981cdeda13a` |
 | Membership Cancellation Form Received | **published** | `73345f90-6ca8-444c-a694-8d1b25cdfdc6` |
+| CS: Contact Evidence - Member Reply | **published** | `06363191-7fbc-4b60-b6d9-000d521cef87` |
 | MC: Financial | **published** | `cf2d159c-2704-4865-8611-d36fbddd01a7` |
 | MC: Health/Injury | **published** | `df73b324-e02b-4961-b017-4c2a9f235dbb` |
 | MC: Moving/Travel | **published** | `93997227-0272-4aa0-a0ec-da56938f3901` |
@@ -86,12 +87,33 @@ This data should inform how assertively retention offers are positioned across t
 
 > **Note:** All 8 `MC:` reason workflows published 2026-07-15. Build guide and confirmed merge tags at `outputs/systems/mc-reason-workflows-build-guide.md`.
 
+The contact-evidence helper automatically adds `cs: contact made` and records
+`CS: Contact Evidence Source = Member Reply` when a member replies while
+`CS: Cancellation Status = Notice Active`. HighLevel cannot natively filter
+the `Call details` trigger by duration, so calls do not write evidence
+automatically. The eight Piper-led reason workflows retain their existing tag
+gates, contain no automatic Day-14 SMS in Megan's name and create a same-day
+Megan review task instead. `MC: Other (Booked Call)` remains separate and
+unchanged.
+
 ---
 
 ## Form
 
 **Membership Cancellation Form**
 **Form ID:** `dzD9sXZC1CR80MRiHgB7`
+
+### Canonical cancellation-form presentation standard
+
+Owner decision recorded 30 July 2026: the Membership Cancellation Form is the presentation and interaction benchmark for all cancellation forms. The standard is its progressive, step-by-step structure rather than its current offer copy:
+
+1. confirm identity;
+2. ask for one primary cancellation reason;
+3. reveal only the relevant next step or retention option;
+4. collect concise experience and outcome feedback;
+5. present the correct notice terms and final confirmation.
+
+Do not copy the Membership Cancellation Form's retired metabolic branch, stale offer details, unsupported evidence claims or placeholder legal links into another form. Those remain defects in the benchmark form's content and compliance layer.
 
 ---
 
@@ -119,6 +141,22 @@ This data should inform how assertively retention offers are positioned across t
    → Update Contact Type → Remove Member Tag → Add Old Member Tag → END
 ```
 
+### Billing acknowledgement control: live 29 July 2026
+
+Live execution review on 29 July 2026 found three membership cancellations with Billing OS `400 Missing required fields` errors: Rachael Kolmajer, Lucinda Gibson and Sarah Loga. For Rachael, GHL successfully executed both `Update Date Submitted Field` and `Update Notice End Date + 30 Days` before the five-minute wait and webhook.
+
+The workflow then continued after the failed webhook: it created downstream records, sent the member confirmation SMS and moved the opportunity into Notice Period. GHL therefore treats an HTTP webhook error as an action log error, not as a branch-stopping acknowledgement.
+
+Billing OS now validates the required data, resolves the GHL contact from the standard webhook payload or exact email match, uses Stripe idempotency keys and writes Succeeded or Exception back to GHL. If a membership cancellation fails, Billing OS removes the contact from `Membership Cancellation Form Recieved` before its spreadsheet, confirmation and Notice Period actions run.
+
+The single PT error for Renae Acton on 4 July was a `404 Not Found` from an older workflow version. The current published PT workflow uses the correct `/stripe/cancel` endpoint, and Renae's cancellation was reconciled.
+
+PT uses the same fail-closed control. If the cancellation cannot be scheduled, Billing OS removes the contact from `PT Cancellation Form Received` before its downstream actions. Successful cancellations remain enrolled and proceed normally.
+
+Every failed membership or PT billing action now creates a same-day `BILLING EXCEPTION: Cancellation - Manual action required` task assigned directly to Admin Eve. The task contains the member, requested cancellation and notice end, exact error, and manual reconciliation instruction. An embedded exception key prevents a retry from creating another open task for the same contact, action and error. The existing 30-day membership and one-day PT processing tasks remain the normal operational review layer; `Billing OS: Cancellation Action Status`, Last Error, Last Result and Last Action At provide the evidence.
+
+Sarah Loga's failed 13 July cancellation was manually reconciled on 3 August. Her paid access is inclusive through 9 August, and Stripe schedule `sub_sched_1TyNBpLMsHYOAUEzyM2nd2rj` now has `end_behavior=cancel` with the exact boundary `2026-08-10T00:00:00+10:00`. GHL records `CS: Final Access Date = 2026-08-09` and Billing OS Succeeded evidence while retaining the legal 12 August notice-end field. The cancellation workbook carries the same boundary note, and both an Admin Eve task and a one-time Codex hard-stop control are scheduled for the post-boundary GHL, Trainerize, workbook and reporting closure. No member message is authorised by this reconciliation.
+
 ### Live Task Routing Audit: 17 July 2026
 
 | Workflow group | Task path | Assignee | Due | Live finding |
@@ -133,6 +171,14 @@ This data should inform how assertively retention offers are positioned across t
 The eight reason workflows and the separate booked-call workflow are all published. The manager-call task is assigned to Megan Brown, not Piper or a joint owner assignment.
 
 The cancellation-processing due dates are intentionally different. The membership task is a 30-day notice-period reconciliation; the PT task is a one-day operational check because payment timing determines which future PT sessions must be retained or deleted.
+
+### Contact-evidence and owner-escalation control: approved 4 August 2026
+
+The eight Piper-led reason workflows retain `cs: contact made` as a compatibility tag, but no longer treat Piper as its sole writer. A separate GHL helper workflow applies the tag automatically when a member replies during an active cancellation notice and records the evidence source. Piper may still apply it after a live conversation that automation cannot prove.
+
+Calls fail closed. Ringing, no answer, voicemail and generic `Completed` status do not prove a live conversation. Call evidence may be automated only if GHL can require an outbound connected call lasting at least 60 seconds; otherwise Megan reviews the call history manually.
+
+Each no-contact branch performs a final evidence check immediately before owner escalation. When evidence is still absent, Megan receives a same-day review task with the reason context and instruction to inspect the full conversation and call history. The former automatic client SMS in Megan's name is removed. `MC: Other (Booked Call)` is excluded because the member explicitly requested manager contact.
 
 ---
 
@@ -180,6 +226,8 @@ Options:
 
 **Retention offers:** 1:1 PT upgrade, hybrid plan, or online-only membership.
 
+Evolved Anywhere and Online Only are valid retention services. Their separate signed variations now have disabled, exact-survey GHL intake workflows and an allowlisted live Billing OS scheduler. They do not become operational current service until the immutable accepted event verifies GHL, billing, Trainerize, appointments, workbooks and reporting. The workflows remain Draft while Trainerize target-product acceptance is incomplete. The replacement control is governed by `plans/2026-07-30-membership-service-change-control.md`.
+
 ---
 
 ### Reason 3: Financial
@@ -220,12 +268,15 @@ Options:
 | CS: Results/Value - Missing Element | RADIO | More guidance/clarity, More accountability, More personalised adjustments, Struggled with consistency, Expected faster results, Program didn't feel right, Not sure |
 | CS: Results/Value - Struggles Communicated | RADIO | Yes / No |
 | CS: Results/Value - Coach Contacted | SINGLE_OPTIONS | Megan / Piper / Nora / Katrina / Leisa |
-| CS: Results/Value - Reset | RADIO | Yes, I'd like a fresh plan / No, continue cancellation |
 | CS: Metabolic Interest - Continue Cancel | RADIO | No, please continue with my cancellation |
 | CS: - PT Interest | RADIO | No, I prefer to continue with the cancellation |
 | CS: PT Package Offer - Declined | RADIO | I've paid for the Reset & I'm ready to continue with my cancellation / No thanks |
 
-**Retention offers:** Results Reset (fresh program/direction) and PT package upgrade. The former Metabolic Blueprint offer is inactive because its delivery workflow was unpublished on 17 July 2026; redesign the Results/Value branch before presenting it again.
+**Retention offers:** The current form uses `CS: - PT Interest` in `Step 4A - PT Reset`, followed by the PT package path. The superseded `CS: Results/Value - Reset` field was deleted on 31 July 2026 after dependency checks and a fresh API read-back verified it absent. The former Metabolic Blueprint delivery workflow was unpublished on 17 July 2026.
+
+Live survey revalidation on 30 July 2026 found that the member-facing form contains `Step 4F - Metabolic`. It presents the A$888 Metabolic Blueprint and A$5,555 Full Metabolic Transformation packages, retains live payment links and references TransformationFLIX. On 31 July Peter chose to keep both packages in the form for now. Keep the full slide, its Results/Value routing and `CS: Metabolic Interest - Continue Cancel` intact; reconcile the retained offer, payment links and evidence language before actively promoting it.
+
+The same pass also found `https://www.example.com` behind both the Privacy Policy and Terms of Service links. Replace those placeholders with the approved business pages before treating the cancellation intake as fully reconciled.
 
 ---
 
@@ -249,10 +300,9 @@ Options:
 |---|---|---|
 | CS: Style - Primary Reason | RADIO | Need more variety, More confident in classes, Faster noticeable results, Train with friends/family, More schedule flexibility, Strength felt confusing/overwhelming, Not progressing as hoped, Not sure |
 | CS: Style - Attraction | RADIO | More cardio, More classes, Outdoor/bootcamp, Pilates/barre/reformer, Home/flexible training, More variety generally |
-| CS: Style - Offer | RADIO | Yes, I'd like help combining styles / No, continue with cancellation |
 | CS: Style/Gym - PT Interest | RADIO | Yes please, show me the offer / No, continue with cancellation |
 
-**Retention offer:** Hybrid style coaching combining strength with preferred modalities, PT package offer.
+**Retention offer:** The live form routes through `CS: Style/Gym - PT Interest`. The superseded `CS: Style - Offer` field was deleted on 31 July 2026 after dependency checks and a fresh API read-back verified it absent.
 
 ---
 
@@ -277,8 +327,10 @@ Options:
 | CS: Date Submitted | DATE | — |
 | CS: Notice End Date | DATE | — |
 | CS: Final Access Date | DATE | — |
-| CS: More Info | LARGE_TEXT | Free-text additional context |
+| CS: More Info | LARGE_TEXT | Historical free-text context; no longer a current form input |
 | CS: I confirm that I want to cancel my membership | SIGNATURE | Consent/compliance signature |
+
+`CS: More Info` is retained because it contains Eliza Lebsanft's historical external-form cancellation context. Do not delete it unless that note is first migrated to another governed record.
 
 ---
 
@@ -301,6 +353,21 @@ Options:
 
 **PT Cancellation Form**
 **Form ID:** `JnwGk9ttNxiSAuqBxuBs`
+
+### Live presentation gap: 30 July 2026
+
+The PT Cancellation Form does not meet the canonical cancellation-form standard. It is one long page rather than a progressive journey. The live form includes a large block of dated results claims, a legacy A$27-per-week Evolved Programming offer, broad nutrition-resource questions, and a final confirmation that incorrectly says the member is cancelling their membership rather than their personal training. Its Privacy Policy and Terms of Service links both point to `https://www.example.com`.
+
+Required redesign:
+
+1. preserve the existing contact fields and workflow-bound outcome fields unless a dependency check approves replacement;
+2. rebuild the visible journey using the Membership Cancellation Form's staged structure;
+3. ask the PT reason first and display only the relevant alternative or resolution;
+4. retain useful achievement, trainer and experience feedback in a shorter dedicated step;
+5. replace the long milestone and weight-loss claims with concise, evidence-reviewed copy or remove them;
+6. reconcile any retained PT, programming or service-change option with the canonical offer register;
+7. use PT-specific notice and confirmation language;
+8. replace the placeholder policy links and run a full submission and workflow regression test.
 
 ---
 
@@ -365,16 +432,17 @@ Both workflows fire a webhook after the 5-minute wait (once Notice End Date is w
 
 - **Endpoint:** `POST https://believable-happiness-production-9870.up.railway.app/stripe/cancel`
 - **Handler:** `stripe_handler/app.py` on Railway — `Billing OS` service (`tender-comfort` project)
-- **Status:** Live — deployed 2026-07-09. Was written but undeployed (14 commits unpushed to GitHub). All existing pipeline contacts verified: either already cancelled or correctly scheduled with `cancel_at`.
-- **Logic:** Finds the last scheduled billing date within the 30-day notice period → sets Stripe `cancel_at` to the end of that billing period (last payment date + billing interval)
-- **Error handling:** No Stripe customer found or no active subscription → admin alert logged and a manual exception review is required. This includes prepaid-pack clients and any other non-subscription payment pathway.
+- **Status:** Live and fail closed. Jenny Littler's 29 June execution returned HTTP 404, then created the spreadsheet row, sent both confirmations and entered Notice Period. The 29 July repair now writes Succeeded or Exception to GHL and removes failed membership or PT cancellations from their exact intake workflow before downstream confirmations. Jenny's Stripe cancellation was reconciled to `2026-07-30T00:00:00+10:00`; after owner-authorised early access closure on 29 July, her GHL lifecycle, Active SGPT roster and Trainerize access were also closed and verified.
+- **Logic:** Preserves Stripe's exact period timestamps and treats the Brisbane notice date as an inclusive final-access date, preventing a same-day timezone shift from creating another invoice. If a subscription schedule has already set the exact required cancellation timestamp, Billing OS acknowledges that authoritative state without attempting a prohibited direct update.
+- **Error handling:** No Stripe customer, no active subscription, multiple active subscriptions or a schedule-managed subscription that is not already aligned produces an Exception, stops the workflow and creates a same-day Admin Eve manual-action task. Repeated delivery of the same exception does not create another open task.
 
 **Payload sent by GHL:**
 ```json
 {
+  "contact_id": "{{contact.id}}",
   "email": "{{contact.email}}",
   "notice_end_date": "{{contact.mc_notice_end_date}}",
-  "contact_name": "{{contact.full_name}}",
+  "contact_name": "{{contact.name}}",
   "cancellation_type": "{{contact.cs_cancellation_type}}"
 }
 ```
@@ -382,7 +450,7 @@ Both workflows fire a webhook after the 5-minute wait (once Notice End Date is w
 ---
 
 ### What's working well
-- **Stripe cancellation fully automated** — both Membership and PT workflows schedule subscription cancellation on form submission, calculated to the correct billing period end date
+- **Stripe cancellation calculation is automated and acknowledged** — both Membership and PT workflows use the exact billing-period boundary. A failed or ambiguous billing action cannot reach member confirmation or Notice Period.
 - **Reason-based branching** is best-in-class — each reason has a purpose-built retention pathway rather than a generic response
 - **Guided radio fields** nudge members toward retention options while still allowing them to proceed with cancellation — no pressure, just structured options
 - **Signature fields** on both forms provide legal protection and reduce disputes
@@ -391,6 +459,16 @@ Both workflows fire a webhook after the 5-minute wait (once Notice End Date is w
 - **Hold conflict check** on both workflows blocks cancellation if a hold is active or pending, preventing simultaneous hold/cancel scenarios
 
 ### Current gaps / things to review
+- **Ambiguous subscriptions require governed mapping** — when a customer has
+  more than one active Stripe subscription, Billing OS must stop for manual
+  selection until Stripe products are mapped authoritatively to Membership, PT
+  and Fast Track cancellation types.
+- **Unaligned subscription schedules require manual review** — Billing OS
+  safely acknowledges an exact existing schedule cancellation. It does not
+  rewrite a schedule whose required end boundary differs, because Stripe owns
+  cancellation through the schedule rather than the subscription.
 - **PT cancellation has no branching logic** — unlike membership, PT cancellations follow a single path with no reason capture or retention offers. Worth considering whether this should be expanded
+- **Service-change activation remains gated on a clean post-boundary accepted event** — Online Only and Evolved Anywhere now pass their controlled Trainerize execution read-backs with the approved one-way access and program rules. The stuck first Evolved Anywhere purchase was safely removed; its same-product, same-profile replacement is Active, and both synthetic profiles are verified Deactivated. Live exception-task deduplication, exact Stripe boundary and all six workbook tabs pass. Until one post-boundary six-surface accepted event passes, both GHL workflows remain Draft and no completion message may be produced.
 - **No win-back workflow visible** — once a contact reaches "Cancelled Member" there's no visible automated re-engagement sequence. Longer-term win-back (e.g. 90 days post-cancellation) may be missing
+- **Terminal opportunity backlog reconciled** — on 3 August, 25 unambiguous completed cancellations already in `Cancelled Member` were set to Lost. One older completed cancellation was aligned from `Cancellation Form Received` to `Cancelled Member` and also set to Lost. All 26 changes passed immediate verification. The remaining three were resolved on 4 August against newer lifecycle runs and live Stripe: Jenny Littler and Banthita Kesrisang had appeared active only in the older 27 July cohort, while the 2 August hub evidence and live Stripe now show cancelled service with no active subscription; Chrissie Trouton also has only cancelled Stripe subscriptions and no active service signal. All three opportunities were set to Lost and verified. Cancellation OS now has no open terminal-stage records; its four remaining open opportunities are in `Notice Period (Current)`.
 - **Cancellation Call calendar is personal type** — may limit availability/scalability if multiple staff need to handle retention calls

@@ -10,6 +10,7 @@ COPY retention_intelligence/requirements.txt /app/retention_intelligence/require
 RUN pip install --no-cache-dir -r /app/retention_intelligence/requirements.txt
 
 COPY retention_intelligence /app/retention_intelligence
+COPY reporting_control /app/reporting_control
 COPY scripts/membership_reconciliation.py /app/scripts/membership_reconciliation.py
 COPY scripts/trainerize_client.py /app/scripts/trainerize_client.py
 

@@ -27,27 +27,38 @@ Increase leverage and reduce long-term owner workload dependency.
 
 ## Strategic Priorities
 
-1. **Increase Revenue Per Client**
-   - Expand Fast Track penetration
-   - Increase 1:1 PT utilisation
-   - Improve packaging and perceived value of offers
-   - Strengthen upgrade pathways inside the member lifecycle
+1. **Timetable Expansion — primary revenue lever**
+   - Capacity is hard-capped at ~104 SGPT members (26 classes × 12 spots ÷ 3 sessions/member/week)
+   - Currently at 109 SGPT members — already past the theoretical cap
+   - Each additional class unlocks ~4 SGPT slots at $99/week
+   - Scaling to ~196 SGPT members closes most of the gap to $1M annual revenue
+   - Target: ~49 classes/week (up from 26)
 
-2. **Optimise Trainer Utilisation**
-   - Fill unused PT capacity across 4 trainers
-   - Shift appropriate members into higher-value coaching structures
-   - Improve revenue density without adding new time slots
+2. **Trainer Bench — rate-limiting factor**
+   - Timetable expansion requires qualified trainers ahead of schedule
+   - Hiring pipeline, structured onboarding, and standards maintenance are prerequisite to #1
+   - Coaching quality is the brand — standards dilution is the highest risk in scaling
 
-3. **Strengthen Marketing & Sales Systems**
-   - Maintain high assessment conversion rates
-   - Refine intake pathways (Strong Package / Fast Track)
-   - Improve lead quality and funnel performance
-   - Build scalable marketing systems that do not rely on manual effort
+3. **Lead Pipeline — fill expanded capacity**
+   - Currently $0 paid ads, ~6 organic leads/week
+   - Sufficient to maintain headcount, not to absorb significant timetable expansion
+   - A deliberate acquisition engine (paid or structured organic) needed as capacity grows
 
-4. **Improve Product & Delivery Architecture**
-   - Refine program structure and packaging
-   - Ensure outcomes justify premium positioning
-   - Increase perceived and delivered value per client
+4. **Retention — fix flat net growth**
+   - Same members in as out each month — churn is masking all growth
+   - If cause is timetable congestion, priorities 1 and 2 resolve it
+   - Exit data needed to determine if another intervention is required
+
+5. **Fast Track Penetration — revenue quality**
+   - Moving members from Bronze ($99/wk) to Silver/Fast Track ($149/wk) = +$50/week per conversion
+   - 50 conversions = ~$130K additional annual revenue with no new members
+   - Build a clear upgrade pathway into the member lifecycle
+
+6. **Peak PT Pricing — protect class capacity**
+   - New rate: $180/hr peak (5am–8am & 5pm–8pm weekdays + all day weekends)
+   - Off-peak remains $120/hr
+   - Applies to new clients only — existing clients grandfathered at $120 flat
+   - Goal: redistribute PT demand away from peak windows, protect SGPT class slots
 
 ---
 

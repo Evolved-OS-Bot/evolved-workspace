@@ -57,7 +57,6 @@ APPOINTMENTS = [
 ]
 # Leads (DateBooked in week):       Appt1, Appt2, Appt3 = 3
 # Studio Bookings (ApptDate in week): Appt1, Appt2, Appt4 = 3
-# Show Y (ApptDate in week):          Appt1, Appt2 = 2
 # Pre-Qual Y (ApptDate in week):      Appt1 only = 1
 
 # Sales: A=Date, B=First, C=Last, D=Mobile, E=Email, F=Source, G=Product, H=Salesperson, I=Cash
@@ -98,7 +97,6 @@ EXPECTED = {
     35: (5,  "Total subscribes"),
     42: (3,  "Total leads (by date booked)"),
     52: (3,  "Total studio bookings (by appt date)"),
-    57: (2,  "Studio bookings attended (Show=Y)"),
     59: (1,  "Pre-qualified (PreQual=Y)"),
     63: (1,  "SGPT sales via paid social"),
     64: (0,  "SGPT sales via google paid"),

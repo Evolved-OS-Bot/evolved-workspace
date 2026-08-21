@@ -1,0 +1,895 @@
+exercise_name,record_type,exercise_type,result_rows,participants,workouts,first_seen,last_seen
+Barbell Bench Press,strength,system,11372,258,4892,2023-09-11,2026-07-18
+Acclimation Set,general,custom,33730,257,17268,2023-09-11,2026-07-21
+Performance Warm Up,general,custom,17340,257,17340,2023-09-11,2026-07-21
+High Plank,timedLongerBetter,system,4111,253,2096,2023-09-11,2026-07-21
+Static Hip Flexor Stretch,general,system,8574,250,5745,2023-10-09,2026-07-21
+Nexus Point Squat,strength,custom,5196,248,2312,2023-09-11,2026-07-20
+Bird Dog,endurance,system,8440,246,3902,2023-09-11,2026-07-21
+Deep Squat Hip Swivel,general,custom,6309,238,2979,2023-10-09,2026-07-21
+Hanging Leg Raise,endurance,system,8516,235,4149,2023-09-15,2026-07-21
+Barbell Deadlift,strength,system,6893,234,3011,2023-09-11,2026-07-15
+Superband Scapular Depression,endurance,custom,5115,233,3247,2023-10-13,2026-07-21
+Barbell Romanian Deadlift,strength,system,7032,228,3283,2023-10-20,2026-07-21
+Scapula Push Up,strength,custom,6260,228,3005,2024-02-01,2026-07-21
+Farmer Walk,strength,system,4526,226,1957,2023-10-10,2026-07-20
+90-90 Supine Breathing,general,custom,4373,220,4253,2023-09-16,2026-07-21
+Dumbbell Bench Press,strength,system,3061,220,1586,2024-01-31,2026-07-21
+Dumbbell Incline Bench Row,strength,system,3629,219,1668,2023-09-22,2026-07-16
+Band Assisted Chin Up,strength,system,6299,217,3269,2023-10-13,2026-07-21
+Dumbbell Lateral Raise,strength,system,6220,212,2628,2023-12-08,2026-07-20
+Kettlebell Goblet Squat,strength,system,1759,207,790,2023-11-13,2026-07-21
+Barbell Split Squat,strength,custom,3316,204,1602,2024-01-01,2026-07-21
+Dumbbell Standing Shoulder Press,strength,system,4408,201,2073,2023-12-06,2026-07-18
+Hollow Body Hold,timedLongerBetter,system,2901,194,1282,2023-09-13,2026-07-15
+Glute Bridge,endurance,system,1025,192,727,2023-12-12,2026-07-20
+Body Weight Squat,endurance,system,1476,191,809,2024-06-27,2026-07-21
+Dumbbell Alternating Bicep Curl,strength,system,2469,190,1154,2023-12-06,2026-07-21
+Dumbbell 21,strength,system,1944,187,962,2024-05-27,2026-07-20
+ATG Split Squat,strength,custom,5748,186,2519,2023-09-12,2026-07-20
+SuperBand Face Pulls,endurance,system,6819,184,2777,2023-10-11,2026-07-20
+Lock Clam,strength,custom,5523,184,2263,2023-09-11,2026-06-23
+Elbow Side Plank,timedLongerBetter,system,6620,183,2829,2023-12-08,2026-07-20
+Dumbbell Renegade Row,strength,system,4168,182,1347,2023-09-15,2026-07-16
+Broomstick Hinge,strength,custom,746,180,473,2024-06-27,2026-07-17
+Lying Prone W.Y.T Pump,strength,custom,3814,179,1846,2024-10-02,2026-07-21
+Dumbbell Single Arm Row,strength,system,2298,179,1099,2023-11-08,2026-07-21
+Barbell Bent Over Row,strength,system,2540,178,1163,2024-02-28,2026-07-15
+Underhand Grip Lat Pulldown,strength,system,3189,177,1529,2023-12-04,2026-07-21
+Single Leg Glute Bridge,endurance,system,2597,176,1166,2023-09-11,2026-07-21
+Barbell Hip Thrust,strength,system,3631,175,1679,2023-10-14,2026-07-18
+Suspension Chest Stretch,general,system,3574,174,1896,2025-01-01,2026-07-21
+Foam Roller Thoracic Extension,general,custom,2265,173,1061,2024-10-02,2026-07-16
+Bench Lat Stretch,general,custom,3627,172,1836,2024-02-29,2026-07-21
+Stability Ball Hamstring Curl with Glute Bridge,endurance,system,2625,171,1098,2023-11-06,2026-07-20
+Barbell Front Squat,strength,system,4292,168,2021,2024-11-15,2026-07-21
+Bar Hang,timedLongerBetter,system,2238,162,1167,2023-12-20,2026-07-18
+Bodyweight Box Squat,strength,custom,449,162,315,2024-03-25,2026-07-17
+Push Up,endurance,system,2471,161,1202,2023-10-14,2026-07-18
+90/90 Hip Int/Ext Rotation,strength,custom,2034,161,1004,2024-04-04,2026-07-21
+Chin Up,strength,system,1684,160,820,2024-01-29,2026-07-21
+Single Arm Bench Press,strength,custom,2071,156,995,2023-10-11,2026-06-17
+Loaded Butterfly Stretch,general,custom,3097,155,1529,2024-07-12,2026-07-20
+Dumbbell Reverse Lunge,strength,system,2383,155,1135,2024-02-05,2026-07-15
+Barbell Close Grip Bench Press,strength,system,2405,153,1170,2024-05-29,2026-07-15
+Front Anchored Banded Barbell Romanian Deadlift,strength,custom,2053,153,1013,2024-04-01,2026-07-20
+Barbell Overhead Press,strength,system,1757,151,823,2023-09-11,2026-07-08
+Dumbbell Goblet Squat Pulses,strength,custom,1122,150,516,2024-02-27,2026-07-20
+Close Grip Strict Lat Pulldown,strength,system,2601,149,1227,2023-09-11,2026-07-20
+Dumbbell Single Leg Deadlift,strength,system,2413,148,1181,2024-06-27,2026-07-20
+DB Pullover (Long Range),strength,custom,4808,147,1997,2023-09-14,2026-07-21
+Is Ys and Ts,endurance,system,2777,146,1368,2023-09-12,2026-07-17
+Foam Roller Pec Stretch,general,custom,1949,145,970,2024-05-30,2026-07-21
+Zercher Squat,strength,custom,661,145,388,2024-02-26,2026-05-15
+Dumbbell Bulgarian Split Squat,strength,system,2026,144,970,2024-02-26,2026-07-17
+ATG Split Squat (Floor),strength,custom,201,144,160,2025-06-13,2026-07-20
+Fire Hydrant Hip Circle,endurance,system,2015,143,977,2025-04-03,2026-07-21
+Dumbbell Bent Over Row,strength,system,2017,142,861,2023-09-13,2026-07-01
+High Plank Shoulder Taps,strength,system,1693,142,856,2025-01-02,2026-07-16
+Dumbbell Seated Tricep Kickbacks,strength,system,1407,142,688,2024-04-03,2026-07-16
+Barbell Single Leg Hip Thrust,strength,system,1550,141,770,2025-04-03,2026-07-21
+Seated Goodmorning,strength,custom,1209,139,609,2024-02-01,2026-07-17
+Wall Calf Raise,strength,custom,2817,138,1298,2023-09-12,2026-07-18
+Quadruped Wrist Extension,endurance,custom,1541,138,770,2023-11-09,2026-07-17
+Anterior Tib Raise,strength,custom,2822,137,1298,2023-09-12,2026-07-18
+Dumbbell Skullcrusher,strength,custom,1520,137,685,2024-02-28,2026-07-01
+Seated Reverse Fly,strength,system,2353,136,600,2023-09-18,2026-07-10
+Side Lying Thoracic Rotation,endurance,system,1697,134,852,2023-09-13,2026-07-21
+Dumbbell Deadlift,strength,system,384,134,265,2023-11-03,2026-07-17
+Cat to Cow,endurance,system,2076,132,985,2025-01-02,2026-07-21
+Jefferson Curl,strength,custom,1911,132,977,2023-09-14,2026-07-21
+Single Arm DB Front Rack Carry,strength,custom,1247,132,735,2023-09-13,2026-07-20
+Suspension Low Row,endurance,system,1554,129,773,2025-05-26,2026-06-16
+Dumbbell Walking Lunge,strength,system,1910,127,883,2023-09-15,2026-07-17
+Dumbbell Bicep Curl,strength,system,1551,125,749,2023-10-13,2026-07-20
+Russian Twist,endurance,system,1123,125,501,2023-12-05,2026-07-10
+ATG Split Squat (Floor + 1 x 15kg Bumper Plate),endurance,custom,159,125,139,2025-06-13,2026-07-20
+Band Assisted Mid Grip Pull Up,strength,system,1205,124,597,2023-10-27,2026-07-17
+ATG Split Squat (Stool + 3 x 15kg Bumper Plates),endurance,custom,196,124,159,2025-06-13,2026-07-20
+ATG Split Squat (Stool + 2 x 15kg Bumper Plates),endurance,custom,184,124,152,2025-06-13,2026-07-20
+ATG Split Squat (Stool),endurance,custom,172,124,146,2025-06-13,2026-07-21
+ATG Split Squat (Floor + 2 x 15kg Bumper Plates),endurance,custom,156,123,138,2025-06-13,2026-07-20
+Bear Plank,timedLongerBetter,system,147,123,133,2025-06-13,2026-07-20
+Strict Toes to Bar,endurance,system,221,121,213,2025-03-24,2026-07-21
+ATG Split Squat (Stool + 4 x 15kg Bumper Plates),endurance,custom,155,121,138,2025-06-13,2026-07-20
+1/2 Squat Core Brace,general,custom,1741,120,844,2023-10-09,2026-07-16
+1/4 Squat Core Brace,general,custom,1729,120,838,2023-10-09,2026-07-16
+Hollow Body Hold Flutter Kicks,endurance,system,1326,120,517,2023-09-12,2026-07-17
+Banded Hip Abduction,strength,custom,1299,120,633,2023-09-14,2026-05-07
+Half Plank (Knees),timedLongerBetter,custom,129,120,124,2025-06-13,2026-07-20
+Rest,general,system,9721,118,1240,2023-10-14,2026-07-21
+Dumbbell Single Arm Shoulder Press,strength,system,603,117,272,2024-11-04,2026-07-21
+Bodyweight Deadbug,strength,system,842,116,360,2025-02-06,2026-07-21
+Side Plank,timedLongerBetter,system,627,114,328,2023-09-11,2026-07-15
+Assault Bike,cardio,custom,3803,113,1318,2023-09-12,2026-07-21
+Staggered Stance Romanian Deadlift,strength,custom,882,113,435,2024-01-01,2026-06-12
+Bench Reverse Crunch,strength,system,764,113,380,2025-02-28,2026-06-23
+Suspension Hamstring Curl,endurance,system,2634,112,399,2024-08-29,2026-07-08
+Dumbbell Incline Bench Chest Fly,strength,system,1111,111,550,2025-07-02,2026-07-15
+Barbell Dead Row,strength,custom,1084,111,436,2024-09-30,2026-07-20
+Rowing,cardio,system,3841,110,1364,2023-09-12,2026-07-18
+Scapula Pull Up,endurance,custom,1241,110,582,2024-02-01,2026-07-01
+Dumbbell Romanian Deadlift,strength,custom,841,110,379,2024-02-27,2026-07-21
+Mini Band Hip Lifted Clamshell,endurance,system,1718,109,770,2025-02-27,2026-07-16
+Squatting Internal and External Rotation,general,system,1126,109,562,2024-10-03,2026-06-19
+Kettlebell Swing,strength,system,2797,108,842,2023-10-14,2026-07-18
+Incline Push Up,endurance,system,996,108,437,2023-10-30,2026-07-21
+Single Arm Neutral Grip Lat Pulldown,strength,system,1279,106,621,2023-12-22,2026-07-21
+Table Top Full Arm Thoracic Rotation,strength,system,1441,105,720,2025-12-31,2026-07-21
+Hip Switch (90/90),strength,custom,1120,105,560,2023-10-12,2026-06-19
+Lying Hip Abductions,endurance,system,700,105,320,2024-12-30,2026-07-21
+Dumbbell Push Press,strength,system,1219,104,608,2026-04-01,2026-06-26
+Lat Pulldown Machine Wide Grip,strength,system,974,104,435,2023-09-11,2026-07-20
+Dumbbell Seated Shoulder Press,strength,system,495,104,237,2023-09-11,2026-07-20
+Suspension High Row,endurance,system,2425,103,891,2025-11-24,2026-07-20
+Side Lying Fixed Hip Internal Rotations,endurance,custom,644,100,282,2023-12-07,2025-12-20
+Kettlebell Windmill,strength,system,694,99,350,2024-04-06,2026-07-16
+Dumbbell Front Squat,strength,system,549,99,280,2023-11-27,2026-07-07
+Dumbbell Hammer Curl,strength,system,645,98,297,2023-11-10,2026-05-27
+Cable Rope Tricep Extension,strength,system,614,98,297,2024-01-10,2026-07-21
+Dumbbell Goblet Squat,strength,system,556,98,271,2025-11-10,2026-07-21
+Single Arm Racked Alternating Reverse Lunge,strength,system,322,98,127,2025-03-24,2026-07-21
+Cable Single Leg Kickback,strength,system,606,97,294,2024-12-23,2026-07-21
+Duck Walk,endurance,system,505,97,361,2024-02-27,2026-07-15
+Dynamic Hip Flexor Stretch,general,system,1242,95,499,2024-01-02,2026-07-16
+Dumbbell Elevated Lateral Lunge,strength,system,1113,95,555,2026-01-06,2026-06-19
+Ski Erg,cardio,custom,2038,93,856,2023-09-16,2026-07-18
+Behind Neck Broomstick Glide,endurance,custom,915,93,456,2023-10-12,2025-12-20
+Mountain Climber,endurance,system,717,93,376,2023-10-10,2026-07-21
+Medicine Ball Slam,strength,system,1464,92,600,2023-09-16,2026-07-21
+Foam Roller Thoracic Extension,strength,system,1253,92,626,2025-12-31,2026-07-15
+Side Lunge,endurance,system,901,90,370,2023-11-07,2026-07-21
+Superband Pull Apart,endurance,system,781,89,379,2023-09-14,2026-07-11
+Rear Foot Elevated Hip Flexor Stretch,timedLongerBetter,system,714,89,442,2023-12-05,2026-07-07
+Dumbbell Single Arm Overhead Tricep Extension,strength,system,518,89,258,2025-04-03,2026-07-21
+Forward Fold Stretch,timedLongerBetter,system,1575,87,827,2025-01-07,2026-07-21
+Static Rear Delt Stretch,general,system,1574,87,826,2025-01-07,2026-07-21
+Table Top Half Arm Thoracic Rotation,general,system,630,87,575,2025-04-03,2026-03-12
+Kettlebell Turkish Get Up,strength,system,1280,86,655,2023-11-07,2026-07-21
+Alternating Arm Hug,general,system,1004,86,682,2023-12-09,2026-07-21
+Weighted Chin Up,strength,system,514,85,253,2025-02-24,2026-07-15
+Bodyweight Alternating Cossack Squat,strength,system,1130,84,376,2026-01-02,2026-07-03
+Dead Ball Over The Shoulder,strength,custom,1403,83,549,2023-10-10,2026-06-27
+Weighted Push Up,strength,custom,961,83,475,2025-04-30,2026-07-15
+Band Prone Hamstring Curl,strength,custom,557,83,267,2023-09-14,2026-07-10
+Child's Pose,general,system,469,83,322,2023-12-05,2026-07-16
+Dumbbell Thruster,strength,system,1330,82,472,2024-01-06,2026-07-18
+Walk out to Push Up,strength,system,416,82,208,2026-04-01,2026-04-22
+Ring Row,strength,custom,2054,80,887,2023-09-16,2026-07-21
+Deadball Squat w Slam,strength,custom,1418,80,347,2024-02-03,2026-07-17
+Dumbbell Incline Bench Press,strength,system,1197,80,482,2023-11-08,2026-06-18
+Deadbug,strength,custom,1046,80,507,2024-08-07,2026-07-07
+Suspension Mountain Climber,endurance,system,505,80,243,2025-01-03,2026-07-10
+Alternate Nostril Breathing #1,general,custom,370,80,368,2025-01-07,2026-07-21
+Dynamic Hip Opening Flow,general,system,777,79,419,2023-12-09,2026-07-17
+Suspension Mid Row,endurance,system,457,79,228,2025-11-24,2025-12-19
+Cable Hip Abduction,strength,system,444,79,219,2025-02-24,2026-07-21
+Dumbbell Seated Back Fly,strength,system,375,79,187,2025-04-03,2026-07-21
+I.Y.T,endurance,custom,253,79,247,2026-02-23,2026-07-20
+Bench Tricep Dip,endurance,system,1093,78,229,2025-03-11,2026-07-21
+Plate Weighted Crunch,strength,system,499,78,200,2023-09-12,2026-07-20
+Dynamic Rear Foot Elevated Hip Flexor Stretch,endurance,system,462,78,230,2025-10-22,2025-12-19
+Goblet Box Squat,strength,custom,898,77,364,2023-09-11,2026-07-20
+Reverse Lunge,endurance,system,845,76,293,2023-09-13,2026-06-30
+Adductor Stretch with Thoracic Twist,strength,system,412,76,206,2025-11-24,2025-12-20
+Diamond Push Up,endurance,system,979,75,211,2025-05-02,2026-07-18
+Anchored Straight Leg Raises,strength,system,400,75,200,2026-02-23,2026-07-17
+SuperBand Seated Row,endurance,system,286,75,140,2023-12-21,2026-07-15
+Supine Deep Neck Flexor Nod,endurance,custom,1625,74,784,2023-10-12,2026-07-21
+Banded Ankle Mobilisations (Talus),general,custom,783,74,408,2024-04-04,2026-04-30
+Soleus Stretch (Bench),general,custom,783,74,408,2024-04-04,2026-04-30
+5-Inch Ankle Mobility Test,general,custom,770,74,408,2024-04-04,2026-04-30
+Dumbbell Single Arm Lateral Raise,strength,system,442,74,219,2025-02-19,2026-07-15
+NSDR (Non Sleep Deep Rest) #1,general,custom,344,74,344,2025-01-30,2026-06-23
+Paris Street Hill Run,general,custom,2496,73,517,2023-11-11,2026-07-18
+Behind Neck Broomstick Pulldown w Spinal Twist,general,custom,1148,73,478,2023-10-09,2026-07-17
+Pancake Stretch,general,custom,686,73,257,2024-01-04,2026-07-16
+Trap Bar Deadlift,strength,system,589,73,303,2023-09-15,2026-07-18
+Navy Seal Box Breathing,timedLongerBetter,custom,2494,72,909,2023-09-14,2026-07-13
+Suitcase Carry,strength,custom,987,72,309,2024-04-30,2026-04-28
+Thread the Needle Alternating Back Stretch,general,system,601,72,300,2025-01-02,2026-07-16
+Dumbbell Incline Bicep Curl,strength,system,432,72,213,2025-01-31,2026-07-16
+Dumbbell Standing Overhead Push Press,strength,system,805,71,239,2024-05-01,2026-03-25
+Skater,endurance,system,570,71,216,2025-02-25,2026-06-25
+Controlled Mountain Climber,endurance,custom,730,70,376,2023-10-10,2026-07-16
+Bear Plank Crawl,endurance,custom,530,70,230,2024-04-04,2026-06-30
+SL Seated Hip Flexion,endurance,custom,419,70,208,2024-05-30,2026-07-16
+V Raise,endurance,system,687,69,339,2025-01-02,2026-07-07
+Dumbbell Single Arm Tricep Kickback,strength,system,1833,68,187,2024-03-27,2026-07-16
+Pass Through,general,system,829,68,349,2023-10-09,2025-11-18
+Reverse Nordic Fall,endurance,custom,496,68,243,2024-02-29,2026-07-14
+Guided Diaphragmatic Breathing #1,general,custom,258,68,258,2025-01-02,2026-06-30
+Eccentric Chin Up,strength,custom,1031,67,510,2024-05-27,2026-04-28
+Dynamic Frog Stretch,general,system,626,67,237,2023-10-14,2026-07-17
+Suspension Single Leg Squat,endurance,system,602,67,563,2024-07-05,2026-04-07
+Push Up,strength,system,192,67,94,2026-02-25,2026-06-25
+Dumbbell Alternating Hammer Curl,strength,system,1221,66,603,2024-07-01,2026-07-10
+Backward Sled Drag,strength,system,868,66,424,2023-09-11,2025-02-19
+Banded Ant/Post Tilt,endurance,custom,436,66,217,2024-01-04,2025-12-25
+Arm Circle,general,system,445,65,262,2025-01-28,2026-07-17
+Suspension Chest Press,endurance,system,1459,64,527,2023-10-09,2026-06-18
+Lunge Stretch w Knee Push Out,strength,custom,492,64,191,2024-01-04,2025-12-25
+5 Minute Box Breathing Exercise | Regulate Your Nervous System (Ocean) | Guided by Megan Brown,general,custom,332,64,330,2025-08-28,2026-07-16
+Z Press,strength,custom,761,63,358,2024-07-03,2025-08-28
+Stair/Driveway,general,custom,743,63,157,2023-11-11,2026-05-11
+Jump Squat to Reverse Lunge,strength,system,674,63,261,2026-01-06,2026-07-02
+Turkish Bridge,strength,custom,362,63,148,2024-02-01,2026-06-25
+Turkish Touchdown,strength,custom,292,63,146,2024-02-01,2026-06-25
+Quadruped Wrist Flexion,endurance,custom,635,62,267,2023-11-09,2025-08-21
+Mountain Climber Stretch w Side Opener,endurance,custom,323,62,161,2023-12-07,2025-12-25
+Box Pistol Squat,strength,system,656,60,318,2024-07-05,2026-07-14
+Dead Bug,strength,custom,308,60,183,2024-05-10,2026-07-20
+Lat Machine Single Arm Close Grip Row,strength,system,311,59,153,2024-06-03,2026-05-13
+Dumbbell Shoulder Tri-Raise,strength,custom,238,59,166,2024-02-28,2026-07-21
+Cable Seated Row,strength,system,665,58,303,2023-09-13,2026-07-20
+Copenhagen Plank,timedLongerBetter,custom,469,58,225,2024-01-04,2026-07-16
+Bicycle Crunch,endurance,system,394,58,171,2023-10-14,2026-02-19
+Walkouts,endurance,system,784,57,253,2024-05-28,2026-06-30
+Body Weight Single Leg Deadlift,endurance,system,396,57,193,2024-06-14,2026-07-03
+Static Quadricep Stretch,general,system,390,57,195,2025-01-28,2026-07-17
+Push Up w Side Leg Sweep,endurance,custom,384,57,154,2023-12-07,2025-09-25
+Turkish Sit Up,strength,custom,329,57,136,2024-01-04,2026-06-25
+Dumbbell Shrugs (Hang Position),strength,custom,832,56,353,2024-09-30,2026-02-28
+Dumbbell Standing Back Fly,strength,system,676,56,331,2024-07-03,2024-09-25
+Kettlebell Sumo Deadlift,strength,system,587,56,187,2023-10-10,2026-07-16
+Dumbbell Calf Raise,strength,system,694,55,344,2024-04-05,2026-04-07
+Reverse Crunch,endurance,system,562,55,196,2024-11-26,2026-06-23
+Wrist Circles,endurance,custom,409,55,233,2025-01-02,2026-01-01
+Sled Push,strength,system,1065,54,491,2023-09-16,2024-10-26
+Shoulder Tap,endurance,system,592,54,237,2023-10-14,2026-01-09
+Quadruped Finger Push Ups,endurance,custom,463,54,191,2023-12-07,2026-01-01
+Explosive Incline Push Up,strength,custom,967,53,396,2023-10-11,2026-01-16
+Block Run,timedFasterBetter,custom,808,53,219,2024-03-02,2026-06-27
+Single Leg Glute Stretch,general,system,461,53,217,2023-10-14,2026-07-02
+Cossack Squat (Strength),strength,custom,410,52,202,2024-07-04,2026-07-21
+Ankle Plantar and Dorsiflexion,general,system,270,52,135,2025-02-27,2026-06-30
+SuperBand Glute Bridge,endurance,system,1050,51,352,2024-01-01,2026-07-04
+Barbell Back Squat,strength,system,659,51,218,2023-09-11,2026-06-22
+High Knees,endurance,system,360,51,180,2023-11-07,2026-07-17
+Jumping Jack,endurance,system,358,51,179,2023-11-07,2026-07-17
+Body Weight Alternating Forward Lunge,endurance,system,353,51,229,2025-03-29,2026-06-27
+Superband Pulldown,strength,custom,285,51,141,2024-04-22,2026-02-18
+Bodyweight Split Squat,endurance,system,212,51,118,2023-09-20,2026-07-21
+Suspension Atomic Push Up,endurance,system,188,51,94,2026-07-01,2026-07-15
+Seal Jack to Squat,strength,system,360,50,139,2026-01-27,2026-06-30
+Stability Ball Dead Bug,endurance,system,510,49,242,2023-09-15,2025-12-09
+Side Plank Hip Dip,endurance,system,308,49,154,2025-01-30,2025-12-25
+Dumbbell Lying Rear Lateral Raise,strength,system,280,49,138,2024-11-27,2025-10-03
+Barbell Bicep Curl,strength,system,252,49,122,2024-09-02,2025-06-25
+Front Foot Elevated Split Squat,strength,custom,678,48,269,2023-10-11,2026-04-23
+Agility: 90-Degree Hops,strength,system,501,48,167,2025-09-09,2026-06-23
+Body Weight Step Up,endurance,system,400,48,151,2023-09-12,2025-11-06
+Bear Crawl,endurance,system,232,48,130,2025-01-28,2026-07-17
+Upper Body Twist,endurance,system,180,48,114,2025-01-02,2026-04-28
+Incline Dumbbell Bicep Raise,strength,custom,692,47,261,2024-01-31,2024-03-27
+Zercher Box Squat,strength,custom,673,47,237,2023-09-11,2026-02-19
+Rowing Machine,strength,system,450,47,150,2025-12-30,2026-07-21
+Isometric Chin Up Hold,timedLongerBetter,custom,309,47,154,2024-02-26,2024-05-27
+Trunk Rotation,general,system,220,47,122,2025-01-07,2026-04-28
+Child's Pose Pec Stretch w Int Rotation,general,custom,205,47,132,2024-02-29,2026-07-16
+Body Scan Meditation,general,custom,194,47,194,2025-04-01,2025-12-23
+Pilates - Seated Forward Fold,strength,system,531,46,177,2026-01-08,2026-07-16
+Dumbbell Pullover,strength,system,467,46,192,2023-10-11,2026-01-21
+Suspension Hip Abduction,endurance,system,273,46,136,2025-04-27,2026-06-01
+Bent Over T-Bar Row,strength,custom,259,46,127,2025-04-27,2026-05-18
+Barbell Shrug,strength,system,255,46,125,2024-09-30,2024-11-18
+Half-Kneeling Thoracic Wall Rotation,endurance,custom,242,46,120,2024-07-04,2026-01-20
+Cable V-Bar Overhead Tricep Extension,strength,system,221,46,109,2025-01-08,2026-05-01
+Suspension Body Saw From Elbow,endurance,system,180,46,107,2024-07-02,2025-08-21
+Inchworm Walk,endurance,system,486,45,165,2023-11-07,2026-07-16
+Band Anchored Tricep Pushdown,endurance,system,466,45,215,2024-01-03,2025-11-19
+Dragon Flags,strength,custom,446,45,148,2024-01-31,2025-01-01
+Pilates - Frog,strength,system,426,45,142,2026-02-26,2026-07-16
+Burpee,endurance,system,358,45,127,2025-01-28,2026-05-23
+Superband Pancake Good Morning,strength,custom,319,45,144,2024-05-02,2026-07-21
+Lying Piriformis Stretch,general,system,285,45,274,2023-12-09,2026-07-02
+Rest,rest,system,267,45,113,2023-09-16,2026-07-20
+Barbell Full Clean,strength,system,255,45,122,2024-11-25,2026-03-24
+Squat Jump,endurance,system,253,45,144,2025-01-11,2026-07-11
+Butt Kickers,endurance,system,247,45,166,2025-01-28,2026-07-17
+Stability Ball Roll Up Crunch,endurance,system,238,45,116,2024-11-25,2024-12-23
+Barbell Clean High Pull,strength,system,204,45,101,2024-10-28,2024-11-18
+Guided Belly Breathing,general,custom,119,45,119,2025-04-03,2026-07-16
+Downward Dog Push Up,endurance,custom,510,44,177,2023-11-09,2024-12-24
+Kettlebell Single Arm Swing,strength,system,499,44,146,2023-09-12,2026-02-21
+High Knee Skipping,general,system,423,44,108,2023-11-07,2026-07-02
+Suspension Bicep Curl,endurance,system,203,44,101,2025-01-31,2026-05-01
+Trap 3 Raise,strength,system,461,43,206,2023-10-12,2026-01-02
+Crunch Heel Tap,endurance,system,446,43,183,2023-10-10,2025-05-29
+Mountain Climber Stretch,general,custom,428,43,156,2023-11-09,2026-07-02
+Kettlebell Single Arm Clean and Press,strength,system,355,43,124,2025-01-28,2026-04-25
+Kettlebell Racked Carry,strength,system,312,43,109,2025-09-11,2026-07-21
+Dumbbell Curtsy Reverse Lunge,strength,custom,295,43,144,2024-02-26,2025-08-28
+Kettlebell Single Arm Clean,strength,system,286,43,126,2023-12-09,2025-09-23
+Swimmers,endurance,system,277,43,138,2025-01-02,2026-01-01
+Barbell Reverse Lunge,strength,system,247,43,118,2024-01-29,2026-06-18
+Band Face Pulls,endurance,system,205,43,74,2024-03-27,2026-06-18
+Dynamic Side Lunge Stretch,timedLongerBetter,system,572,42,298,2023-12-09,2026-07-16
+Lateral Gorilla Hops,strength,system,456,42,152,2026-01-06,2026-06-23
+Shuttle Run,endurance,custom,424,42,212,2023-10-10,2024-10-22
+Sissy Squat,strength,custom,418,42,207,2024-07-04,2024-10-24
+Plank Alternating Leg Lift,endurance,system,285,42,98,2025-04-03,2026-07-16
+Heavy Sled Push,strength,custom,281,42,138,2024-02-26,2024-03-25
+Medicine Ball Pistol Squat,strength,system,277,42,138,2024-11-01,2024-12-27
+Single Leg L-Sit,timedLongerBetter,custom,239,42,119,2023-11-09,2024-12-26
+Superband Alternating Diagonal Pull Apart,endurance,custom,239,42,119,2023-11-09,2024-12-26
+Forward Leg Swing,general,system,232,42,232,2023-12-09,2025-07-22
+Lateral Leg Swing,general,system,232,42,232,2023-12-09,2025-07-22
+Prone Arm Raise,strength,custom,506,41,245,2023-10-11,2026-07-21
+Dumbbell High Pull,strength,system,386,41,104,2024-07-02,2025-10-21
+Arms Overhead Reverse Lunge to Side Bend,strength,system,248,41,124,2025-05-27,2025-12-23
+Barbell Straight Leg Deadlift,strength,system,225,41,111,2024-01-08,2025-07-09
+Broad Jump,strength,system,224,41,106,2025-04-05,2026-07-21
+Hinge to T-Rotation,strength,system,411,40,137,2026-01-29,2026-07-16
+Straddle Stretch,strength,system,411,40,137,2026-01-29,2026-07-16
+90-90 Hip Switch to Lift and Reach,strength,system,401,40,163,2026-01-08,2026-07-16
+Fire Hydrant Standing,general,system,375,40,144,2026-01-08,2026-06-30
+Bulgarian Split Squat (Glute Emphasis ),strength,custom,310,40,123,2023-09-13,2026-07-17
+Mini Band Wall Sit Marches,endurance,system,189,40,94,2024-11-29,2024-12-27
+Dumbbell Hip Thrust,strength,system,422,39,177,2024-02-02,2026-06-05
+Lying Straight Leg Raise,endurance,system,400,39,106,2024-01-02,2026-06-10
+Agility: In/Out Steps,strength,system,291,39,97,2025-09-09,2026-07-21
+Quadruped Side Leg Sweep w ER,endurance,custom,240,39,80,2023-12-07,2024-12-26
+SuperBand Anchored Pistol Squat to Row,endurance,system,192,39,95,2024-10-04,2024-10-25
+Thread the Needle Glute Stretch,general,system,177,39,177,2023-12-05,2026-01-28
+Prone Reverse Prayer Around The Worlds,strength,custom,161,39,80,2023-12-07,2024-12-26
+Medicine Ball Squat & Throw,strength,system,607,38,153,2023-12-05,2024-11-23
+Hip Thrust,strength,custom,573,38,203,2023-09-13,2026-04-23
+Fast Feet,timedLongerBetter,system,228,38,76,2026-04-28,2026-07-16
+Plank To Push Up,endurance,system,175,38,87,2024-08-13,2025-12-25
+Deadball Lunge w Slam,strength,custom,643,37,150,2024-02-03,2024-12-24
+Cobra,general,system,284,37,123,2023-09-12,2024-11-20
+Bodyweight A-skip,strength,system,186,37,93,2025-12-30,2026-07-21
+Bodyweight Squat To Hinge,strength,system,186,37,93,2025-12-30,2026-07-21
+Jog On The Spot,strength,system,186,37,93,2025-12-30,2026-07-21
+Mini Band Clamshell,endurance,system,184,37,85,2025-01-02,2026-06-12
+Yoga - Supine Twist (Jathara Parivartanasana),strength,system,148,37,74,2025-04-03,2026-07-16
+Static Pigeon Stretch,general,system,448,36,267,2023-12-09,2026-07-02
+Standing Piriformis Stretch,general,system,348,36,116,2024-01-30,2024-12-24
+Pilates - Twist (Side Plank to twist),strength,system,270,36,90,2026-02-26,2026-07-16
+Squat to T-Rotation,strength,system,270,36,90,2026-02-26,2026-07-16
+Pop Squats,strength,system,250,36,83,2026-04-02,2026-06-25
+Dumbbell External Rotation on Side,strength,system,195,36,91,2025-02-27,2025-12-09
+Mini Band Side Lying Hip Abduction,endurance,system,179,36,89,2025-03-03,2026-07-16
+Band Glute Kickback,endurance,system,176,36,87,2024-01-01,2025-04-15
+Balance Board Single Leg Knee Drive,endurance,system,162,36,81,2025-05-29,2025-12-25
+Mini Band Clamshell Hip Lift with Internal Rotation,endurance,system,162,36,81,2025-05-29,2025-12-25
+V Tuck,strength,system,162,36,81,2025-05-29,2025-12-25
+Travelling Burpee,endurance,custom,109,36,109,2024-11-02,2026-06-20
+Ski Erg,strength,system,468,35,107,2026-01-27,2026-06-30
+V Up,endurance,system,395,35,103,2024-01-02,2026-01-31
+Seated Leg Press,strength,system,343,35,136,2024-01-05,2026-07-17
+High Plank Jacks,endurance,system,228,35,114,2023-10-10,2024-09-24
+Sprinters Step Up,endurance,custom,226,35,113,2023-10-10,2024-09-24
+Quadruped Trunk Rotation,endurance,custom,181,35,90,2023-10-12,2024-10-24
+Oblique Mountain Climbers,strength,system,156,35,78,2025-02-27,2025-09-25
+Single Leg Frog Stretch,general,system,156,35,78,2025-02-27,2025-09-25
+Balance Board Full Plank,timedLongerBetter,system,125,35,78,2025-02-27,2025-09-25
+Cross Leg Stretch,endurance,system,445,34,265,2023-12-09,2024-07-23
+Curl Up Crunch,strength,system,390,34,101,2024-01-02,2025-02-17
+Lateral Shuttle Run,strength,system,222,34,110,2026-02-24,2026-07-17
+Band Calf Raise,endurance,system,182,34,91,2025-04-03,2025-11-20
+Seated Hip Twist,endurance,system,164,34,82,2025-01-30,2025-08-21
+Kettlebell High Pull,strength,system,463,33,117,2024-04-02,2024-12-24
+Bear Position Kettlebell Pull Through,strength,system,324,33,108,2026-02-24,2026-06-23
+Kettlebell Overhead Standing March,strength,system,324,33,108,2026-02-24,2026-06-23
+SuperBand Thruster,endurance,system,222,33,110,2023-12-23,2026-07-10
+DB Smith Curls,strength,custom,206,33,102,2023-09-14,2024-09-26
+Parallel Grip Lat Pulldown,strength,system,180,33,83,2024-02-12,2026-07-21
+Balance Board Single Leg Standing Hold,timedLongerBetter,system,167,33,83,2025-05-01,2026-03-17
+Alternating Jump Lunge,endurance,system,164,33,81,2025-02-25,2025-11-18
+Hyperextension Roman Chair Back Extension,endurance,system,164,33,76,2024-01-05,2024-04-13
+Dumbbell Seated Tricep Press,strength,system,151,33,73,2023-12-06,2026-03-26
+3D Lunge,endurance,system,528,32,176,2023-09-16,2024-10-26
+Battle Rope Alternating Wave,endurance,system,369,32,123,2024-05-28,2024-12-24
+Suspension Power Pull,endurance,system,330,32,110,2025-09-09,2026-03-26
+Battle Rope Double Wave,endurance,system,321,32,107,2026-02-24,2026-06-23
+Quadruped Single Arm Dumbbell Windmill,strength,custom,292,32,119,2024-01-04,2024-04-04
+Pilates - Hip Circles,strength,system,282,32,94,2026-04-02,2026-07-16
+Dumbbell Single Leg Calf Raise,strength,system,188,32,90,2024-08-29,2026-07-14
+Clamshell with Twist,endurance,system,164,32,82,2025-05-01,2025-11-20
+Foot Doming,endurance,custom,164,32,76,2025-01-02,2026-07-20
+SuperBand Birddog,endurance,system,162,32,81,2025-05-01,2025-11-20
+Glute Side Circle,general,system,148,32,74,2025-01-30,2026-07-16
+Plank Hip Twist,endurance,system,108,32,90,2025-02-08,2026-06-12
+Wall Ball,strength,custom,92,32,91,2024-11-30,2026-06-20
+Box Breathing,general,custom,82,32,82,2025-05-01,2025-11-20
+SuperBand Lat Pull Down,endurance,system,358,31,121,2023-10-13,2026-07-14
+Static Rear Foot Elevated Hip Flexor Stretch,general,system,272,31,91,2024-02-27,2024-09-26
+Med Ball Overhead Throw,strength,custom,230,31,94,2023-09-14,2024-09-10
+Dowel Overhead Squat,endurance,system,185,31,92,2024-10-03,2024-11-21
+Active Leg Lowering to Bolster,strength,system,147,31,74,2025-01-30,2026-03-25
+Hundreds,endurance,custom,146,31,73,2025-01-30,2025-08-21
+Dumbbell Forward Lunge Single Arm Press,strength,system,305,30,76,2023-12-05,2024-08-20
+Elevated Pigeon,general,custom,275,30,107,2023-09-16,2026-05-14
+Barbell Lockouts,strength,custom,234,30,115,2024-05-02,2024-07-04
+Unilateral Dumbbell Good Morning,strength,custom,232,30,112,2024-05-02,2024-06-27
+Wall Sit,timedLongerBetter,system,231,30,80,2024-06-01,2026-07-06
+Pilates - Plank to Pike,strength,system,187,30,73,2025-09-30,2026-04-23
+Dumbbell Eccentric Step Up,strength,system,178,30,86,2026-01-06,2026-07-21
+90-90 Hip Switch,strength,system,176,30,88,2026-01-08,2026-07-16
+High Plank Single Leg Lift Hold,strength,system,131,30,65,2025-01-02,2026-01-01
+Dumbbell Step Up,strength,system,537,29,231,2024-07-26,2026-06-15
+Alternating Medicine Ball Push Up,endurance,system,308,29,77,2025-01-28,2025-08-19
+Dumbbell Squat Clean and Press,strength,system,300,29,75,2023-12-05,2024-08-20
+Battle Rope Single Arm Wave Full Plank,endurance,system,296,29,74,2023-12-05,2024-08-20
+Battle Rope Power Slam,endurance,system,288,29,72,2025-01-07,2025-07-22
+Downward Dog to Push-Up,strength,system,261,29,87,2026-01-08,2026-02-19
+Pilates - Double Leg Stretch,strength,system,261,29,87,2026-01-08,2026-02-19
+Medicine Ball Shoulder Toss,strength,system,205,29,69,2025-03-14,2026-05-19
+Stability Ball Push Up,endurance,system,160,29,74,2023-11-06,2023-11-27
+Pilates - The Hundred,strength,system,156,29,52,2026-04-02,2026-07-16
+Marching Glute Bridge,strength,system,130,29,65,2025-04-03,2026-03-12
+Static Wrist Flexion Stretch,timedLongerBetter,system,73,29,73,2025-01-07,2025-07-22
+Box Step-Off to Squat,strength,system,363,28,121,2025-10-01,2026-03-26
+Ab Crunch,endurance,system,190,28,65,2023-09-15,2026-06-30
+Yoga - Downward-Facing Dog (Adho Mukha Svanasana),strength,system,186,28,62,2026-04-30,2026-07-16
+Dumbbell Prone Row w ER,strength,custom,138,28,69,2024-05-30,2025-06-16
+Alternating Single Leg Skater Squat,strength,system,128,28,64,2025-04-03,2026-03-12
+Rolling Like A Ball,general,custom,128,28,64,2025-04-03,2026-03-12
+Side-Lying Hip Circles,strength,system,128,28,64,2025-04-03,2026-03-12
+Superman Lat Pull,strength,system,128,28,64,2025-04-03,2026-03-12
+Medicine Ball Alternating Overhead Lunge,strength,system,350,27,70,2025-04-01,2025-10-21
+Balance Board Push Up,endurance,system,143,27,69,2025-04-03,2026-03-11
+Down Dog Single Leg Hip Opener to Climber,strength,system,140,27,70,2025-04-01,2025-10-21
+Seated Oblique Stretch,general,custom,136,27,68,2024-05-30,2026-02-08
+Suspension Alternating Side Lunge,endurance,system,109,27,38,2025-09-09,2026-07-16
+Bodyweight Walking Lunge,strength,system,98,27,80,2025-03-01,2026-03-21
+Yoga - Sun Salutation B (Surya Namaskar B),strength,system,61,27,61,2026-04-30,2026-07-16
+Run to Back Fence,cardio,custom,2065,26,59,2024-10-29,2024-11-19
+Knee Up Crunch,endurance,system,394,26,57,2024-10-29,2025-04-17
+Double Kettlebell Racked Front Squat,strength,system,246,26,82,2024-01-30,2025-01-06
+Full Sit Up,endurance,system,201,26,67,2024-11-26,2026-03-24
+Push/Pull Sled Relay,strength,custom,182,26,101,2023-12-09,2024-04-23
+Medicine Ball Knee Drives,strength,system,171,26,57,2026-04-28,2026-05-19
+Trapezius Stretch,general,custom,144,26,70,2024-05-30,2024-07-04
+Yoga - Cat-Cow Stretch (Marjaryasana-Bitilasana),strength,system,113,26,56,2025-04-03,2026-07-11
+Mini Band Wall Slides,endurance,system,85,26,43,2025-02-27,2026-05-13
+Dumbbell Split Squat Pulses,strength,custom,78,26,64,2024-02-27,2025-10-20
+Half Kneeling Hamstring Stretch,general,custom,371,25,124,2023-09-16,2026-07-02
+L-Sit,timedLongerBetter,custom,349,25,116,2023-09-15,2023-10-30
+Pilates - Advanced Side Plank,strength,system,302,25,75,2026-04-02,2026-05-21
+Yoga - Seated Side Stretch,strength,system,225,25,75,2026-04-02,2026-05-21
+Battle Rope High Plank Alternating Slams,endurance,system,171,25,57,2026-01-27,2026-06-30
+Kneel to Stand to Squat,strength,system,171,25,57,2026-01-27,2026-06-30
+Agility: Single-Leg Forward Hops,strength,system,162,25,54,2025-11-25,2026-07-21
+Shuttle Run,strength,system,114,25,57,2026-01-27,2026-06-30
+Bear Squat to Downward Dog,strength,system,110,25,55,2025-04-03,2026-03-12
+Mini Band Bent Over Y's,strength,system,110,25,55,2025-04-03,2026-03-12
+Squatting Internal Alternating Rotation,general,system,110,25,55,2025-04-03,2026-03-12
+Supine Ankle Circles,strength,system,110,25,55,2025-04-03,2026-03-12
+Bench Leg Raise,endurance,system,481,24,55,2024-04-30,2026-07-07
+Suspension Body Saw with Crunch from Elbow,endurance,system,183,24,61,2024-11-26,2024-12-24
+ATG Split Squat into Side Lunge,strength,custom,143,24,71,2024-02-29,2024-03-28
+Agility: In/Out Hops,strength,system,138,24,46,2025-09-09,2026-07-21
+Around the World,endurance,system,133,24,44,2024-01-02,2024-01-23
+Get Up,endurance,custom,121,24,77,2024-01-06,2025-01-06
+Narrow Grip Lat Pulldown,strength,system,91,24,45,2024-09-23,2026-07-17
+Active Adductor Stretch,strength,system,51,24,50,2026-03-31,2026-07-16
+Bench Plyo Push Ups,strength,system,290,23,97,2026-01-08,2026-03-26
+Suspension Hamstring Runner,endurance,system,288,23,96,2026-01-08,2026-03-26
+Kettlebell Renegade Row,strength,system,165,23,55,2024-01-30,2024-02-20
+Medicine Ball Reverse Lunge,strength,system,165,23,55,2024-01-30,2024-02-20
+Turkish Rollout,strength,custom,164,23,55,2024-01-04,2024-05-01
+Mini Band Clamshell with Internal Rotation,endurance,system,153,23,51,2023-12-08,2023-12-29
+Quadruped Hold with Opposite Arm and Leg Reach,endurance,system,153,23,51,2023-12-08,2023-12-29
+Alternating Lateral Deadlift Hinge,strength,system,147,23,49,2026-03-31,2026-04-28
+Band Pallof Press,endurance,system,147,23,49,2026-03-31,2026-04-28
+Medicine Ball Russian Twist,strength,system,147,23,49,2026-03-31,2026-04-28
+Box Step-Off to Vertical Jump,strength,system,135,23,45,2025-10-01,2026-07-16
+Scapular Pull Up,endurance,system,134,23,63,2024-01-04,2026-01-30
+Plank w Side Rotation,strength,custom,92,23,46,2024-10-31,2024-11-21
+Battle Rope Wave Jump Squat,endurance,system,288,22,96,2026-01-08,2026-03-26
+Suspension I Delt Fly,endurance,system,285,22,95,2026-01-08,2026-03-26
+Trap Bar x3 + Trap Bar Carry,strength,custom,186,22,62,2023-09-16,2025-12-06
+High Plank Alternating Single Arm Raise,strength,system,141,22,47,2026-01-29,2026-02-19
+Wide Grip Lat Pulldown,strength,system,129,22,62,2024-07-15,2026-07-20
+Cossack Squat to T-Spine Reach,strength,system,120,22,40,2026-01-08,2026-01-22
+Mini Band Mountain Climbers,endurance,system,120,22,40,2026-01-08,2026-01-22
+Pilates - Corkscrew,strength,system,120,22,40,2026-01-08,2026-01-22
+Dumbbell Split Squat,strength,system,109,22,53,2025-11-11,2026-07-20
+T Push Up,endurance,system,280,21,56,2024-04-02,2024-04-23
+Dead Ball Side Throw,strength,custom,189,21,63,2024-05-28,2024-06-25
+High Plank Alternating Arm & Leg Lift,endurance,system,189,21,63,2024-05-28,2024-06-25
+Spiderman Plank,timedLongerBetter,system,183,21,61,2023-09-16,2024-10-26
+Alternating Floor Sweep,general,system,169,21,56,2024-04-02,2024-04-23
+Kneeling Medicine Ball Chest Press to Wall,strength,custom,150,21,50,2023-09-13,2023-10-04
+Wall Thoracic Extension,strength,custom,150,21,50,2023-09-13,2023-10-04
+Cable Seated Single Arm Row,strength,system,156,20,68,2023-11-22,2026-07-21
+Prone Barbell Scapular Retraction,strength,custom,90,20,45,2024-05-02,2024-05-23
+Heel Lift Skips,general,system,250,19,50,2023-11-07,2023-11-28
+Side Steps,general,custom,250,19,50,2023-11-07,2023-11-28
+Dumbbell Single Arm High Pull,strength,system,175,19,87,2026-01-08,2026-03-26
+Supine Chin Tucks,general,system,140,19,46,2023-09-15,2023-10-06
+Hip ER Holds,endurance,custom,137,19,46,2023-11-09,2026-07-16
+Hip Internal Rotations,endurance,custom,137,19,46,2023-11-09,2026-07-16
+Pilates - Single Leg Stretch with Twist,strength,system,126,19,42,2026-04-30,2026-05-21
+Pilates - Teaser I,strength,system,126,19,42,2026-04-30,2026-05-21
+Yoga - Bound Angle Pose (Baddha Konasana),strength,system,126,19,42,2026-04-30,2026-05-21
+Yoga - Crescent Lunge (Anjaneyasana),strength,system,126,19,42,2026-04-30,2026-05-21
+Yoga - Dancing Warrior Sequence,strength,system,126,19,42,2026-04-30,2026-05-21
+Yoga - Chair Pose (Utkatasana),strength,system,99,19,33,2026-04-02,2026-04-23
+Yoga - Garland Pose (Malasana),strength,system,99,19,33,2026-04-02,2026-04-23
+Yoga - Revolved Chair Pose (Parivrtta Utkatasana),strength,system,99,19,33,2026-04-02,2026-04-23
+Yoga - Seated Forward Bend (Paschimottanasana),strength,system,99,19,33,2026-04-02,2026-04-23
+Weighted Wall Sit,timedStrength,system,94,19,47,2023-10-14,2026-03-14
+Yoga - Dolphin Plank,strength,system,84,19,42,2026-04-30,2026-05-21
+Crocodile Breathing,general,system,46,19,46,2023-09-15,2023-10-06
+Yoga - Sun Salutation A (Surya Namaskar A),strength,system,33,19,33,2026-04-02,2026-04-23
+Static Frog Stretch,general,system,175,18,175,2023-12-09,2024-07-20
+Dumbbell Seated Overhead Tricep Extension,strength,system,102,18,44,2024-02-13,2026-05-07
+Overhead Carry,strength,custom,53,18,51,2025-02-01,2026-02-24
+Cable Rope Face Pull,strength,system,259,17,111,2023-10-20,2026-04-14
+Suspension Knee Tuck,endurance,system,123,17,41,2025-09-09,2025-11-20
+Pilates - Leg Pull Front,strength,system,114,17,38,2025-09-11,2025-12-16
+Bear Crawl Bird Dog,endurance,system,86,17,43,2023-10-12,2023-11-02
+Stability Ball Chest Fly,strength,system,86,17,43,2023-10-12,2023-11-02
+Suspension Overhead Back Extension,endurance,system,83,17,29,2024-04-03,2026-07-21
+Superband Reverse Prayer,endurance,custom,78,17,39,2023-11-09,2023-11-30
+Yoga - Chaturanga Dandasana,strength,system,60,17,20,2026-07-02,2026-07-16
+SuperBand Dislocates,general,system,58,17,45,2023-10-12,2023-11-22
+Yoga - Happy Baby Pose (Ananda Balasana),strength,system,41,17,20,2026-07-02,2026-07-16
+Agility: Side to Side Hops,strength,system,120,16,40,2025-09-30,2025-11-18
+Pilates - Rolling Like a Ball,strength,system,120,16,40,2025-09-30,2025-11-18
+Pilates - Side Lying Developé,strength,system,120,16,40,2025-09-30,2025-11-18
+Pilates - Miniband Front to Back Lunge,strength,system,114,16,19,2026-07-02,2026-07-16
+Pilates - Miniband Single Squat Leg Raise,strength,system,114,16,19,2026-07-02,2026-07-16
+Band Assisted Parallel Grip Pull Up,strength,system,96,16,34,2023-09-11,2026-07-17
+Band Standing Hip Flexion,endurance,system,93,16,31,2026-02-24,2026-07-21
+Jump Squat to Lateral Shuffle,strength,system,84,16,28,2026-06-30,2026-07-21
+Yoga - Reclined Bound Angle Pose (Supta Baddha Konasana),strength,system,38,16,19,2026-07-02,2026-07-16
+Elbow Plank,timedLongerBetter,system,137,15,63,2023-11-07,2025-09-17
+1/2 Kneel to High Knee Hop,strength,system,72,15,24,2025-11-25,2026-05-06
+Inverted Row,endurance,system,60,15,29,2025-05-30,2025-10-16
+Yoga - Knee to Nose to Fallen Triangle,strength,system,54,15,18,2026-07-02,2026-07-16
+Floor Glute Kickback,endurance,system,52,15,26,2025-04-01,2025-04-15
+Box Squat (Stool + 3 x 15kg Bumper Plates),endurance,custom,29,15,20,2025-10-27,2026-05-11
+Dumbbell Stationary Lunge,strength,system,98,14,45,2023-10-18,2026-07-15
+Dumbbell Glute Bridge,strength,system,74,14,37,2024-12-02,2026-07-18
+Lateral Lunge to Hop,strength,system,69,14,23,2025-11-25,2025-12-16
+Pilates - Jackknife,strength,system,69,14,23,2025-11-25,2025-12-16
+Pilates - Kneeling Side Kick,strength,system,69,14,23,2025-11-25,2025-12-16
+Box Step-Off to Single-Leg Squat,strength,system,57,14,19,2026-07-02,2026-07-16
+Band Assisted Wide Grip Pull Up,strength,system,56,14,26,2025-09-10,2026-07-21
+Cable Crossover Tricep Extensions,strength,custom,56,14,27,2023-09-14,2026-03-11
+Partner Plank & Jump,endurance,custom,36,14,36,2024-02-03,2024-02-24
+Burpee Broad Jump,strength,system,19,14,19,2025-03-29,2026-06-27
+Dumbbell Romanian Deadlift,strength,system,58,13,24,2025-01-06,2026-04-10
+Reverse Nordic Band Assisted,strength,custom,52,13,26,2023-09-14,2024-10-24
+Pick Your Path Workout,general,custom,25,13,25,2024-05-04,2024-05-25
+Dumbbell Squat,strength,system,52,12,28,2023-11-27,2026-07-15
+Medicine Ball Throw From Chest,strength,custom,50,12,25,2023-09-14,2023-10-05
+Kettlebell Alternating Bent Over Row,strength,system,29,12,14,2025-09-09,2025-09-23
+SuperBand Deadlift,endurance,system,17,12,12,2023-12-23,2026-07-10
+Suspension Alternating Reverse Lunge,endurance,system,54,11,19,2025-07-08,2025-11-05
+SL Glute Bridge,strength,custom,52,11,23,2024-07-12,2026-07-17
+Box Squat,strength,custom,79,10,32,2024-11-04,2026-07-08
+Box Step-Off to Broad Jump,strength,system,78,10,26,2025-10-01,2025-11-20
+Suspension Body Saw with Crunch from Hand,endurance,system,78,10,26,2025-10-01,2025-11-20
+Suspension Wide Mountain Climber,endurance,system,78,10,26,2025-10-01,2025-11-20
+Gorilla Row,strength,custom,65,10,23,2024-11-30,2025-02-11
+Kettlebell Overhead Carry,strength,system,54,10,27,2025-10-30,2025-12-18
+Banded Goblet Squat,strength,custom,29,10,13,2024-08-30,2026-05-26
+Over Under Deadball,cardio,custom,20,10,20,2023-11-11,2023-12-02
+Synchronised Barbell Farmers Carry,cardio,custom,20,10,20,2023-11-11,2023-12-02
+Synchronised Battlerope Hold,general,custom,20,10,20,2023-11-11,2023-12-02
+Synchronised Lunges,endurance,custom,20,10,20,2023-11-11,2023-12-02
+Synchronised Push Ups,endurance,custom,20,10,20,2023-11-11,2023-12-02
+Tension Squats (Box),strength,custom,83,9,37,2024-07-12,2026-06-17
+Pilates - Leg Beats (Prone Position),strength,system,45,9,15,2025-09-11,2025-09-25
+Pilates - Wide Second plié - Full Range,strength,system,45,9,15,2025-09-11,2025-09-25
+Suspension Reverse Lunge With Hop,endurance,system,45,9,15,2025-09-11,2025-09-25
+Suspension Single Leg Squat Jump,endurance,system,45,9,15,2025-09-11,2025-09-25
+Box Jump to Squat Hold,strength,system,42,9,14,2025-11-27,2025-12-18
+Diagonal Bounds,strength,system,42,9,14,2025-11-27,2025-12-18
+Suspension Push Up,endurance,system,42,9,14,2025-11-27,2025-12-18
+Suspension Side Elbow Plank with Rotation,endurance,system,42,9,14,2025-11-27,2025-12-18
+Alternating Lunge to Lateral Raise,strength,system,28,9,14,2025-11-27,2025-12-18
+Deadball Lunge Walk,strength,custom,19,9,19,2024-11-30,2024-12-21
+Bench Single Leg Hip Thrust,strength,system,32,8,15,2025-02-17,2026-07-03
+Lat Machine Parallel Grip Row,strength,system,28,8,13,2024-12-16,2026-07-20
+ATG Split Squat (Stool + 1 x 15kg Bumper Plate),endurance,custom,16,8,8,2025-09-25,2026-07-09
+Calf Stretch (Wall),general,custom,318,7,83,2024-01-29,2026-07-13
+Mini Band Glute Bridge,endurance,system,83,7,31,2025-02-20,2026-02-22
+Dumbbell Seated Arnold Press,strength,system,67,7,32,2024-12-09,2025-11-05
+Weighted Full Sit Up,strength,system,51,7,17,2024-01-06,2024-01-27
+Dumbbell Forward Lunge,strength,system,45,7,21,2024-08-13,2024-12-27
+Front Foot Elevated ATG Split Squat,strength,custom,136,6,58,2024-11-24,2026-01-20
+Kneeling Push Up,endurance,system,109,6,57,2024-04-01,2026-07-16
+Patrick step ups,strength,custom,63,6,34,2025-07-12,2026-05-12
+Mini Band Lateral Squat Walk (Knees),strength,system,54,6,27,2024-11-29,2025-12-03
+Angled Machine Leg Press,strength,system,50,6,17,2023-10-14,2025-01-06
+Calf Raise Farmer Walk,strength,system,39,6,13,2024-07-06,2024-07-20
+Machine Lying Leg Curl,strength,system,37,6,15,2023-11-20,2025-09-30
+Angled Machine Single Leg Press,strength,system,35,6,14,2024-04-29,2025-02-14
+Machine Seated Neutral Grip Row,strength,system,28,6,12,2023-09-27,2026-03-31
+Cable Straight Bar Tricep Pushdown,strength,system,22,6,9,2024-06-26,2025-12-09
+Mini Band Frog Pumps,endurance,system,22,6,10,2023-12-23,2026-07-10
+Side Plank on Knee (Forearm),timedLongerBetter,system,22,6,11,2023-11-21,2026-07-08
+Plate Weighted Wall Sit,timedStrength,custom,21,6,10,2025-06-26,2026-03-06
+B-Stance RDL Single Dumbbell,strength,system,19,6,9,2025-11-07,2026-07-10
+Body Weight Forward Lunge,endurance,system,18,6,8,2023-11-07,2024-11-15
+Battle Rope Alternating Power Slam,endurance,system,13,6,13,2024-07-06,2024-07-20
+Plank Standard,general,custom,11,6,6,2025-07-09,2026-07-02
+Dumbbell Sumo Squat,strength,system,84,5,32,2024-08-13,2026-07-12
+Cable Seated Close Row,strength,system,54,5,21,2024-02-12,2026-03-09
+Cable Seated Single Arm Close Row,strength,system,44,5,16,2024-03-13,2026-05-13
+Dumbbell Incline Bench High Row,strength,system,42,5,18,2024-07-10,2026-05-13
+Snatch grip RDL,strength,custom,40,5,15,2024-04-10,2025-07-03
+Pull Up,strength,system,39,5,19,2025-02-06,2025-12-22
+Mini Band Side Steps,endurance,system,34,5,17,2024-12-23,2026-07-16
+Plate Russian Twist,strength,system,25,5,10,2024-08-06,2026-03-24
+Band Single Arm Lat Pull Down,endurance,system,24,5,12,2024-05-22,2025-08-15
+Dead Ball Deadlift w Side Pass,strength,custom,18,5,9,2023-12-09,2023-12-30
+Deadball Deadlift w Forward Throw,strength,custom,18,5,9,2023-12-09,2023-12-30
+Ankle Dorsiflexion Rockbacks,strength,custom,17,5,16,2025-07-10,2026-04-23
+Body Weight Reverse Lunge,endurance,system,16,5,7,2024-07-12,2026-04-20
+Lying Single Leg Raise,endurance,system,16,5,8,2025-09-01,2026-03-04
+Seated Piriformis Stretch,general,system,310,4,77,2024-04-01,2026-07-13
+B-stance Glute Bridge,strength,custom,111,4,50,2024-08-06,2025-11-14
+Stair climbing,cardio,system,76,4,6,2024-07-13,2025-08-09
+Foam Roller Dead Bug,endurance,custom,45,4,18,2024-04-23,2025-02-07
+Barbell Rack Pull,strength,custom,44,4,16,2024-04-23,2025-11-05
+Scrape the rack bent over rows,strength,custom,30,4,10,2024-08-28,2024-09-21
+Body Weight Calf Raise,endurance,system,27,4,9,2024-07-13,2024-11-22
+High Side Plank from Knees,timedLongerBetter,system,25,4,11,2024-10-14,2026-06-18
+Mini Band Side Steps (Squat Stance),endurance,system,23,4,9,2024-12-13,2026-07-16
+Leg Press Machine Single Leg,strength,system,15,4,7,2024-02-12,2024-10-11
+Single Arm Cable Row,strength,system,14,4,6,2024-06-10,2026-07-06
+Machine Assisted Chin Up,strength,system,13,4,5,2025-07-10,2026-06-25
+Kettlebell Single Arm Clean w Walk,strength,custom,10,4,5,2023-12-16,2023-12-23
+Weight Plate Floor to Ceiling w Walk,strength,custom,10,4,5,2023-12-16,2023-12-23
+Band Lat Pull Down,endurance,system,8,4,4,2024-07-12,2025-12-05
+Nordic Fall,strength,custom,8,4,4,2024-07-04,2025-11-07
+Single-Leg Glute Bridge Hold with Leg Drop,strength,system,8,4,5,2025-11-17,2026-07-01
+Band Standing Row,endurance,system,182,3,81,2024-04-01,2026-05-22
+Box Squat (Stool + 2 x 15kg Bumper Plates),endurance,custom,54,3,26,2025-07-02,2026-02-18
+Kettlebell Racked Walking Lunges,strength,system,47,3,17,2025-03-21,2025-05-20
+Elevated Bar Push-up,endurance,system,38,3,15,2024-06-19,2026-05-11
+Barbell Incline Bench Press,strength,system,34,3,16,2025-03-20,2025-08-13
+Dumbbell Incline Bench Back Fly,strength,system,33,3,13,2024-06-07,2025-07-31
+Slider Hamstring Curl,strength,system,20,3,8,2025-02-17,2026-06-29
+Barbell Skullcrusher,strength,system,19,3,8,2024-12-23,2025-01-30
+Cable step-ups,strength,custom,18,3,8,2024-08-06,2025-06-23
+Cable Rope Seated High Row,strength,system,15,3,7,2025-05-30,2026-05-12
+Hamstring Scoops,endurance,custom,15,3,5,2024-07-13,2024-07-22
+Single Leg Balance,endurance,system,15,3,13,2025-10-29,2026-07-15
+Barbell Overhead Push Press,strength,system,14,3,6,2026-01-17,2026-03-17
+Machine Assisted Wide Grip Pull Up,strength,system,14,3,6,2026-05-11,2026-06-15
+Cable Standing Single Leg Kickback,strength,system,13,3,5,2026-03-24,2026-06-05
+Wall Push Up,strength,custom,13,3,6,2025-11-01,2026-05-26
+Deadbug - Legs Only,strength,system,12,3,5,2026-01-29,2026-07-15
+Dumbbell Standing Shoulder External Rotations,strength,system,12,3,6,2025-12-23,2026-04-10
+Superband Overhead Lat Pull Apart,endurance,system,12,3,6,2023-11-15,2026-07-21
+Diaphragmic breathing,strength,custom,11,3,11,2025-10-29,2026-04-23
+Kettlebell Single Arm Row,strength,system,11,3,4,2024-08-13,2025-11-28
+Band Shoulder Press,endurance,system,10,3,3,2023-12-21,2026-07-11
+Landmine Single Arm Shoulder Press,strength,system,10,3,4,2023-12-06,2025-12-06
+Mini Band Donkey Kicks,endurance,system,10,3,4,2025-03-04,2025-09-30
+Suspension Full Plank From Hand,timedLongerBetter,system,10,3,5,2026-07-08,2026-07-15
+Barbell Incline Bench Pull,strength,system,9,3,4,2023-09-22,2025-12-22
+Lat Machine Straight Arm Pulldown,strength,system,9,3,4,2024-04-10,2025-01-20
+SuperBand Glute Kickback,endurance,system,9,3,3,2023-12-23,2026-07-10
+Alternating Cossack Squat,general,system,8,3,6,2025-07-10,2026-03-24
+Weight Plate Floor to Ceiling,strength,custom,8,3,4,2023-12-09,2023-12-30
+Cable Reverse Grip Tricep Pulldown,strength,system,7,3,3,2025-04-30,2026-05-27
+Static Distal Hamstring Stretch,timedLongerBetter,system,6,3,3,2024-11-11,2026-04-10
+Medicine Ball Half Kneeling Alternating Slams,strength,system,42,2,14,2025-03-21,2025-05-19
+Barbell Sumo Deadlift,strength,system,36,2,17,2025-01-16,2026-03-30
+Cable Standing Wide Grip Row,strength,system,35,2,12,2025-01-09,2025-02-25
+Mini Band Seated Abduction,endurance,system,33,2,13,2025-02-17,2025-07-22
+Mini Band Squat Thrust,endurance,system,33,2,11,2025-02-20,2026-07-04
+Stability Ball Plank,timedLongerBetter,system,30,2,11,2024-12-20,2025-03-13
+Mini Band Wide to Narrow Jump Squat,endurance,system,27,2,9,2025-02-20,2026-07-04
+Prone Shoulder Extension,strength,custom,26,2,9,2024-07-22,2024-09-16
+Deficit Deadlift,strength,custom,24,2,9,2024-04-10,2024-08-21
+Plate Hip Thrust,strength,system,24,2,12,2025-02-17,2026-06-05
+Barbell Clean and Press,strength,system,23,2,8,2025-12-06,2026-03-24
+Cable Seated Close Grip Row,strength,system,22,2,11,2025-02-13,2025-12-31
+Dumbbell Alternating Reverse Lunge,strength,system,22,2,7,2024-08-16,2024-12-03
+Dumbbell Heel Elevated Goblet Squat,strength,system,20,2,10,2025-11-18,2026-01-06
+Kettlebell Half Kneeling Bottom Up Press,strength,system,16,2,6,2025-07-07,2025-08-01
+Mini Band External Rotation,strength,system,15,2,7,2025-10-22,2025-12-19
+Clamshell,endurance,system,10,2,4,2024-09-13,2026-04-20
+Weighted pushup,strength,custom,10,2,5,2024-11-27,2024-12-18
+Lower Calf Stretch,general,system,9,2,5,2026-02-06,2026-07-16
+Medicine Ball Squat & Press,strength,system,9,2,4,2025-11-17,2026-07-21
+Stair step ups,strength,custom,9,2,3,2025-08-09,2025-10-30
+Cable Upright Row,strength,system,8,2,2,2024-05-15,2025-01-06
+Machine Seated Leg Extension,strength,system,8,2,3,2025-03-17,2025-07-07
+Pilates - Standing Roll-Down,strength,system,8,2,4,2026-01-23,2026-02-19
+SuperBand Seated Face Pull,endurance,system,8,2,3,2024-01-31,2025-11-28
+SuperBand Single Arm Lat Pull Down,endurance,system,8,2,3,2024-10-02,2025-08-08
+Cable Standing Single Arm Close Row,strength,system,7,2,3,2024-01-12,2025-01-03
+Alternating Deficit Reverse Lunges,strength,system,6,2,2,2025-11-17,2026-02-18
+Anchored Reverse Crunch,strength,system,6,2,2,2026-03-12,2026-04-28
+Band Bent Over Row,endurance,system,6,2,2,2023-12-21,2026-07-11
+Band Lying Leg Press,endurance,system,6,2,2,2023-12-23,2026-07-10
+Cable Straight Arm Lat Pulldown,strength,system,6,2,3,2025-07-15,2025-10-03
+Dumbbell Lying Down Row,strength,system,6,2,2,2024-01-12,2024-10-28
+Kettlebell Plie Squat,strength,system,6,2,2,2025-02-11,2025-09-15
+Kettlebell Single Arm Floor Press,strength,system,6,2,2,2024-08-15,2025-11-28
+Kettlebell Split Squat,strength,system,6,2,2,2024-12-20,2025-01-01
+Pilates - Double Leg Lower Lift,strength,system,6,2,3,2026-02-21,2026-06-17
+SuperBand Overhead Tricep Extension,endurance,system,6,2,2,2023-12-21,2026-07-11
+SuperBand Single Arm Lateral Raise,endurance,system,6,2,2,2023-12-21,2026-07-11
+90-90 Hip Rotations,strength,system,5,2,2,2025-06-17,2026-07-16
+Barbell Floor Glute Bridge,strength,system,5,2,2,2025-08-21,2026-05-01
+Machine Seated Chest Press,strength,system,5,2,2,2024-08-21,2025-05-06
+Mini Band Alternating Hip Abduction,endurance,system,5,2,2,2024-12-13,2024-12-13
+Mini Band Alternating Side Steps (Squat Stance),endurance,system,5,2,2,2024-12-20,2025-04-01
+Single Arm Tricep Pushdown,strength,system,5,2,2,2025-03-10,2025-09-20
+Single Arm Wide Grip Lat Pulldown,strength,system,5,2,2,2026-03-11,2026-04-10
+Squat Pulse,strength,system,5,2,2,2025-03-17,2025-05-12
+Away Facing Cable Pulldown,strength,system,4,2,2,2023-11-21,2025-11-14
+Band Anchored Pistol Squat to Row,endurance,system,4,2,2,2024-11-08,2024-11-08
+Banded Lateral Step Outs,strength,custom,4,2,2,2025-07-10,2025-10-21
+Bodyweight Squat,strength,custom,4,2,2,2024-10-10,2026-07-06
+Cable Single Arm Tricep Pushdown,strength,system,4,2,2,2025-11-12,2026-02-18
+Dumbbell Front Raise,strength,system,4,2,2,2025-07-29,2026-06-01
+Dumbbell Single Arm Standing Shoulder Press,strength,system,4,2,2,2025-05-14,2026-03-18
+Scapular Pushups,endurance,system,4,2,2,2025-02-17,2025-02-19
+SuperBand Single Leg Glute Bridge,endurance,system,4,2,2,2023-12-23,2026-07-10
+Wide Grip Pull Up,strength,system,4,2,2,2026-03-10,2026-05-11
+Foam Roller Quadricep,general,system,3,2,2,2025-11-01,2026-01-28
+Battle Rope Burpee,endurance,system,2,2,2,2024-11-02,2024-11-02
+Supine Supported Cervical Rotations,endurance,custom,24,1,8,2026-04-27,2026-07-20
+W.Y.T,strength,custom,24,1,8,2024-07-24,2024-09-18
+Supine Scapula I's,endurance,custom,18,1,6,2026-04-27,2026-05-18
+Supine Scapula T's,endurance,custom,18,1,6,2026-04-27,2026-05-18
+Supine Scapula Y's,endurance,custom,18,1,6,2026-04-27,2026-05-18
+Suspension Reverse Lunge,endurance,system,16,1,8,2025-04-18,2025-07-29
+GHD Reverse Hyperextenstion,endurance,system,15,1,5,2023-11-13,2023-12-18
+Kettlebell Walking Lunges,strength,system,15,1,5,2025-05-26,2025-07-02
+B-Stance Dumbbell Squat,strength,custom,14,1,7,2024-07-26,2024-11-15
+Cable V Bar Tricep Pushdown,strength,system,14,1,7,2025-04-10,2025-05-22
+Machine Tricep Pushdowns,strength,system,13,1,5,2024-01-10,2024-02-21
+Bodyweight Single Leg Calf Raise,strength,system,12,1,4,2026-04-21,2026-06-02
+Kettlebell Racked Reverse Lunge,strength,system,12,1,6,2025-03-24,2025-06-23
+Machine Seated Shoulder Press,strength,system,12,1,4,2024-09-29,2025-01-08
+Mini Band Fire Hydrants,endurance,system,12,1,6,2024-12-23,2025-02-10
+Suspension Assisted Slider Lunge,endurance,system,12,1,6,2024-07-26,2024-09-20
+T-Bar Row,strength,system,12,1,6,2025-05-26,2025-06-30
+Bent Knee Toes to Bar,endurance,system,10,1,5,2025-08-22,2026-03-11
+Bodyweight Alternating Reverse Lunges,endurance,system,10,1,2,2024-06-04,2024-06-11
+Cable Standing Close Row,strength,system,10,1,2,2024-06-04,2024-06-11
+Kettlebell Standing Overhead Press,strength,system,10,1,5,2025-05-30,2025-07-04
+Plank Alternating Arm & Leg Lift,endurance,system,10,1,5,2025-07-10,2025-09-25
+Zercher Goodmornings,strength,custom,10,1,3,2024-08-28,2024-09-11
+Kettlebell Single Arm Shoulder Press,strength,system,9,1,3,2025-11-06,2025-11-28
+Pendlay Row,strength,custom,9,1,3,2024-08-28,2024-09-18
+Barbell Step Up,strength,system,8,1,4,2024-08-23,2024-10-25
+Cable Single Arm Standing Fly,strength,system,8,1,3,2025-05-01,2025-05-22
+High Side Plank from Knees With Leg Lift,timedLongerBetter,system,8,1,4,2025-02-24,2025-04-07
+Leg Press Machine Calf Raise,strength,system,8,1,4,2026-06-22,2026-07-14
+Stability Ball Single Leg Bent Knee Glute Bridge,endurance,system,8,1,4,2026-02-27,2026-07-13
+incline bench pigeon stretch,strength,custom,8,1,4,2025-07-12,2025-08-16
+Double Deadbug,strength,system,7,1,3,2025-08-29,2025-09-15
+Barbell High Pull,strength,system,6,1,2,2025-12-13,2025-12-20
+Core Bracing,strength,custom,6,1,3,2026-07-01,2026-07-15
+Dynamic Pigeon Stretch,endurance,system,6,1,4,2026-06-25,2026-07-16
+Medicine Ball Lunge,strength,system,6,1,3,2026-06-22,2026-06-23
+Medicine Ball Lunge Twist to Overhead Press,strength,system,6,1,3,2026-06-22,2026-06-23
+Medicine Ball Overhead Lunge,strength,system,6,1,3,2026-06-22,2026-06-23
+Medicine Ball Slider Lunge,endurance,system,6,1,3,2024-10-24,2024-11-14
+Medicine Ball Squat,strength,system,6,1,3,2026-06-29,2026-07-21
+"Supine I's, Y's & T's",endurance,custom,6,1,2,2026-05-25,2026-07-20
+Double Kettlebell Push Press,strength,system,5,1,2,2025-12-13,2025-12-20
+Dumbbell Alternating Shoulder Press,strength,system,5,1,2,2024-10-17,2024-10-24
+Kneeling Side Plank,timedLongerBetter,system,5,1,2,2025-10-27,2025-11-10
+Pilates - Inner Thigh Squeeze with Ball Between Knees,strength,system,5,1,2,2026-06-29,2026-07-07
+Assisted Leg Lowering to Bolster,endurance,system,4,1,2,2026-01-30,2026-02-06
+Barbell B Stance Hip Thrust,strength,system,4,1,2,2025-04-04,2025-10-31
+Barbell Wide Grip Bicep Curl,strength,system,4,1,2,2025-01-23,2025-01-30
+Bench Bridge March,strength,system,4,1,1,2026-04-10,2026-04-10
+Box Squat (Stool + 1 x 15kg Bumper Plates),endurance,custom,4,1,2,2026-01-29,2026-02-05
+Cable Single Arm Standing Overhead Tricep Extension,strength,system,4,1,2,2025-04-04,2025-04-11
+Mini Band Fencer Walk,endurance,system,4,1,1,2026-04-10,2026-04-10
+Pulse Sumo Squats,strength,system,4,1,2,2026-04-20,2026-05-04
+Stability Ball Back Extension,endurance,system,4,1,2,2026-01-08,2026-05-13
+Stability Ball Crunch,endurance,system,4,1,2,2024-06-27,2024-07-04
+SuperBand Anchored Tricep Pushdown,endurance,system,4,1,2,2026-04-10,2026-04-15
+Suspension Squat,endurance,system,4,1,1,2025-11-05,2025-11-05
+Thorasic Row Kneeling,strength,custom,4,1,1,2026-04-10,2026-04-10
+90-90 Hip Stretch (Internal Bias),strength,system,3,1,1,2025-08-28,2025-08-28
+90-90 hip stretch,strength,system,3,1,1,2025-06-23,2025-06-23
+Active Straight Leg Drop,strength,system,3,1,1,2025-11-12,2025-11-12
+BOSU Dome Up Push Up,endurance,system,3,1,1,2024-09-11,2024-09-11
+Balance Board Single Leg Standing with Knee Raise,endurance,system,3,1,1,2026-03-17,2026-03-17
+Band Deadlift,endurance,system,3,1,1,2024-06-14,2024-06-14
+Band Single Leg Lying Press,endurance,system,3,1,1,2024-06-24,2024-06-24
+Banded Thruster,strength,system,3,1,1,2025-11-06,2025-11-06
+Box Squat (Stool + 4 x 15kg Bumper Plates),endurance,custom,3,1,1,2025-12-19,2025-12-19
+Box Squat (Stool),endurance,custom,3,1,1,2025-06-29,2025-06-29
+Cable Bicep Curl,strength,system,3,1,1,2024-06-14,2024-06-14
+Cable Lateral Raise,strength,system,3,1,1,2025-01-06,2025-01-06
+Cable Pull Through,strength,system,3,1,1,2026-05-25,2026-05-25
+Cable Single Arm Reverse Fly,strength,system,3,1,1,2025-12-17,2025-12-17
+Donkey Kick,endurance,system,3,1,1,2024-06-12,2024-06-12
+Dumbbell Bent over row to Rear Fly,strength,system,3,1,1,2026-04-10,2026-04-10
+Dumbbell Deadlift to Row,strength,system,3,1,1,2026-03-02,2026-03-02
+Dumbbell Single Leg Squat,strength,system,3,1,1,2025-09-10,2025-09-10
+Foam Roller Adductor,general,system,3,1,1,2025-06-03,2025-06-03
+Foam Roller T-Spine,strength,system,3,1,1,2026-01-28,2026-01-28
+Half Kneeling SuperBand Single Arm Row,endurance,system,3,1,1,2024-06-24,2024-06-24
+Hip Thrust with abduction,strength,custom,3,1,1,2026-04-10,2026-04-10
+Kettlebell Bent Over Row,strength,system,3,1,1,2025-09-09,2025-09-09
+Kettlebell Kickstand Deadlift,strength,system,3,1,1,2025-11-28,2025-11-28
+Kettlebell Lateral Step Up,strength,system,3,1,1,2025-05-15,2025-05-15
+Machine Single Leg Extension,strength,system,3,1,1,2024-10-11,2024-10-11
+Medicine Ball Over Head Backward Slam,strength,system,3,1,1,2025-11-22,2025-11-22
+Mini Band Glute Kickback,endurance,system,3,1,1,2025-04-01,2025-04-01
+Pin Barbell Back Squat,strength,custom,3,1,1,2024-08-06,2024-08-06
+Sandbag Side Lunge,strength,system,3,1,1,2026-07-21,2026-07-21
+Stability Ball Glute Bridge,endurance,system,3,1,1,2025-03-29,2025-03-29
+SuperBand Overhead Reverse Lunge,endurance,system,3,1,1,2026-07-04,2026-07-04
+SuperBand Overhead Squat,endurance,system,3,1,1,2026-07-04,2026-07-04
+SuperBand Single Arm Row,endurance,system,3,1,1,2024-02-28,2024-02-28
+Superband Squat,endurance,system,3,1,1,2026-07-04,2026-07-04
+Yoga - Child’s Pose (Balasana),strength,system,3,1,1,2026-07-11,2026-07-11
+Yoga - Lotus Pose (Padmasana),strength,system,3,1,1,2026-07-11,2026-07-11
+Yoga - Low Lunge to High Lunge Flow,strength,system,3,1,1,2026-07-11,2026-07-11
+Yoga - Marichi’s Pose (Marichyasana),strength,system,3,1,1,2026-07-11,2026-07-11
+Alternating Dumbbell Chest Press,strength,system,2,1,1,2026-04-29,2026-04-29
+Alternating Dumbbell Step Up,strength,system,2,1,1,2026-07-16,2026-07-16
+Alternating Leg Drop,endurance,system,2,1,1,2025-02-28,2025-02-28
+Barbell Bulgarian Split Squat,strength,system,2,1,1,2024-03-04,2024-03-04
+Barbell Good Morning,strength,system,2,1,1,2026-03-13,2026-03-13
+Bear Plank with Shoulder Tap,strength,system,2,1,1,2025-12-02,2025-12-02
+Bird Dog Balance Row,strength,system,2,1,1,2025-05-29,2025-05-29
+Cable Kneeling Single Arm Lat Pulldown,strength,system,2,1,1,2026-01-02,2026-01-02
+Cable Seated Wide Grip Row,strength,system,2,1,1,2025-10-01,2025-10-01
+Cable Standing Horizontal Chest Fly,strength,system,2,1,1,2025-10-22,2025-10-22
+Cable Standing Rear Delt Crossover,strength,system,2,1,1,2024-07-31,2024-07-31
+Cable Underhand Pulldown,strength,system,2,1,1,2026-06-03,2026-06-03
+Close Grip Scapular Retraction,strength,system,2,1,1,2026-02-06,2026-02-06
+Dumbbell B-Stance RDL to Single Arm Row,strength,system,2,1,1,2025-11-21,2025-11-21
+Dumbbell Bench Deadbug Pullover,strength,system,2,1,1,2026-06-03,2026-06-03
+Dumbbell Flat Bench Chest Fly,strength,system,2,1,1,2025-04-18,2025-04-18
+Dumbbell Goblet Squat Pulses,strength,system,2,1,1,2026-07-06,2026-07-06
+Dumbbell Incline Alternating Curl,strength,system,2,1,1,2026-05-02,2026-05-02
+Dumbbell Lying Down Reverse Fly,strength,system,2,1,1,2026-03-25,2026-03-25
+Dumbbell Overhead Standing March,strength,system,2,1,1,2026-07-02,2026-07-02
+Dumbbell Shrug,strength,system,2,1,1,2024-11-11,2024-11-11
+Dumbbell Single Arm Bicep Curl,strength,system,2,1,1,2024-12-23,2024-12-23
+Dumbbell Single Leg Deadlift to Row,strength,system,2,1,1,2025-12-12,2025-12-12
+Dumbbell Step-Up to Overhead Press,strength,system,2,1,1,2026-07-16,2026-07-16
+Foot stretches (top and bottom),strength,custom,2,1,1,2026-01-30,2026-01-30
+Jumping Rope,endurance,system,2,1,1,2024-09-03,2024-09-03
+Kettlebell Plank Pull Through,strength,system,2,1,1,2025-04-27,2025-04-27
+Lat Machine Single Arm Wide Grip,strength,system,2,1,1,2024-10-28,2024-10-28
+Lat Machine Wide Grip Scapular Retraction,strength,system,2,1,1,2024-02-12,2024-02-12
+Laying Hamstring Curl,strength,system,2,1,1,2025-06-19,2025-06-19
+Lying T-Bar Row,strength,system,2,1,1,2024-08-26,2024-08-26
+Machine Assisted Parallel Grip Pull Up,strength,system,2,1,1,2025-07-21,2025-07-21
+Machine Seated Leg Curl,strength,system,2,1,1,2025-03-17,2025-03-17
+Medicine Ball Leg Drops,strength,system,2,1,1,2025-08-01,2025-08-01
+Mini Band Alternating Lateral Lunge,endurance,system,2,1,1,2026-04-03,2026-04-03
+Mini Band Wall Sit,timedLongerBetter,system,2,1,1,2025-11-01,2025-11-01
+Oblique Crunch Leg Raise,endurance,system,2,1,1,2026-02-08,2026-02-08
+Pilates - Donkey Kicks,strength,system,2,1,1,2025-08-21,2025-08-21
+Plantar Fascia (Foot) Release,general,custom,2,1,2,2024-01-29,2024-02-05
+Plate Weighted Wide Grip Pull Up,strength,system,2,1,1,2026-04-06,2026-04-06
+Sciatic Nerve Glide,general,system,2,1,2,2026-01-09,2026-01-23
+Slider Side Lunge,endurance,system,2,1,1,2026-01-23,2026-01-23
+Smith Machine Single Arm Bench Press,strength,system,2,1,1,2026-04-29,2026-04-29
+Split Squat Pulse,strength,system,2,1,1,2026-07-20,2026-07-20
+Stability Ball Bent Knee Glute Bridge,endurance,system,2,1,1,2026-02-26,2026-02-26
+Stability Ball Straight Leg Dead Bug,strength,system,2,1,1,2025-09-19,2025-09-19
+SuperBand Push Up,endurance,system,2,1,1,2024-11-06,2024-11-06
+The Dead Bug,strength,custom,2,1,2,2025-02-01,2025-03-22
+Tibialis Stretch,general,custom,2,1,2,2024-01-29,2024-02-05
+couch stretch,strength,custom,2,1,1,2025-11-01,2025-11-01
+Cycling,cardio,system,1,1,1,2024-10-22,2024-10-22
+Foam Roller Calf,general,system,1,1,1,2026-02-19,2026-02-19
+Foam Roller Hamstring,general,system,1,1,1,2026-02-12,2026-02-12
+Foam Roller Side Glute,general,system,1,1,1,2026-01-28,2026-01-28
+Foam Roller Single Leg Hamstring,general,system,1,1,1,2026-01-28,2026-01-28
+Kettlebell Pass Around The Body,strength,system,1,1,1,2025-08-09,2025-08-09
+Lacrosse Ball Neck Release,general,system,1,1,1,2026-07-17,2026-07-17
+Landmine Offset Squat,strength,system,1,1,1,2026-04-10,2026-04-10
+Overhead dowel press,strength,custom,1,1,1,2026-03-24,2026-03-24
+Running,cardio,system,1,1,1,2024-08-04,2024-08-04
+Slider Single Leg Tuck With Band,endurance,system,1,1,1,2024-07-05,2024-07-05
+Static Proximal Hamstring Stretch,general,system,1,1,1,2025-07-22,2025-07-22
+Strict Knees To Elbows,endurance,system,1,1,1,2025-12-22,2025-12-22

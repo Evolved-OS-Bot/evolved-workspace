@@ -1,0 +1,175 @@
+{
+  "record_version": "metric-acceptance-readiness-v1",
+  "gate_version": "metric-acceptance-v1",
+  "recorded_at": "2026-08-02T10:30:00+10:00",
+  "authority": {
+    "technical_acceptance": "MetricAcceptanceController",
+    "owner_acceptance": "Peter Brown exact metric, version and rule only",
+    "publication": "separate immutable publication registry",
+    "railway_is_sole_scheduler": true
+  },
+  "global_controls": {
+    "publication_state": "shadow",
+    "promotion_authorised": false,
+    "accepted_dashboard_unchanged": true,
+    "kpi_workbook_unchanged": true,
+    "xero_income_can_be_cash": false,
+    "workflow_extension_contract": "hub-workflow-extension-v1",
+    "unaccepted_metrics_are_preview_only": true
+  },
+  "records": [
+    {
+      "metric_id": "website_visitors",
+      "definition_version": "website-marketing-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 under final definition",
+      "comparison_cycles": "0/2",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-03T06:02:00+10:00"
+    },
+    {
+      "metric_id": "website_subscribers_unique",
+      "definition_version": "website-marketing-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 under final definition",
+      "comparison_cycles": "0/2",
+      "identity_sample": "pending deterministic aggregate-only sample",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-03T06:02:00+10:00"
+    },
+    {
+      "metric_id": "visitor_to_subscriber_rate",
+      "definition_version": "website-marketing-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 under final definition",
+      "comparison_cycles": "0/2",
+      "identity_sample": "pending deterministic aggregate-only sample",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-03T06:02:00+10:00"
+    },
+    {
+      "metric_id": "subscriber_to_sa_booking_rate",
+      "definition_version": "ghl-subscriber-sa-booking-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 final website and acquisition pair",
+      "comparison_cycles": "0/2",
+      "identity_sample": "pending deterministic aggregate-only sample",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-03T06:18:00+10:00"
+    },
+    {
+      "metric_id": "sa_show_rate",
+      "definition_version": "sa-attendance-v2",
+      "acceptance_state": "blocked",
+      "scheduled_cycles": "4 observed; 2 required",
+      "comparison_cycles": "1/2",
+      "unexplained_event_count": 18,
+      "owner_approval_state": "pending",
+      "recommendation": "Do not accept. Replace the unresolved first comparison with two bounded terminal-evidence comparisons; never infer a no-show or attendance outcome."
+    },
+    {
+      "metric_id": "assessment_conversion_unique",
+      "definition_version": "assessment-conversion-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "4 attendance and 4 acquisition cycles observed; 2 each required",
+      "comparison_cycles": "1/2 across every required period",
+      "identity_sample": "30-case protected sample, zero unexplained",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-02T18:18:00+10:00"
+    },
+    {
+      "metric_id": "cash_goal_progress",
+      "definition_version": "cash-goal-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "2/2",
+      "comparison_cycles": "processor identity comparison sample pending",
+      "identity_sample": "pending aggregate-only processor-event sample",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "recommendation": "Keep the rolling $468,729.75 ex-GST goal shadow-only until the exact processor-event sample and two comparison cycles pass."
+    },
+    {
+      "metric_id": "operating_expenses",
+      "definition_version": "operating-expenses-v2",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "1/2",
+      "comparison_cycles": "1/2, bookkeeping timing classified",
+      "unexplained_event_count": 0,
+      "unexplained_cents": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-02T18:24:00+10:00"
+    },
+    {
+      "metric_id": "cash_accounting_validation",
+      "definition_version": "cash-accounting-validation-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "cash 2/2; Xero 1/2",
+      "comparison_cycles": "1/2, bookkeeping timing classified",
+      "unexplained_event_count": 0,
+      "unexplained_cents": 0,
+      "owner_approval_state": "pending",
+      "observation_not_before": "2026-08-02T18:24:00+10:00",
+      "recommendation": "Use Xero income only to explain the accounting-close difference; never substitute it for collected cash."
+    },
+    {
+      "metric_id": "sgpt_delivery",
+      "definition_version": "sgpt-delivery-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "two distinct complete Trainerize source run IDs not yet bound to a Build 4 acceptance record",
+      "comparison_cycles": "pending",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "recommendation": "Require complete fresh source evidence, exact identity reconciliation, zero inferred outcomes and timetable assignment coverage at metric level."
+    },
+    {
+      "metric_id": "evolved_standards",
+      "definition_version": "evolved-standards-v1-shadow",
+      "acceptance_rule_version": "evolved-standards-future-proofing-score-v1",
+      "acceptance_policy_fingerprint": "083c35c3b054dae1e8897523c42364d06933cf1b5c531faf43a367d24b80e988",
+      "acceptance_record_id": "693fd91cedeb5501ac942f3532086121",
+      "acceptance_fingerprint": "8a2f5b6d4640e677a8fec9dd71581cb99a6d0ff40f5cd9cb5e1e2b7f86df573d",
+      "acceptance_state": "ready_for_owner_acceptance",
+      "scheduled_cycles": "2/2 complete post-migration Trainerize observations; the first legacy two-column bundle failed closed and does not count",
+      "comparison_cycles": "2/2 across all six required evidence periods",
+      "identity_sample": "20/20 exact aggregate-only matches; zero unexplained mismatches; sample fingerprint a11147691b12417795533c6a3159011713840befd81e67f3f3b5f545a10d6ef4",
+      "unexplained_event_count": 0,
+      "owner_approval_state": "pending",
+      "publication_state": "shadow",
+      "promotion_authorised": false,
+      "recommendation": "Technical gates pass. Peter may review this exact metric definition and immutable evidence fingerprint for owner acceptance. That decision remains separate from publication; preserve all six individual standard levels, publish only the complete 0-18 Future-Proofing Score and canonical band, and never invent an overall Live, Long or Perform member label."
+    },
+    {
+      "metric_id": "consumer_retention_intelligence_contract",
+      "definition_version": "retention-hub-read-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 exact consumer comparisons",
+      "owner_approval_state": "pending"
+    },
+    {
+      "metric_id": "consumer_conversation_triage_contract",
+      "definition_version": "conversation-triage-hub-read-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 exact consumer comparisons",
+      "owner_approval_state": "pending"
+    },
+    {
+      "metric_id": "consumer_pt_booking_continuity_contract",
+      "definition_version": "pt-booking-hub-read-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 exact consumer comparisons",
+      "owner_approval_state": "pending"
+    },
+    {
+      "metric_id": "consumer_revenue_control_contract",
+      "definition_version": "revenue-control-hub-read-v1",
+      "acceptance_state": "collecting",
+      "scheduled_cycles": "0/2 exact consumer comparisons",
+      "owner_approval_state": "pending"
+    }
+  ]
+}

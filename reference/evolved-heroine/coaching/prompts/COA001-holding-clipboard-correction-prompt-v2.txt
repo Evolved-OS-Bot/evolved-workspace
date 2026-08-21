@@ -1,0 +1,29 @@
+Use case: identity-preserve
+Asset type: corrected Evolved Heroine master candidate
+
+Correct COA001 so she unmistakably reads as one peach-bodied mascot, not a human figure with a peach head. Preserve the clipboard pose, friendly expression, leaf, stem, gloves, black shorts, pink sneakers, blank clipboard and original flat vintage treatment.
+
+Reference roles:
+- COA001 v1: edit target controlling the clipboard pose, expression and composition.
+- FND002: primary construction reference only.
+- FND001: compact mascot leg proportions, peach dominance, vintage face and colour.
+- FND004: hard vintage cream, peach, coral and deep-plum value separation.
+- Ignore all barbells, weights, exercise poses, floors and backgrounds in the references.
+
+Critical construction correction:
+- Make the peach substantially larger and dominant.
+- Keep its pointed lower centre and paired lower fruit lobes clearly visible immediately above a very shallow black shorts band.
+- Attach two short, stubby, widely spaced simple tube legs directly beneath the peach and shorts edge.
+- The legs must be approximately half the v1 length, with no knees, thigh shapes, calf taper, hips, pelvis or separate human lower torso.
+- The shorts are a shallow curved garment following the peach underside, not a horizontal human waistband.
+- Use the compact original mascot relationship: large peach body, tiny tube legs and oversized sneakers.
+
+Preserve full upper lobes, the stem cleft, inward lower taper, two lower fruit lobes, pointed centre, carved midsection definition and a readable deep-plum underside and viewer-right shadow. Do not make the peach a circle, sphere or head.
+
+Use the original hand-inked flat 2D vintage athletic-mascot rendering. No 3D, Pixar-like, glossy, soft-gradient, inflated or human anatomical treatment.
+
+Include exactly one blank clipboard. Do not add a pencil, whistle, stopwatch, barbell, dumbbell, bench, writing, chart, extra paper, scenery or floor.
+
+The word “Evolved” may appear only on the outside panel of the anatomical left shoe when visible. Otherwise omit it. No pseudo-text.
+
+Place the isolated character on a perfectly uniform flat solid #ff00ff chroma-key background with no shadow, floor, gradient, texture or reflection. Keep crisp separated edges, generous padding and a square composition.

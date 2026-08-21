@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v10",
+  "recorded_at": "2026-08-04T13:33:31+10:00",
+  "source_articulation_result": "mechanical_followup_required",
+  "passed_observations": [
+    "neutral source reassembly",
+    "arm-root source coverage preview",
+    "arm-bend source coverage preview",
+    "leg-bend source coverage preview",
+    "leaf and stem source coverage preview",
+    "pupil safe-range source coverage preview",
+    "no canvas clipping",
+    "left-shoe brand remained on anatomical-left shoe only"
+  ],
+  "failed_observation": {
+    "test": "12-degree outward leg-root rotation",
+    "result": "visible background wedges at the shorts openings",
+    "tested_pivots": [[582, 704], [678, 704], [582, 680], [678, 680]],
+    "disposition": "Resolve with native Motion root-cover masks or equivalent linked cover behavior before rig approval."
+  },
+  "scope": "This adjudication does not fail the exact neutral layered-source identity candidate. It prevents the stress sheet from being represented as rig-mechanics approval.",
+  "rig_approval_status": "not_started",
+  "human_layered_source_approval_status": "pending"
+}

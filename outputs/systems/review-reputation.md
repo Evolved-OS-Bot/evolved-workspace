@@ -1,14 +1,14 @@
 # Review & Reputation Management System
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-04-01
+**Last Updated:** 2026-07-24
 
 ---
 
 ## Overview
 
-The Review & Reputation Management system captures member satisfaction via an in-house star rating at the point of exit (PT cancellation form), then routes positive responses (4 and 5 stars) into an automated Google Review request sequence. The pipeline tracks progress from initial review request through to confirmed review receipt, with branching stages for negative and positive responses.
+The live Review & Reputation workflow is a tag-triggered satisfaction and Google-review journey. A contact enters when `send review request` is added, waits 14 days, receives an SMS asking for a 1-to-5 response, and then follows a positive, negative, other-reply or no-response path.
 
-The system is intentionally gated — only members who rate 4 or 5 stars receive the Google Review request. This protects the public rating profile and ensures that negative feedback is captured internally rather than directed to Google.
+Only a positive 4- or 5-star reply receives the Google review request. Lower ratings stay inside the feedback and service-recovery journey. The Review Pipeline records the major states, while the workflow also contains reminder, check-in and thank-you actions.
 
 ---
 
@@ -31,7 +31,7 @@ The pipeline uses a branching structure: after the review request is sent, conta
 
 | Tag | Purpose |
 |---|---|
-| `send review request` | Applied to contacts who qualify to receive a review request (4 or 5 star rating) |
+| `send review request` | Durable marker that starts the member-feedback journey. It is added during new-member onboarding, before the member supplies the 1-to-5 rating. |
 
 ---
 
@@ -41,23 +41,28 @@ The pipeline uses a branching structure: after the review request is sent, conta
 |---|---|---|
 | Google Review Request (4 & 5 Stars Only) | **published** | `ebbd43c1-4e39-4731-a3e3-c7e5f0bfae0b` |
 
-Only one review-specific workflow is present. It is live/published and triggers exclusively for contacts who submit a 4 or 5 star rating. The workflow is expected to move the contact into the Review Pipeline (stage: Review Requested) and send the Google Review link.
+Only one review-specific workflow is present. It is published and enters contacts when the `send review request` tag is added. The 4- or 5-star gate happens after the workflow asks for feedback; it is not the enrolment trigger.
 
-No separate workflow exists for the negative response path — this suggests negative feedback handling is either manual or managed via pipeline stage assignment only.
+The workflow contains both positive and negative handling. The live builder shows opportunity updates, an improvement-request SMS for negative responses, a Google-review SMS for positive responses, trigger-link tracking, follow-up checks and thank-you messages.
 
 ---
 
 ## Forms / Surveys
 
-The star rating that gates this system is captured inside the **PT Cancellation Form** (Survey ID: `JnwGk9ttNxiSAuqBxuBs`), not a standalone review request form. There is no dedicated review or NPS survey in the account.
+GHL contains an exit-rating field inside the **PT Cancellation Form** (Survey ID: `JnwGk9ttNxiSAuqBxuBs`), but the live review workflow does not enrol from that field or survey. It enrols from the `send review request` tag and collects the operative 1-to-5 response by SMS after the 14-day wait.
 
-The rating field sits alongside PT cancellation fields and exit feedback questions within the same custom field group (`JwbflBU2YDUaZb9godHU`).
+Two live onboarding workflows are confirmed upstream sources:
+
+- `3.0 New Member`: active membership branches add the action labelled `Add 'Review Request' Tag`.
+- `3.1. New Personal Training Client`: the live builder also contains `Add 'Review Request' Tag` before its First 7 Days handoff and opportunity action.
+
+The tag can also be added manually by staff. No other automation source has been confirmed.
 
 ---
 
 ## Calendars
 
-No dedicated calendars are associated with this system. Negative response handling does not appear to route to a booked call or escalation calendar (unlike the Cancellation system's `MC: Other` pathway).
+No dedicated calendars are associated with this system. Negative response handling does not appear to route to an escalation calendar; the separate Cancellation system has its own manager pathway.
 
 ---
 
@@ -127,49 +132,49 @@ The full Place ID begins with `ChIJOSoY` — the value is truncated in the sourc
 ## Step-by-Step Flow
 
 ```
-1. Member submits PT Cancellation Form (Survey ID: JnwGk9ttNxiSAuqBxuBs)
-2. Form captures star rating → "Overall out of 5 stars how would you rate..." (pzDHsfSCxFQ1zoWDLHUf)
-3. Also captures exit feedback: achievements, reason for leaving, tenure, resource utilisation
-
-4. IF rating = 4 stars OR 5 stars:
-   → Tag applied: "send review request"
-   → Workflow fires: "Google Review Request (4 & 5 Stars Only)" (ebbd43c1-...)
-   → Contact enters Review Pipeline → Stage: Review Requested (2cc9c164-...)
-   → Contact receives message with Google Review Link ({{ custom_values.google_review_link }})
-
-5. IF contact clicks the Google Review link:
-   → Pipeline stage advances to: Trigger Link Clicked (a36717f3-...)
-
-6. IF review is confirmed received:
-   → Pipeline stage advances to: Review Received (e5ab2e8d-...)
-
-7. IF rating = 1, 2, or 3 stars:
-   → Contact moves to pipeline stage: Negative Response (16ac1951-...)
-   → No automated Google Review request sent
-   → Negative feedback is captured internally only
-
-8. Positive responses that do not click the link remain:
-   → Pipeline stage: Positive Response (1e68e800-...)
-   → Presumably subject to follow-up or left in stage for manual review
+1. Upstream process or staff action adds tag: send review request
+2. Google Review Request workflow enrols the contact
+3. Workflow waits 14 days
+4. Workflow creates or updates the Review Pipeline opportunity
+5. SMS asks the contact to reply with a rating from 1 to 5
+6. Workflow waits up to 24 hours for a reply
+7. Reply is classified:
+   - 1, 2 or 3: negative path, opportunity update, improvement question and follow-up logic
+   - 4 or 5: positive path, opportunity update and Google review request
+   - other reply: separate handling path
+   - no reply: timeout path
+8. Positive path watches for the Google review trigger-link click
+9. Workflow updates the opportunity and continues its check-in or thank-you path
+10. The workflow finishes without removing `send review request`
 ```
+
+Live enrollment history on 24 July 2026 confirmed ongoing production use through June and July. Several contacts were actively waiting at the initial 14-day delay, while completed contacts had progressed through later workflow actions.
+
+`Allow re-entry` is enabled, but the trigger is specifically the tag being added. Because the workflow does not remove the tag, re-entry will only occur if staff or another controlled process first removes it and later adds it again. For the current one-time new-client review journey, this durable-tag behaviour is an effective duplicate-send control.
+
+### Drive fallback procedure
+
+The Drive Admin Reviews folder contains one short exception note: `Failed Review Link: Send This`. It tells Admin to manually send the Google review request when a member replies 4 or 5 and the automated message fails.
+
+The exception purpose is valid, but the note uses a hard-coded short link and does not require checking the workflow execution log first. Retain the fallback concept, then rewrite it to: confirm the positive reply, verify the failed or skipped action in GHL, send the canonical review link, record the manual intervention and avoid sending a duplicate request.
 
 ---
 
 ## System Notes & Observations
 
 ### What's working well
-- **Gated review request** is the right approach — only routing 4 and 5 star respondents to Google protects the public profile from unmanaged negative reviews
-- **Exit feedback embedded in PT Cancellation Form** is efficient — the rating is captured at the highest-intent moment (point of departure), maximising completion rates
-- **Pipeline structure clearly separates sentiment paths** — Negative Response and Positive Response are distinct stages, making it easy to see the split at a glance
-- **"Trigger Link Clicked" stage** provides a measurable midpoint between intent (positive response) and action (confirmed review), enabling follow-up on drop-off
-- **Tag `send review request`** enables filtering and reporting on who has been asked for a review without relying solely on pipeline stage
+- **Gated review request** keeps the public request on the positive-response path while capturing lower ratings internally.
+- **The workflow is actively used** and has current contacts progressing through the initial waiting period.
+- **Positive and negative handling exist in one controlled journey**, including improvement questions, reminders, link-click tracking and thank-you actions.
+- **Pipeline stages provide reporting checkpoints** for requested, negative, positive, clicked and received states.
+- **Tag-based entry** allows multiple upstream member moments to use the same review journey once the tag sources are governed.
 
 ### Current gaps / things to review
-- **Rating capture is tied solely to PT cancellation** — there is no review request pathway visible for SGPT/membership cancellations or for active members mid-lifecycle (e.g. milestone moments like 90 days, 6 months, 1 year). The majority of members who have a good experience and leave naturally may never be asked for a review
-- **No negative response follow-up workflow visible** — contacts who rate 1–3 stars enter the Negative Response pipeline stage but there is no workflow handling this path. No internal notification, no manager alert, no recovery sequence. This is a significant gap for service recovery
-- **Positive Response stage has no visible automation** — contacts who rate 4–5 stars but don't click the Google Review link remain in the Positive Response stage. There is no visible reminder or re-nudge sequence to recover these
-- **Review confirmed (Review Received) has no visible downstream automation** — once a review is received there is no workflow that thanks the member, logs the outcome, or triggers any further action. A thank-you message would reinforce the behaviour
-- **No NPS or mid-lifecycle satisfaction survey** — the system only captures satisfaction at cancellation. There is no proactive check-in for active members, no early warning system for at-risk members, and no structured mechanism to identify promoters before they decide to leave
-- **Google Review Link value is truncated in documentation** — the full Place ID (`ChIJOSoY...`) should be verified to ensure the link resolves correctly
-- **One workflow only, currently published** — the single `Google Review Request` workflow carries the full weight of this system. If it breaks or is accidentally paused, the entire review generation process stops with no fallback
-- **No testimonial or case study capture pipeline** — highly satisfied members (5 stars) could be automatically routed into a testimonial or social proof request sequence, but no such workflow exists
+- **Tag provenance and current duplicate control are documented:** `3.0 New Member` and `3.1. New Personal Training Client` are the confirmed automation sources. Manual addition remains possible. The retained tag makes the current onboarding review journey effectively one-time.
+- **Future repeat-review cycles need deliberate governance:** if milestone review requests are introduced, remove and re-add the tag only through a controlled workflow with a defined cooldown and eligibility rule.
+- **Workflow name is misleading:** it describes only the positive branch, although the workflow first collects ratings and handles negative feedback too. A clearer name would be `Member Feedback & Google Review Journey`.
+- **Drive fallback uses a hard-coded link:** replace it with the canonical GHL review-link source and an execution-log verification step.
+- **Review received verification has a named owner:** a trigger-link click proves intent, not publication. Admin Eve checks the Google Business Profile once weekly and moves only visibly published reviews to `Review Received`; Piper remains the personal member-experience follow-up owner. AI sentiment and link clicks are triage signals only.
+- **The existing review pipeline has a reconciliation backlog:** live inspection on 30 July 2026 found 117 opportunities at Review Requested, 3 at Negative Response, 63 at Positive Response, 0 at Trigger Link Clicked and 10 at Review Received. Reconcile this gradually through the weekly verification control; do not bulk mark positive responses as published reviews.
+- **One workflow remains a concentration risk:** keep a monitoring owner and periodic test because pausing or breaking this workflow stops the whole review journey.
+- **Testimonial handoff is not visible:** a verified 5-star result could feed the member-story system, subject to consent and deduplication.

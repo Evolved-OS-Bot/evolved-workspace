@@ -1,6 +1,6 @@
 # Conversion Funnel Strategy — The Evolved
 
-**Last updated:** 2026-05-03
+**Last updated:** 2026-08-04
 
 ---
 
@@ -47,6 +47,19 @@ Every step is intentional. No shortcuts bypass this sequence.
 The homepage is organic-only and always links to `-o` pages.
 
 Each landing page has its own dedicated GHL form. Form identity (not URL params) triggers the correct intake workflow, which tags the lead with life stage and traffic source automatically.
+
+### Pregnancy route clarification
+
+For the Pregnancy organic funnel, the current thank-you and Strength
+Assessment page is `/pppsa-page-1536`. HighLevel funnel next-step logic
+controls the destination when the form is embedded in that funnel; the form's
+On Submit redirect is only the fallback when the same form is used outside the
+funnel.
+
+On 4 August 2026, the `30DNNC Form - PPP` fallback was corrected from
+`/pppsa` to `/pppsa-page-1536`. The public page returned 200 and its metadata
+matched the existing Pregnancy organic funnel, middle step and booking
+confirmation next step.
 
 ---
 

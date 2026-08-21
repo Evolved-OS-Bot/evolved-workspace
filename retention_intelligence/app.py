@@ -105,10 +105,10 @@ def start_scheduler() -> None:
     scheduler.add_job(
         _run,
         "cron",
-        hour=5,
+        hour="5,17",
         minute=45,
         args=[settings.sheets_write_enabled],
-        id="daily-retention-intelligence",
+        id="twice-daily-retention-intelligence",
         max_instances=1,
         coalesce=True,
         replace_existing=True,

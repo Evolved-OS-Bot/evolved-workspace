@@ -18,3 +18,5 @@ __pycache__/
 *.log
 discord_bot/sent_reports.json
 scripts/update-metrics.log
+data/private/
+context/current-data.json

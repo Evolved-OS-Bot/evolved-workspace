@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "record_id": "PEACH-LAYER-three-quarter-layered-source-v10-shoe-alpha-defect-record-v1",
+  "recorded_at": "2026-08-04T19:46:55+10:00",
+  "affected_artifacts": [
+    "PEACH-LAYER-three-quarter-candidate-v1",
+    "PEACH-LAYER-three-quarter-layered-source-v10"
+  ],
+  "observation": "At enlarged transparent-viewer scale, checkerboard is visible through the distressed fabric of the anatomical-right blank shoe and through both shoe tongues.",
+  "root_cause": "Low and zero alpha were baked into the approved source artwork and reproduced exactly by v10; Apple Motion did not introduce the defect.",
+  "containment": {
+    "approved_v10_overwritten": false,
+    "new_rig_construction_paused": true,
+    "existing_motion_canaries_preserved": true
+  },
+  "correction_candidate": {
+    "artifact_id": "PEACH-LAYER-three-quarter-layered-source-v11",
+    "path": "outputs/evolved-heroine/animation/rigs/source/PEACH-LAYER-three-quarter-layered-source-v11",
+    "status": "technical_qa_pass_visual_approval_pending"
+  }
+}

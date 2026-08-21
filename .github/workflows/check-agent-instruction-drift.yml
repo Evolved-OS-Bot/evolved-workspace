@@ -1,0 +1,18 @@
+name: Check agent instruction drift
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify agent instructions
+        run: python3 scripts/check_agent_instruction_drift.py

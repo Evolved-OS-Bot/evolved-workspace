@@ -12,13 +12,25 @@ from .ghl_client import GHLReadOnlyClient
 from .google_sheets import SheetsKPIWriter
 from .kpi import aggregate_weekly_pt_kpi, monday_for
 from .models import Appointment, Finding
+from .pack_ledger import prepaid_pack_findings
 from .reconciler import reconcile_contact
 from .reporting import high_risk, send_report
 from .source_reconciliation import (
     build_cross_system_snapshot,
     cross_system_findings,
+    reconcile_primary_with_cross_system_evidence,
 )
 from .state_store import StateStore
+from reporting_control.hub_pack_commercial_client import (
+    publish_stripe_pack_commercial_evidence,
+)
+from .hub_contract import (
+    apply_hub_authority,
+    apply_hub_commercial_evidence,
+    fetch_pt_contract,
+    pt_cutover_authority,
+    publish_pt_parity,
+)
 
 
 log = logging.getLogger(__name__)
@@ -86,6 +98,37 @@ class ShadowAuditService:
         try:
             calendars, by_contact, events, now = self._registry_and_events()
             cohort = self._resolve_full_cohort()
+            try:
+                contract = fetch_pt_contract()
+                parity, published = publish_pt_parity(
+                    contract=contract,
+                    contacts=cohort,
+                    comparison_cycle=run_id,
+                )
+                try:
+                    authority = pt_cutover_authority()
+                    hub_authoritative = bool(
+                        authority.promotion_authorised
+                        and parity.equivalent
+                    )
+                except Exception:
+                    hub_authoritative = False
+                if hub_authoritative:
+                    apply_hub_authority(cohort, contract)
+                log.info(
+                    "Hub PT person-contract shadow comparison "
+                    "equivalent=%s unexplained=%s result=%s",
+                    parity.equivalent,
+                    parity.unexplained_event_count,
+                    published.get("status"),
+                )
+            except Exception as exc:
+                contract = None
+                hub_authoritative = False
+                log.warning(
+                    "Hub PT person-contract read failed closed to legacy: %s",
+                    type(exc).__name__,
+                )
             findings = [
                 reconcile_contact(
                     contact,
@@ -100,11 +143,44 @@ class ShadowAuditService:
             if self.settings.cross_system_reconciliation_enabled:
                 try:
                     snapshot = build_cross_system_snapshot(self.settings)
+                    try:
+                        pack_contacts = list(cohort)
+                        known_contact_ids = {
+                            contact.id for contact in pack_contacts
+                        }
+                        for contact_id in (
+                            snapshot.stripe_pack_payments_by_contact_id
+                        ):
+                            if contact_id in known_contact_ids:
+                                continue
+                            pack_contacts.append(
+                                self.client.get_contact(contact_id)
+                            )
+                        publish_stripe_pack_commercial_evidence(
+                            pack_contacts,
+                            snapshot.stripe_pack_payments_by_contact_id,
+                            source_run_id=run_id,
+                            observed_at=now.isoformat(),
+                        )
+                    except Exception as exc:
+                        log.warning(
+                            "Hub verified PT-pack publish failed: %s",
+                            type(exc).__name__,
+                        )
                     primary_by_contact = {
                         item.contact_id: item for item in findings
                     }
                     for contact in cohort:
                         evidence = snapshot.evidence_for(contact)
+                        if hub_authoritative and contract is not None:
+                            hub_row = contract.by_source_identity("ghl").get(
+                                contact.id
+                            )
+                            if hub_row is not None:
+                                apply_hub_commercial_evidence(
+                                    evidence,
+                                    hub_row,
+                                )
                         primary_by_contact[contact.id].evidence[
                             "cross_system"
                         ] = evidence
@@ -115,8 +191,22 @@ class ShadowAuditService:
                             not in {"cancelled", "canceled", "no_show", "noshow"}
                             for event in by_contact.get(contact.id, [])
                         )
+                        reconcile_primary_with_cross_system_evidence(
+                            primary_by_contact[contact.id],
+                            contact,
+                            evidence,
+                            has_future,
+                        )
                         findings.extend(
                             cross_system_findings(contact, evidence, has_future)
+                        )
+                        findings.extend(
+                            prepaid_pack_findings(
+                                contact,
+                                by_contact.get(contact.id, []),
+                                evidence,
+                                now,
+                            )
                         )
                 except Exception as exc:
                     log.exception("Cross-system reconciliation failed")
