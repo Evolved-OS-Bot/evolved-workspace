@@ -11,4 +11,6 @@ RUN useradd --system --uid 10001 --no-create-home finalizer \
     && chown -R finalizer:finalizer /app
 
 USER finalizer
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('PORT','8080')+'/health',timeout=3).read()"]
 CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 1 --threads 4 --timeout 120 --access-logfile - --error-logfile - cancellation_finalizer.wsgi:app"]
