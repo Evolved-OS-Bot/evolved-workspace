@@ -11,8 +11,8 @@ Endpoints:
     member-visible discount-recovery quote without creating a charge
 
 Hold logic:
-  Pauses subscription with behavior=void, applies overlap credit for any pre-paid
-  days during the hold, resumes billing on Pre-Return Date (Hold End Date - 7 days).
+  Membership/SGPT pauses remain date based. PT holds are session based and
+  return a side-effect-free entitlement proposal for human approval.
 
 Cancellation logic:
   Receives notice_end_date from GHL (CS: Notice End Date field). Finds the last
@@ -31,6 +31,11 @@ from zoneinfo import ZoneInfo
 from flask import Flask, request, jsonify
 import requests
 import stripe
+
+try:
+    from .pt_entitlement_reconciliation import reconcile_pt_hold
+except ImportError:  # Railway starts app.py directly from stripe_handler/.
+    from pt_entitlement_reconciliation import reconcile_pt_hold
 
 stripe.api_key = os.environ["STRIPE_API_KEY"]
 
@@ -2313,10 +2318,39 @@ def pause_hold():
     pre_return_str = data.get("pre_return_date", "").strip()
     contact_name = data.get("contact_name", "Unknown")
     hold_type = data.get("hold_type", "")
+    normalized_hold_type = str(hold_type).strip().lower()
     requested_action = (
         f"{hold_type or 'Membership'} hold from "
         f"{hold_start_str or 'unknown'} to {hold_end_str or 'unknown'}"
     )
+
+    # PT value is delivered as discrete appointments. Keep it completely out
+    # of the date-proration and Stripe customer-balance-credit path. Missing or
+    # ambiguous evidence is expressed in the proposal itself so this branch
+    # never creates a duplicate Billing OS exception task.
+    if normalized_hold_type in {"pt", "personal training"}:
+        proposal = reconcile_pt_hold(data)
+        log.info(
+            "PT HOLD PROPOSAL: %s | status=%s | conversation=%s | mutations=0",
+            contact_name,
+            proposal["status"],
+            proposal["work_item"].get("conversation_id"),
+        )
+        return jsonify(proposal), 200
+
+    # Preserve the legacy blank value as Membership, but fail closed for any
+    # other unknown value before a Stripe lookup or mutation.
+    if normalized_hold_type not in {"", "membership", "sgpt"}:
+        message = "Unsupported hold type; no billing action performed"
+        log.warning("%s: %r", message, hold_type)
+        record_exception(
+            contact_id,
+            "hold",
+            message,
+            contact_name=contact_name,
+            requested_action=requested_action,
+        )
+        return jsonify({"status": "exception", "error": message}), 422
 
     if (
         not contact_id
@@ -2727,6 +2761,13 @@ def cancel_membership():
             contact_name=contact_name,
             notice_end_date=notice_end_date,
         )
+
+
+@app.route("/stripe/pt-hold/reconcile", methods=["POST"])
+def reconcile_pt_hold_endpoint():
+    """Build a PT entitlement proposal without mutating any live system."""
+    proposal = reconcile_pt_hold(request.get_json(silent=True) or {})
+    return jsonify(proposal), 200
 
 
 @app.route("/health", methods=["GET"])

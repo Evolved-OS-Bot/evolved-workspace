@@ -1,6 +1,6 @@
 # Personal Training Sales & Delivery System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-07-23
+**Last Updated:** 2026-08-24
 
 ---
 
@@ -13,6 +13,10 @@ Two parallel onboarding paths exist depending on how a client enters:
 - **Membership upgrade path** — existing gym member upgrades to PT via a Membership Change: PT Agreement form
 
 PT holds (standard and extended) are handled by separate workflows and forms — see the Hold System documentation. PT cancellations are handled by the Cancellation System documentation.
+
+PT holds are reconciled in session entitlements, never daily proration. The local Billing OS candidate accepts payment cadence, sessions per payment, a validated payment-to-service offset, appointments around both hold boundaries, prior adjustments, risk flags, and the existing GHL Conversation ID. It classifies pre-hold, in-hold and post-hold appointments and may propose exact one-to-one transfers from paid in-hold sessions to return sessions left unfunded by hold-skipped payments. It performs no mutation.
+
+Missing evidence, cadence irregularity, makeup/forfeited/no-show or cancelled sessions, complaints, billing exceptions, medical/safety questions, policy ambiguity, existing credits/transfers, or unequal source and target counts all stop at human review. The existing Conversation is the sole work item; no reconciliation task or tracker may be created, and no carried session may coexist with a Stripe credit for the same boundary.
 
 ---
 

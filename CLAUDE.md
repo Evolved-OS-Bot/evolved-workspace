@@ -181,6 +181,7 @@ Claude should not:
 | `reference/evolved-heroine/` | Source of truth for Heroine production, marketing use, and animation. Read its canonical README, marketing usage guide, animation-system specification, final generation prompt template, and active production register as applicable. Local files govern brand use, prompts, motion, and production history; Drive holds approved PNG masters; websites and campaigns use channel-specific deployment copies. |
 | `reference/sops/` | Operational SOPs — source of truth for all service delivery procedures. |
 | `scripts/` | Automation scripts. Includes KPI refresh, Trainerize data extraction, and read-only GHL–Stripe–Trainerize reporting and reconciliation; setup and usage live in `scripts/SETUP.md`. |
+| `stripe_handler/` | Railway Billing OS. Membership/SGPT holds retain their date-based path; PT hold reconciliation is session-based, proposal-only, and human-approved in the existing GHL Conversation. |
 
 ---
 

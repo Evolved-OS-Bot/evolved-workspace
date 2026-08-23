@@ -93,10 +93,10 @@ Trainers at The Evolved are **employees** — not subcontractors. This is an imp
 
 **All members are billed at least one week in advance.**
 
-This has direct consequences for hold and cancellation automation:
+This has direct consequences for hold and cancellation automation. The date rules below are authoritative for Membership/SGPT. For PT they are billing control dates only; the funded unit is a booked session and must be reconciled against payment cadence and appointments:
 
 - A member's billing cycle will fire up to 7 days **before** their hold start date
-- The Stripe pause must be triggered on **HS: Pre-Hold-Start Date** (Hold Start Date − 7 days), not on the Hold Start Date itself
+- The Membership/SGPT Stripe pause must be triggered on **HS: Pre-Hold-Start Date** (Hold Start Date − 7 days), not on the Hold Start Date itself
 - **HS: Pre-Hold-Start Date** is the date payments pause — not the date the hold physically begins
 - **HS: Pre-Return Date** (Hold End Date − 7 days) is the date payments resume — this is when Stripe unpauses billing
-- Any communication referencing when payments pause or resume must use `{{contact.hs_preholdstart_date}}` and `{{contact.hs_prereturn_date}}` respectively — never `{{contact.hf_hold_start_date}}` or `{{contact.hf_hold_end_date}}` for billing dates
+- Any approved communication referencing when payments pause or resume must use `{{contact.hs_preholdstart_date}}` and `{{contact.hs_prereturn_date}}` respectively — never `{{contact.hf_hold_start_date}}` or `{{contact.hf_hold_end_date}}` for billing dates. PT communications must wait until the session reconciliation and billing action are human-approved and executed.

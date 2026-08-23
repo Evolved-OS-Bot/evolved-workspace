@@ -1,6 +1,6 @@
 # Membership Hold System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-08-05 (Hold Return guards verified; Cate Akaveka historical hold reconciled)
+**Last Updated:** 2026-08-24 (PT entitlement reconciliation candidate integrated locally)
 
 ---
 
@@ -10,7 +10,7 @@ Two parallel hold systems exist — one for **Membership (SGPT) holds** and one 
 
 The hold system is also a retention pathway offered inside the membership cancellation flow (Health/Injury and Moving/Travel reasons), meaning a contact may enter the hold pipeline directly from a cancellation form rather than via a standalone hold request.
 
-The member journey, Stripe pause, pre-return communications, and auto-completion are automated. The live system is not currently fail-safe: GHL can continue the member-facing pause confirmation after the Billing OS webhook has failed.
+The member journey, Membership/SGPT Stripe pause, pre-return communications, and auto-completion are automated. PT billing is a separate session-entitlement boundary: the local candidate proposes reconciliation but performs no Stripe, appointment, membership, entitlement, workflow, or Conversation mutation. The live system is not currently fail-safe: GHL can continue the member-facing pause confirmation after the Billing OS webhook has failed.
 
 > **Bug fix 2026-07-09:** `pre_return_date` was missing from the `HS: Hold Activates` webhook body. Added `pre_return_date → {{contact.hs_prereturn_date}}` to the GHL webhook custom data. Affected contacts were reviewed and Stripe subscriptions manually corrected.
 
@@ -28,7 +28,7 @@ Admin must not queue a future second hold inside the contact's active hold field
 
 ---
 
-## Billing Policy
+## Billing Policy and Calculation Boundary
 
 **All members are billed at least one week in advance.**
 
@@ -36,13 +36,15 @@ For reconciliation, a normal scheduled payment funds the following service week.
 
 A late retry or manually recovered arrears payment retains the original service entitlement being recovered. Apply the one-week advance rule to the original scheduled payment date, not to the later success date.
 
-This has direct consequences for hold automation:
+For Membership/SGPT, this has direct consequences for hold automation:
 
 - A member's billing cycle will fire up to 7 days **before** their hold start date
 - Stripe must be paused on **HS: Pre-Hold-Start Date** (Hold Start Date − 7 days), not on the Hold Start Date itself
 - **HS: Pre-Hold-Start Date** = when payments pause
 - **HS: Pre-Return Date** = Hold End Date − 7 days = when payments resume (covers the return week)
-- Any overlap (days already paid that fall within the hold period) is credited to the member's Stripe customer balance and auto-reduces their first invoice after the hold
+- Any Membership/SGPT overlap (days already paid that fall within the hold period) is credited to the member's Stripe customer balance and auto-reduces their first invoice after the hold
+
+PT value is delivered as discrete appointments, not days. `HS: Pre-Hold-Start Date` and `HS: Pre-Return Date` are PT billing-control dates only; neither proves that a debit occurred or which appointments it funded. PT reconciliation requires the actual payment cadence and status, sessions per payment, a validated billing-to-service offset, appointments around both hold boundaries, and prior adjustment evidence. A carried PT entitlement and a Stripe cash credit must never both be granted for the same overlap.
 
 ---
 
@@ -204,12 +206,13 @@ were deleted. The full Billing OS unit suite also passed 39 tests.
 
 The handler:
 1. Receives payload from GHL webhook on Pre-Hold-Start Date
-2. Looks up Stripe customer by email
-3. Calculates and applies overlap credit if billing period extends past hold start date
-4. Pauses subscription with `behavior: void` and `resumes_at` = Pre-Return Date timestamp
-5. Writes Succeeded or Exception, the result, time and any error back to GHL
-6. Creates a same-day `BILLING EXCEPTION: Hold - Manual action required` task assigned directly to Admin Eve when the hold cannot be completed
-7. Uses idempotency keys so a retry does not duplicate a credit or pause, and an exception key so the same open error does not create duplicate tasks
+2. Branches PT before any Stripe or GHL mutation and returns only a reconciliation proposal or fail-closed review state
+3. For Membership/SGPT, looks up the Stripe customer by email
+4. Calculates and applies Membership/SGPT overlap credit if the billing period extends past hold start date
+5. Pauses the Membership/SGPT subscription with `behavior: void` and `resumes_at` = Pre-Return Date timestamp
+6. Writes Succeeded or Exception, the result, time and any error back to GHL for the existing Membership/SGPT path
+7. Creates a same-day `BILLING EXCEPTION: Hold - Manual action required` task for a Membership/SGPT failure
+8. Uses idempotency keys so a retry does not duplicate a credit or pause, and an exception key so the same open error does not create duplicate tasks
 
 When no active Stripe subscription exists, the handler writes an Exception and creates the Admin Eve task with the member, requested hold dates and exact error. `HS: Hold Activates` now sets the hold action to Processing, sends `contact_id`, email and the verified dates to Billing OS, and waits until `Billing OS: Hold Action Status = Succeeded` before sending the first pause confirmation. A failed or unresolved billing action therefore cannot produce a member message saying the hold has been arranged.
 
@@ -241,8 +244,9 @@ HS: Membership/PT Hold Form Submitted workflow fires
       ▼
 [Pre-Hold-Start Date — 7 days before hold start]
 HS: Hold Activates workflow fires
-      ├─ Webhook → Railway → Stripe subscription paused (resumes_at = Pre-Return Date)
-      ├─ Overlap credit applied if applicable
+      ├─ Membership/SGPT → Railway → Stripe subscription paused (resumes_at = Pre-Return Date)
+      ├─ Membership/SGPT overlap credit applied if applicable
+      ├─ PT → proposal/review state only; no live mutation and no duplicate task
       ├─ SMS: Payments now paused, gym access until Hold Start Date, return on Hold End Date (Level 3)
       ├─ Wait 7 days
       ├─ Pipeline → On Hold
@@ -388,14 +392,42 @@ When appointments are created programmatically, suppress per-appointment notific
 
 ---
 
+## PT Entitlement Reconciliation Guard
+
+The local Billing OS candidate branches PT before any Stripe lookup, daily-proration calculation, GHL status write, or exception-task creation. It accepts an existing GHL Conversation ID plus payment and appointment evidence and returns one of three side-effect-free states:
+
+| State | Meaning | Permitted next action |
+|---|---|---|
+| `proposal_ready` | Complete regular evidence supports exact one-to-one transfer(s) | Human may review the proposal in the existing Conversation; execution remains separately gated |
+| `no_transfer_needed` | Complete evidence shows no boundary transfer is required | Human records the outcome in the existing Conversation; no adjustment |
+| `review_required` | Evidence is missing, irregular, policy-sensitive, duplicated or mismatched | Stop; human investigates without a Stripe credit or entitlement transfer |
+
+Appointments are classified against the inclusive service hold: before the start is pre-hold, start through end is in-hold, and after the end is post-hold. A recurring payment funds the appointments in the cadence window beginning on payment date plus the validated service offset. Manual payments and packs require explicit appointment mappings.
+
+A safe proposal requires all of the following:
+
+- stable payment and appointment IDs, actual payment states, and complete appointments around both boundaries;
+- exact cadence and `sessions_per_payment` coverage in every relevant service window;
+- hold-validated skipped payments rather than failed or unexplained billing;
+- a paid in-hold source and an otherwise-unfunded post-hold target in equal counts;
+- an existing Conversation ID and no prior cash credit or entitlement transfer touching the boundary; and
+- no complaint, cancellation, billing exception, makeup/forfeit/no-show question, medical or safety issue, or policy ambiguity.
+
+The result always records `mutations_performed: []`, `create_task: false`, and `create_tracker: false`. The existing GHL Conversation remains the sole work item. The candidate does not post its internal-note payload because Conversation writes remain separately protected.
+
+The exact acceptance fixture produces one proposed transfer from the paid 10 September appointment to the otherwise-unfunded 8 October return appointment, no cash adjustment, and four skipped weekly payments on 7, 14, 21 and 28 September. The 2 September and 30 September dates remain control dates rather than debit dates.
+
+---
+
 ## System Notes
 
 ### What's automated
 - Duplicate hold block — no double-processing
 - Cancellation check — no holds during notice period
 - Date calculations — Hold End Date, Pre-Hold-Start Date, Pre-Return Date all calculated on form submission
-- Stripe pause — fires automatically on Pre-Hold-Start Date via Railway webhook handler
-- Overlap credit — calculated and applied automatically
+- Membership/SGPT Stripe pause — fires automatically on Pre-Hold-Start Date via Railway webhook handler
+- Membership/SGPT overlap credit — calculated and applied automatically
+- PT reconciliation candidate — proposal generation only; not a live execution or Conversation-write path
 - Pre-return communications — coach task at 7 days, member SMS at 2 days
 - Return day communications — member SMS + coach task + admin notification
 - Auto-completion — 3 days after return day, current-cycle guard passes before status → Completed and pipeline removal
@@ -403,6 +435,7 @@ When appointments are created programmatically, suppress per-appointment notific
 - Extended hold approval chase — 2-day wait, escalation if not actioned
 
 ### What remains manual
+- PT evidence clearance, proposal approval, and any later entitlement or billing execution
 - Standard membership-hold verification tasks — Admin Eve checks dates, billing pause, and Hold Status on the selected duration branch
 - Prepaid-pack and other non-subscription exceptions: Admin reviews manually when Railway alerts
 - Extended hold rejection — system flags but staff communicate outcome to member
@@ -414,6 +447,8 @@ When appointments are created programmatically, suppress per-appointment notific
 - No cancellation pathway prompts in automation — manual human judgement only
 - Passive non-returner safety net removed — coach relationships handle this
 - One active hold at a time — enforced in workflow via duplicate hold block
+- Existing GHL Conversation is the sole PT reconciliation work item; do not create a duplicate task or tracker
+- PT appointment entitlement must never be converted into an automatic daily Stripe credit
 
 The 3 August pipeline reconciliation found 19 open Hold OS opportunities whose canonical `HS: Hold Status` was Completed and whose start/end chronology was valid with the end date already passed. Peter explicitly approved their permanent deletion; all 19 were removed and independently verified absent. Four other opportunities still say Completed but were excluded from cleanup: one carries a future hold period and three have end dates before their start dates.
 

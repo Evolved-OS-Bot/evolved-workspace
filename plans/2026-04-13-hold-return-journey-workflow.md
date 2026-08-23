@@ -6,6 +6,8 @@
 
 > **Superseded assumption, 24 July 2026:** PT Minder references in this historical plan are not current operating instructions. The owner confirmed that The Evolved does not use PT Minder or its remaining-pack-sessions function. Current billing evidence comes from Stripe; prepaid-pack session balances remain an unresolved operational-data gap.
 
+> **PT boundary amendment, 24 August 2026:** Daily overlap-credit decisions and Stripe steps in this historical plan apply to Membership/SGPT only. PT holds require session-entitlement reconciliation and human approval under `plans/2026-08-22-pt-hold-entitlement-reconciliation.md`. Do not use this plan to issue a PT daily credit.
+
 > **Current-cycle hardening, 5 August 2026:** the original delayed-write design
 > did not prove that an enrolment still belonged to the accepted hold cycle.
 > The published workflow now calls Billing OS and branches fail-closed before
