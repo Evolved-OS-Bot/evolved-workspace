@@ -24,6 +24,14 @@ def jody_payload():
         "hold_type": "PT",
         "hold_start_date": "2026-09-09",
         "hold_end_date": "2026-10-07",
+        "evidence_window_start_date": "2026-08-31",
+        "evidence_window_end_date": "2026-10-18",
+        "evidence_complete": True,
+        "evidence_provenance": {
+            "source": "validated_operator_bundle",
+            "snapshot_id": "jody-boundary-acceptance-v1",
+            "fingerprint": "fixture-jody-boundary-v1",
+        },
         "payment_cadence_days": 7,
         "sessions_per_payment": 2,
         "billing_to_service_offset_days": 7,
@@ -112,6 +120,8 @@ class PTEntitlementReconciliationTests(unittest.TestCase):
         self.assertEqual(result["hold"]["pre_return_billing_control_date"], "2026-09-30")
         self.assertFalse(result["work_item"]["create_task"])
         self.assertFalse(result["work_item"]["create_tracker"])
+        self.assertEqual(result["work_item"]["proposal_id"], result["proposal_id"])
+        self.assertEqual(result["proposal_id"], reconcile_pt_hold(jody_payload())["proposal_id"])
 
     def test_aligned_hold_needs_no_transfer(self):
         payload = jody_payload()
@@ -184,6 +194,28 @@ class PTEntitlementReconciliationTests(unittest.TestCase):
         self.assertEqual(result["status"], "review_required")
         self.assertIn("missing existing GHL Conversation ID", result["reasons"])
         self.assertIn("billing-to-service offset is not validated", result["reasons"])
+
+    def test_missing_provenance_or_incomplete_boundary_window_fails_closed(self):
+        payload = jody_payload()
+        payload["evidence_provenance"] = {}
+        payload["evidence_window_end_date"] = "2026-10-07"
+        result = reconcile_pt_hold(payload)
+
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("evidence source is not governed", result["reasons"])
+        self.assertIn(
+            "appointment evidence does not cover the post-hold boundary",
+            result["reasons"],
+        )
+
+    def test_delivered_in_hold_session_is_not_treated_as_unused_entitlement(self):
+        payload = jody_payload()
+        payload["appointments"][3]["status"] = "completed"
+        result = reconcile_pt_hold(payload)
+
+        self.assertEqual(result["status"], "review_required")
+        self.assertTrue(any("marked delivered" in reason for reason in result["reasons"]))
+        self.assertEqual(result["proposed_transfers"], [])
 
     def test_billing_exception_or_unverified_skip_reason_fails_closed(self):
         payload = jody_payload()

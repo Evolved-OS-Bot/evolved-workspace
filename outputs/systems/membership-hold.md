@@ -202,11 +202,11 @@ were deleted. The full Billing OS unit suite also passed 39 tests.
 **Service:** Railway — `Billing OS` (formerly `believable-happiness`) in the `tender-comfort` project
 **Endpoint:** `POST https://believable-happiness-production-9870.up.railway.app/stripe/pause-hold`
 **File:** `stripe_handler/app.py` in the `Evolved-OS-Bot/evolved-workspace` GitHub repo
-**Environment variables:** `STRIPE_API_KEY`, `GHL_API_KEY`, `GHL_LOCATION_ID`, `GHL_ADMIN_EVE_USER_ID`
+**Environment variables:** `STRIPE_API_KEY`, `GHL_API_KEY`, `GHL_LOCATION_ID`, `GHL_ADMIN_EVE_USER_ID`; PT candidate gate `PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED` defaults to `false`
 
 The handler:
 1. Receives payload from GHL webhook on Pre-Hold-Start Date
-2. Branches PT before any Stripe or GHL mutation and returns only a reconciliation proposal or fail-closed review state
+2. When the protected PT gate is enabled, branches PT before any Stripe or GHL mutation and returns only a reconciliation proposal or fail-closed review state
 3. For Membership/SGPT, looks up the Stripe customer by email
 4. Calculates and applies Membership/SGPT overlap credit if the billing period extends past hold start date
 5. Pauses the Membership/SGPT subscription with `behavior: void` and `resumes_at` = Pre-Return Date timestamp

@@ -7,12 +7,15 @@ proposal for a human to approve in an *existing* GHL Conversation.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import date, datetime, timedelta
 from typing import Any
 
 
 SAFE_APPOINTMENT_STATUSES = {"scheduled", "completed", "attended"}
 PAYMENT_STATUSES = {"paid", "skipped"}
+ALLOWED_EVIDENCE_SOURCES = {"operating_data_hub", "validated_operator_bundle"}
 POLICY_SENSITIVE_TERMS = {
     "billing_exception",
     "cancellation",
@@ -105,6 +108,7 @@ def _work_item(conversation_id: str, result: dict[str, Any]) -> dict[str, Any]:
     return {
         "type": "ghl_conversation_internal_note",
         "conversation_id": conversation_id or None,
+        "proposal_id": result.get("proposal_id"),
         "use_existing_conversation": True,
         "create_task": False,
         "create_tracker": False,
@@ -119,6 +123,28 @@ def _public_appointment(appointment: dict[str, Any]) -> dict[str, Any]:
         "date": appointment["date"].isoformat(),
         "status": appointment["status"],
     }
+
+
+def _proposal_id(
+    conversation_id: str,
+    hold_start: date,
+    hold_end: date,
+    provenance: dict[str, Any],
+    transfers: list[dict[str, Any]],
+) -> str:
+    identity = json.dumps(
+        {
+            "conversation_id": conversation_id,
+            "hold_start": hold_start.isoformat(),
+            "hold_end": hold_end.isoformat(),
+            "snapshot_id": str(provenance.get("snapshot_id") or ""),
+            "fingerprint": str(provenance.get("fingerprint") or ""),
+            "transfers": transfers,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return "pt-hold-" + hashlib.sha256(identity.encode()).hexdigest()[:32]
 
 
 def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
@@ -137,6 +163,14 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
     try:
         hold_start = _date(payload.get("hold_start_date"), "hold_start_date")
         hold_end = _date(payload.get("hold_end_date"), "hold_end_date")
+        evidence_window_start = _date(
+            payload.get("evidence_window_start_date"),
+            "evidence_window_start_date",
+        )
+        evidence_window_end = _date(
+            payload.get("evidence_window_end_date"),
+            "evidence_window_end_date",
+        )
         cadence_days = _positive_int(payload.get("payment_cadence_days"), "payment_cadence_days")
         sessions_per_payment = _positive_int(payload.get("sessions_per_payment"), "sessions_per_payment")
         service_offset_days = _nonnegative_int(
@@ -148,6 +182,25 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
 
     if hold_end < hold_start:
         reasons.append("hold_end_date precedes hold_start_date")
+    if evidence_window_end < evidence_window_start:
+        reasons.append("evidence window end precedes its start")
+    if evidence_window_start > hold_start - timedelta(days=cadence_days):
+        reasons.append("appointment evidence does not cover the pre-hold boundary")
+    if evidence_window_end < hold_end + timedelta(days=cadence_days):
+        reasons.append("appointment evidence does not cover the post-hold boundary")
+    if payload.get("evidence_complete") is not True:
+        reasons.append("payment, appointment, adjustment, and risk evidence is not marked complete")
+    provenance = payload.get("evidence_provenance")
+    if not isinstance(provenance, dict):
+        reasons.append("missing evidence provenance")
+    else:
+        source = str(provenance.get("source") or "").strip()
+        snapshot_id = str(provenance.get("snapshot_id") or "").strip()
+        fingerprint = str(provenance.get("fingerprint") or "").strip()
+        if source not in ALLOWED_EVIDENCE_SOURCES:
+            reasons.append("evidence source is not governed")
+        if not snapshot_id or not fingerprint:
+            reasons.append("evidence provenance lacks snapshot ID or fingerprint")
     if payload.get("offset_validated") is not True:
         reasons.append("billing-to-service offset is not validated")
 
@@ -166,6 +219,10 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
                 raise EvidenceError(f"duplicate appointment id: {appointment_id}")
             appointment_ids.add(appointment_id)
             appointment_date = _date(raw.get("date"), f"appointments[{index}].date")
+            if not evidence_window_start <= appointment_date <= evidence_window_end:
+                reasons.append(
+                    f"appointment {appointment_id} falls outside the declared evidence window"
+                )
             status = str(raw.get("status") or "").strip().lower()
             if status not in SAFE_APPOINTMENT_STATUSES:
                 reasons.append(
@@ -231,6 +288,18 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
                 f"irregular payment cadence between {previous['date']} and {current['date']}: {gap} days"
             )
 
+    if cadence_payments:
+        first_service_start = cadence_payments[0]["date"] + timedelta(
+            days=service_offset_days
+        )
+        last_service_end = cadence_payments[-1]["date"] + timedelta(
+            days=service_offset_days + cadence_days - 1
+        )
+        if first_service_start > evidence_window_start:
+            reasons.append("payment evidence does not cover the start of the evidence window")
+        if last_service_end < evidence_window_end:
+            reasons.append("payment evidence does not cover the end of the evidence window")
+
     paid_by_appointment: dict[str, str] = {}
     skipped_by_appointment: dict[str, str] = {}
     payment_windows: list[dict[str, Any]] = []
@@ -286,6 +355,18 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
         key=lambda item: (item["date"], item["id"]),
     )
 
+    for item in paid_in_hold:
+        if item["status"] != "scheduled":
+            reasons.append(
+                f"paid in-hold appointment {item['id']} is marked delivered; "
+                "unused entitlement is ambiguous"
+            )
+    for item in unfunded_post:
+        if item["status"] != "scheduled":
+            reasons.append(
+                f"post-hold target appointment {item['id']} is not scheduled"
+            )
+
     funding = {
         "payment_windows": payment_windows,
         "paid_in_hold_appointment_ids": [item["id"] for item in paid_in_hold],
@@ -332,8 +413,16 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
     ]
 
     status = "proposal_ready" if proposed_transfers else "no_transfer_needed"
+    proposal_id = _proposal_id(
+        conversation_id,
+        hold_start,
+        hold_end,
+        provenance,
+        proposed_transfers,
+    )
     result = {
         "status": status,
+        "proposal_id": proposal_id,
         "safe_to_approve": True,
         "reasons": [],
         "hold": {
@@ -345,6 +434,11 @@ def reconcile_pt_hold(payload: dict[str, Any]) -> dict[str, Any]:
             "pre_return_billing_control_date": (
                 hold_end - timedelta(days=service_offset_days)
             ).isoformat(),
+        },
+        "evidence": {
+            "window_start": evidence_window_start.isoformat(),
+            "window_end": evidence_window_end.isoformat(),
+            "provenance": provenance,
         },
         "classifications": classifications,
         "funding": funding,

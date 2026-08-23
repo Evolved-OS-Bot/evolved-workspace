@@ -1,7 +1,7 @@
 # Plan: PT Hold Entitlement Reconciliation Guard
 
 **Created:** 2026-08-22
-**Status:** Implemented
+**Status:** Local implementation verified; dark deployment candidate; live PT activation blocked at protected Conversation/evidence gates
 **Request:** Preserve SGPT hold processing while replacing PT daily-proration assumptions with a fail-closed, session-entitlement reconciliation proposal for approval in the existing GHL Conversation.
 
 ---
@@ -22,13 +22,13 @@ PT payments purchase discrete coached sessions, so daily Stripe proration can co
 
 ### Relevant Existing Structure
 
-- `stripe_handler/app.py` exposes the shared `/stripe/pause-hold` endpoint and currently applies daily overlap credit to both Membership and PT holds.
+- `stripe_handler/app.py` is the current guarded Billing OS. The production deployment still applies the legacy daily-overlap path to PT until the protected PT gate is separately activated.
 - `outputs/systems/membership-hold.md` documents the shared Hold OS workflow and the current daily Stripe overlap credit.
 - `outputs/systems/personal-training.md` documents PT calendars, packages, and the shared hold workflow.
 - `context/policies.md` establishes that PT is paid at least one week in advance and that cancellations/forfeitures have distinct policy treatment.
 - `plans/2026-04-13-hold-return-journey-workflow.md` records the original date-based design rationale.
 
-The delegated brief also names `AGENTS.md`, `plans/2026-07-31-ghl-conversation-clearance-controller.md`, `outputs/systems/conversation-clearance-control.md`, and `outputs/systems/inbound-communications.md`. Those files are absent from this checkout and cannot be treated as verified repository instructions or implementation dependencies.
+The canonical Conversation controller plan and system documents are present and were reviewed. They keep GHL Conversations as the sole work item, prohibit secondary tasks, and report shadow mode with assignment and message write gates disabled. The workflow-extension registry also records `promotion_authorised=false`; therefore the local work-item payload cannot yet be posted live.
 
 ### Gaps or Problems Being Addressed
 
@@ -84,7 +84,7 @@ None.
 ### Key Decisions Made
 
 1. **Hold dates are inclusive service dates:** appointments before the start are pre-hold, dates from start through end are in-hold, and later dates are post-hold.
-2. **PT never uses daily proration:** a PT request cannot reach the Stripe customer-balance credit branch.
+2. **PT never uses daily proration after guarded activation:** when the protected PT gate is enabled, a PT request cannot reach the Stripe customer-balance credit branch. The gate defaults off so a code deployment alone cannot silently change production billing behavior.
 3. **Payments fund service windows, then appointments:** a validated billing-to-service offset opens a cadence-length service window; each cadence payment must map to exactly `sessions_per_payment` appointments.
 4. **Manual/pack entitlements require explicit appointment mapping:** they are not inferred from a recurring cadence.
 5. **Only exact one-to-one reconciliation is safe:** the number of paid in-hold appointments must equal the number of post-hold appointments uncovered by skipped payments; mismatches are human-review-only with no transfer.
@@ -100,10 +100,11 @@ None.
 - **Create a separate task or spreadsheet tracker:** rejected because the existing GHL Conversation is the required single work item.
 - **Pair as many appointments as possible when counts differ:** rejected because partial reconciliation can hide missing evidence or duplicate compensation.
 
-### Open Questions (if any)
+### Remaining Activation Gates
 
-- The absent conversation-clearance controller documents must be reconciled before live integration. The local output contract will be deliberately connector-neutral until those canonical files are available.
-- The production source and schema for appointment, payment, and prior-adjustment evidence must be validated before rollout.
+- The Hub evidence adapter and production schema for payments, appointment coverage, cadence/offset, prior adjustments, risk flags and the existing Conversation ID are not implemented.
+- Conversation clearance remains shadow-only, with `promotion_authorised=false` and no authorised internal-note handoff.
+- The PT environment gate must remain `false` until both controls pass read-only parity and Peter separately approves the exact live handoff/activation.
 
 ---
 
@@ -111,7 +112,7 @@ None.
 
 | Threat / failure | Consequence | Local control | Rollout control still required |
 | --- | --- | --- | --- |
-| PT request reaches SGPT daily-proration code | Wrong cash credit; possible double benefit | Explicit hold-type branch before Stripe lookup; unknown types return 400 | Shadow-log hold-type values before enabling branch |
+| PT request reaches SGPT daily-proration code | Wrong cash credit; possible double benefit | Enabled PT gate branches before Stripe lookup; unknown types fail closed | Keep the gate off for dark deployment; enable only after Hub evidence and Conversation handoff acceptance |
 | Hold boundary interpreted as exclusive | Wrong source/target appointment | Inclusive date comparisons covered by Jody test | Compare shadow results with coach/admin records |
 | Billing control date treated as debit/service date | Wrong payment-to-appointment mapping | Funding uses payment date + validated offset; control dates are labels only | Evidence adapter must pull actual payment status/date |
 | Cadence drift or duplicated payment | False entitlement inference | Exact interval and unique ID validation | Human must resolve plan migrations and billing exceptions |
@@ -272,45 +273,46 @@ No live workflow is changed in this task. If this code is later deployed, Member
 
 ## Notes
 
-The local implementation is a guard and proposal generator, not a rollout. Live evidence adapters, GHL Conversation posting, approval capture, Stripe pause execution, and appointment entitlement mutation remain separately controlled rollout work requiring Peter's approval.
+The local implementation is a guard and proposal generator, not an execution path. Live evidence adapters, GHL Conversation posting, approval capture, Stripe pause execution, and appointment entitlement mutation remain separately controlled rollout work.
 
 ### Rollout / Migration Plan
 
-1. Restore and review the missing conversation-clearance controller plan and canonical inbound/clearance documentation; adapt the connector-neutral work-item payload to that verified contract.
-2. Build read-only adapters for Stripe payment status, PT appointment records, plan cadence/offset, manual/pack mappings, prior adjustments, and Conversation risk flags.
-3. Run in shadow mode with no posts or mutations; compare at least one full hold cycle against human reconciliations, including Jody-like partial boundaries.
-4. Add authenticated webhook requests, evidence version/freshness checks, deterministic reconciliation IDs, and execution idempotency.
-5. With Peter's separate approval, post internal proposals to the existing GHL Conversation only. Keep human approval mandatory and member communications disabled.
-6. In Stripe test mode and non-live appointment fixtures, verify approval, rejection, stale-evidence recheck, retry, and duplicate-execution behavior.
-7. Pilot on a small set of regular-cadence PT holds under manual dual review. Do not include packs, irregular cadence, exceptions, complaints, cancellations, or medical/safety cases.
-8. Reconcile every pilot outcome against Stripe, appointments, and the Conversation audit record before expanding. Maintain an immediate rollback to the manual PT process.
+1. Deploy the candidate dark with `PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED=false`; verify health and that no GHL, Stripe, appointment or Conversation behavior changes.
+2. Build a read-only Hub adapter for payment status, PT appointments, cadence/offset, manual mappings, prior adjustments, risk flags and existing Conversation identity.
+3. Run proposal-only parity with no Conversation post or mutation; require complete governed evidence windows and compare against human reconciliations.
+4. Add an authenticated existing-Conversation internal-note handoff, exact freshness re-read, proposal ID binding and execution idempotency. Do not create a task or tracker.
+5. Obtain the exact immutable Conversation promotion authority and Peter's approval for that protected handoff; keep member messaging and all execution disabled.
+6. Test approval, rejection, stale-evidence, retry and duplicate-credit behavior with non-live fixtures, then pilot only regular-cadence PT holds under dual human review.
+7. Enable the PT gate only after the activation evidence is recorded. Reconcile every pilot outcome and retain immediate rollback by setting the gate to `false`.
 
 ---
 
 ## Implementation Notes
 
-**Implemented:** 2026-08-22
+**Implemented:** 2026-08-22; reconciled onto the governed Billing OS on 2026-08-24
 
 ### Summary
 
 - Added a pure PT entitlement engine with inclusive boundary classification, cadence/service-window mapping, exact one-to-one transfer proposals, and fail-closed evidence checks.
-- Branched the shared hold endpoint before Stripe lookup so PT cannot receive the SGPT daily overlap credit; unknown hold types also fail before mutation.
+- Added a protected, default-off gate that branches PT before Stripe lookup so activation cannot issue an SGPT daily overlap credit; unknown hold types fail before Stripe mutation.
 - Added a proposal-only endpoint and existing-GHL-Conversation work-item contract with no task/tracker creation and `mutations_performed: []`.
-- Added 14 unit/integration tests, including Jody's exact boundary, aligned and partial boundaries, cadence/appointment failures, policy/billing exceptions, duplicate credit, unknown type, and Membership regression coverage.
+- Added complete-evidence windows, governed provenance, deterministic proposal IDs, delivered-session rejection and duplicate-work-item tests in addition to the original boundary suite.
 - Updated canonical hold/PT documentation and the workspace map.
 - Qualified the shared business billing context and marked the historical hold plan's PT daily-credit logic as superseded.
 
 ### Verification Results
 
-- `STRIPE_API_KEY=sk_test_local_only /tmp/pt-hold-test-venv/bin/python -m unittest discover -s stripe_handler/tests -v` — **14 passed**
+- Current Billing OS regression suite — **50 passed**
+- PT unit and integration suite — **17 passed**
 - `python3 -m py_compile ...` for the handler, engine, and tests — **passed**
 - `git diff --check` — **passed**
-- No deployment, live API call, contact/workflow update, billing/appointment mutation, or member communication was performed.
+- At this record point no live contact/workflow, billing, appointment, membership, entitlement or member communication mutation was performed.
 
-### Deviations from Plan
+### Reconciliation Notes
 
-- The delegated brief's `AGENTS.md`, conversation-clearance controller plan, conversation-clearance system doc, and inbound-communications system doc do not exist in this checkout. No substitute behavior was invented. The implementation emits a connector-neutral existing-Conversation note contract that must be reconciled with those canonical documents before live integration.
-- The local Python environment did not contain Flask/Stripe, so the pinned runtime dependencies were installed only in `/tmp/pt-hold-test-venv` to execute integration tests; no dependency lock or runtime version was changed.
+- The original PT implementation was based on an obsolete 253-line handler. It was checkpointed, replayed onto the newest governed repository snapshot, and then reconciled with the later canonical Billing OS and test delta. The current guarded Billing OS remains the base; only the pure engine, PT branch, tests and documentation were carried forward.
+- The Conversation documents are available in the governed snapshot. They confirm that no substitute task or live note writer may be invented while promotion remains unauthorised.
+- The local Python environment did not contain Flask/Stripe, so pinned runtime dependencies were installed only in `/tmp/pt-hold-test-venv`; no dependency lock or runtime version changed.
 
 ### Issues Encountered
 

@@ -74,7 +74,16 @@ class BillingOSTest(unittest.TestCase):
                     '"original_weekly_price_cents":9900,'
                     '"weekly_discount_cents":1000,'
                     '"maximum_clawback_cents":52000,'
-                    '"term_months":12}}'
+                    '"term_months":12},'
+                    '"strong_standard":{'
+                    '"price_id":"price_strong-99",'
+                    '"weekly_price_cents":9900,'
+                    '"service_name":"Strong, Fit & Flexible Membership",'
+                    '"service_type":"sgpt",'
+                    '"offer_version":"strong-standard-service-change-v1",'
+                    '"agreement_version":"strong-standard-service-change-variation-v1",'
+                    '"survey_id":"survey-strong-standard",'
+                    '"allow_notice_waiver":true}}'
                 )
             },
         )
@@ -369,6 +378,13 @@ class BillingOSTest(unittest.TestCase):
 
         self.assertEqual(contact_id, "contact_1")
 
+    def test_cancellation_resolves_contact_id_from_nested_custom_data(self):
+        contact_id = billing.resolve_contact_id(
+            {"customData": {"contact_id": "contact_nested"}}
+        )
+
+        self.assertEqual(contact_id, "contact_nested")
+
     @patch.object(billing.requests, "delete")
     def test_failed_pt_cancellation_removes_contact_from_pt_workflow(
         self, request_delete
@@ -423,6 +439,42 @@ class BillingOSTest(unittest.TestCase):
         self.assertEqual(
             update_status.call_args.args[:3],
             ("contact_1", "cancellation", "Succeeded"),
+        )
+
+    @patch.object(billing, "update_ghl_status")
+    @patch.object(billing.stripe.Subscription, "modify")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Customer, "list")
+    def test_cancellation_accepts_nested_ghl_webhook_payload(
+        self, customer_list, subscription_list, modify, update_status
+    ):
+        customer_list.return_value = SimpleNamespace(
+            data=[SimpleNamespace(id="cus_test")]
+        )
+        subscription_list.return_value = SimpleNamespace(data=[subscription()])
+
+        response = self.client.post(
+            "/stripe/cancel",
+            json={
+                "contact": {"id": "contact_nested"},
+                "customData": {
+                    "email": "member@example.com",
+                    "notice_end_date": "2026-08-28",
+                    "contact_name": "Nested Member",
+                    "cancellation_type": "PT",
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        modify.assert_called_once()
+        customer_list.assert_called_once_with(
+            email="member@example.com", limit=1
+        )
+        update_status.assert_called_once()
+        self.assertEqual(
+            update_status.call_args.args[:3],
+            ("contact_nested", "cancellation", "Succeeded"),
         )
 
     @patch.object(billing, "update_ghl_status")
@@ -685,6 +737,183 @@ class BillingOSTest(unittest.TestCase):
             event["requested_services"][0]["weekly_price_cents"],
             2700,
         )
+
+    @patch.object(billing.stripe.Subscription, "modify")
+    @patch.object(billing.stripe.SubscriptionSchedule, "create")
+    @patch.object(billing.stripe.SubscriptionSchedule, "list")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Price, "retrieve")
+    def test_strong_standard_waiver_separates_billing_and_service_boundaries(
+        self,
+        price_retrieve,
+        subscription_list,
+        schedule_list,
+        schedule_create,
+        subscription_modify,
+    ):
+        price_retrieve.return_value = {
+            "id": "price_strong-99",
+            "unit_amount": 9900,
+            "currency": "aud",
+            "active": True,
+            "recurring": {"interval": "week", "interval_count": 1},
+        }
+        current = subscription()
+        current["items"]["data"][0]["plan"]["amount"] = 18000
+        current["current_period_end"] = billing.service_change_boundary(
+            date(2026, 8, 13)
+        )
+        subscription_list.return_value = SimpleNamespace(data=[current])
+        schedule_list.return_value = SimpleNamespace(data=[])
+        schedule_create.return_value = {"id": "sub_sched_strong"}
+
+        result = billing.schedule_service_change_billing(
+            "cus_test",
+            contact_id="contact_1",
+            request_id="msc-anika",
+            request_date=date(2026, 8, 10),
+            current_price_cents=18000,
+            target_service="strong_standard",
+            supplied_effective_date="2026-08-17",
+            notice_waived=True,
+        )
+
+        self.assertEqual(result["billing_boundary_date"], "2026-08-13")
+        self.assertEqual(result["effective_date"], "2026-08-17")
+        self.assertTrue(result["notice_waived"])
+        self.assertEqual(
+            schedule_create.call_args.kwargs["start_date"],
+            billing.service_change_boundary(date(2026, 8, 13)),
+        )
+        self.assertEqual(
+            subscription_modify.call_args.kwargs["cancel_at"],
+            billing.service_change_boundary(date(2026, 8, 13)),
+        )
+
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Price, "retrieve")
+    def test_strong_standard_waiver_rejects_wrong_service_week(
+        self,
+        price_retrieve,
+        subscription_list,
+    ):
+        price_retrieve.return_value = {
+            "id": "price_strong-99",
+            "unit_amount": 9900,
+            "currency": "aud",
+            "active": True,
+            "recurring": {"interval": "week", "interval_count": 1},
+        }
+        current = subscription()
+        current["items"]["data"][0]["plan"]["amount"] = 18000
+        current["current_period_end"] = billing.service_change_boundary(
+            date(2026, 8, 13)
+        )
+        subscription_list.return_value = SimpleNamespace(data=[current])
+
+        with self.assertRaisesRegex(ValueError, "must be a Monday"):
+            billing.schedule_service_change_billing(
+                "cus_test",
+                contact_id="contact_1",
+                request_id="msc-anika",
+                request_date=date(2026, 8, 10),
+                current_price_cents=18000,
+                target_service="strong_standard",
+                supplied_effective_date="2026-08-18",
+                notice_waived=True,
+                execute=False,
+            )
+
+    @patch.object(billing.stripe.SubscriptionSchedule, "list")
+    @patch.object(billing.stripe.Subscription, "list")
+    @patch.object(billing.stripe.Price, "retrieve")
+    def test_strong_standard_defaults_to_30_paid_days_notice(
+        self,
+        price_retrieve,
+        subscription_list,
+        schedule_list,
+    ):
+        price_retrieve.return_value = {
+            "id": "price_strong-99",
+            "unit_amount": 9900,
+            "currency": "aud",
+            "active": True,
+            "recurring": {"interval": "week", "interval_count": 1},
+        }
+        current = subscription()
+        current["items"]["data"][0]["plan"]["amount"] = 18000
+        current["current_period_end"] = billing.service_change_boundary(
+            date(2026, 8, 13)
+        )
+        subscription_list.return_value = SimpleNamespace(data=[current])
+        schedule_list.return_value = SimpleNamespace(data=[])
+
+        result = billing.schedule_service_change_billing(
+            "cus_test",
+            contact_id="contact_1",
+            request_id="msc-standard-notice",
+            request_date=date(2026, 8, 10),
+            current_price_cents=18000,
+            target_service="strong_standard",
+            notice_waived=False,
+            execute=False,
+        )
+
+        self.assertEqual(result["billing_boundary_date"], "2026-09-10")
+        self.assertEqual(result["effective_date"], "2026-09-10")
+        self.assertFalse(result["notice_waived"])
+
+    def test_signed_source_form_must_match_approved_offer(self):
+        payload = {
+            "contact_id": "contact_1",
+            "email": "member@example.com",
+            "request_id": "msc-strong",
+            "request_date": "2026-08-10",
+            "target_service": "strong_standard",
+            "source_form_id": "wrong-form",
+            "prior_service": "45 Min 1:1 PT",
+        }
+        preview = {
+            "current_price_cents": 18000,
+            "effective_date": "2026-08-17",
+            "effective_at": "2026-08-17T00:00:00+10:00",
+        }
+
+        with self.assertRaisesRegex(ValueError, "source form"):
+            billing.requested_service_change_event(payload, preview)
+
+    def test_notice_waiver_requires_complete_owner_approval(self):
+        payload = {
+            "notice_waiver_status": "Approved",
+            "notice_waiver_approved_by": "Peter Brown",
+            "notice_waiver_approved_at": "2026-08-10T09:00:00+10:00",
+            "notice_waiver_reason": "Owner-approved transition for Anika",
+            "final_prior_service_date": "2026-08-16",
+        }
+
+        result = billing.validate_notice_waiver_evidence(
+            payload,
+            date(2026, 8, 17),
+        )
+
+        self.assertEqual(result["notice_waiver_status"], "Approved")
+        self.assertEqual(result["final_prior_service_date"], "2026-08-16")
+
+    def test_notice_waiver_rejects_incomplete_approval(self):
+        with self.assertRaisesRegex(ValueError, "approved by Peter Brown"):
+            billing.validate_notice_waiver_evidence(
+                {
+                    "notice_waiver_status": "Approved",
+                    "notice_waiver_approved_by": "",
+                },
+                date(2026, 8, 17),
+            )
+
+    def test_reusable_workflow_derives_waiver_from_governed_status(self):
+        self.assertTrue(billing.notice_waiver_requested("Approved"))
+        self.assertTrue(billing.notice_waiver_requested(True))
+        self.assertFalse(billing.notice_waiver_requested("Not Applicable"))
+        self.assertFalse(billing.notice_waiver_requested(""))
 
     @patch.object(billing.stripe.Subscription, "modify")
     @patch.object(billing.stripe.SubscriptionSchedule, "create")
@@ -1168,6 +1397,70 @@ class BillingOSTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json()["status"], "accepted")
         snapshot.assert_called_once()
+
+    @patch.object(billing, "snapshot_hold_request")
+    @patch.object(billing, "get_ghl_contact_fields")
+    def test_hold_intake_accepts_nested_ghl_webhook_payload(
+        self, get_fields, snapshot
+    ):
+        get_fields.return_value = {
+            "hold_lifecycle_status": "Completed",
+            "hold_start": int(
+                (
+                    datetime.now(billing.BRISBANE_TZ)
+                    + billing.timedelta(days=14)
+                ).timestamp()
+                * 1000
+            ),
+            "hold_reason": "Holidays",
+            "hold_weeks": "3",
+        }
+        response = self.client.post(
+            "/ghl/hold-intake",
+            json={
+                "customData": {
+                    "contact_id": "contact_1",
+                    "form_kind": "standard_membership",
+                }
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["status"], "accepted")
+        snapshot.assert_called_once_with(
+            "contact_1",
+            get_fields.return_value,
+            "standard",
+        )
+
+    @patch.object(billing, "snapshot_hold_request")
+    @patch.object(billing, "get_ghl_contact_fields")
+    def test_hold_intake_accepts_nested_contact_and_form_kind_header(
+        self, get_fields, snapshot
+    ):
+        get_fields.return_value = {
+            "hold_lifecycle_status": "Completed",
+            "hold_start": int(
+                (
+                    datetime.now(billing.BRISBANE_TZ)
+                    + billing.timedelta(days=14)
+                ).timestamp()
+                * 1000
+            ),
+            "hold_reason": "Holidays",
+            "extended_hold_weeks": "6",
+        }
+        response = self.client.post(
+            "/ghl/hold-intake",
+            json={"contact": {"contactId": "contact_1"}},
+            headers={"form_kind": "extended_pt"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["status"], "accepted")
+        snapshot.assert_called_once_with(
+            "contact_1",
+            get_fields.return_value,
+            "extended",
+        )
 
     @patch.object(billing, "restore_protected_hold")
     @patch.object(billing, "get_ghl_contact_fields")

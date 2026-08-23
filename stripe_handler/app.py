@@ -42,12 +42,30 @@ stripe.api_key = os.environ["STRIPE_API_KEY"]
 GHL_API_KEY = os.environ.get("GHL_API_KEY", "")
 GHL_LOCATION_ID = os.environ.get("GHL_LOCATION_ID", "")
 GHL_ADMIN_EVE_USER_ID = os.environ.get("GHL_ADMIN_EVE_USER_ID", "")
+PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED = (
+    os.environ.get("PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED", "false")
+    .strip()
+    .lower()
+    in {"1", "true", "yes"}
+)
 GHL_BASE_URL = "https://services.leadconnectorhq.com"
 GHL_FIELD_NAMES = {
     "hold_status": "Billing OS: Hold Action Status",
     "cancellation_status": "Billing OS: Cancellation Action Status",
     "service_change_status": "SC: Billing Action Status",
     "service_change_effective_date": "SC: Effective Date",
+    "service_change_billing_boundary_date": "SC: Billing Boundary Date",
+    "service_change_notice_waiver_status": "SC: Notice Waiver Status",
+    "service_change_notice_waiver_approved_by": (
+        "SC: Notice Waiver Approved By"
+    ),
+    "service_change_notice_waiver_approved_at": (
+        "SC: Notice Waiver Approved At"
+    ),
+    "service_change_notice_waiver_reason": "SC: Notice Waiver Reason",
+    "service_change_final_prior_service_date": (
+        "SC: Final Prior Service Date"
+    ),
     "service_change_change_status": "SC: Change Status",
     "service_change_commitment_start_date": "SC: Commitment Start Date",
     "service_change_commitment_end_date": "SC: Commitment End Date",
@@ -572,11 +590,37 @@ def restore_protected_hold(contact_id, fields):
     update_ghl_fields(contact_id, values)
 
 
+def ghl_payload_value(data, *keys):
+    """Read a value from direct or nested GHL webhook data."""
+    if not isinstance(data, (dict, list)):
+        return ""
+    if isinstance(data, dict):
+        for key in keys:
+            value = data.get(key)
+            if value not in ("", None, [], {}):
+                return value
+        for value in data.values():
+            nested = ghl_payload_value(value, *keys)
+            if nested not in ("", None, [], {}):
+                return nested
+    else:
+        for value in data:
+            nested = ghl_payload_value(value, *keys)
+            if nested not in ("", None, [], {}):
+                return nested
+    return ""
+
+
 @app.route("/ghl/hold-intake", methods=["POST"])
 def hold_intake():
     data = request.get_json(silent=True) or {}
-    contact_id = str(data.get("contact_id", "")).strip()
-    form_kind = str(data.get("form_kind", "")).strip()
+    contact_id = str(
+        ghl_payload_value(data, "contact_id", "contactId")
+    ).strip()
+    form_kind = str(
+        ghl_payload_value(data, "form_kind", "formKind")
+        or request.headers.get("form_kind", "")
+    ).strip()
     request_kind = HOLD_FORM_KINDS.get(form_kind)
 
     if not contact_id or not request_kind:
@@ -808,10 +852,9 @@ def record_exception(
 
 def resolve_contact_id(data, email=""):
     """Resolve the GHL contact from standard or custom webhook payload data."""
-    nested_contact = data.get("contact")
+    nested_contact = data.get("contact") if isinstance(data, dict) else None
     candidates = [
-        data.get("contact_id"),
-        data.get("contactId"),
+        ghl_payload_value(data, "contact_id", "contactId"),
         nested_contact.get("id") if isinstance(nested_contact, dict) else "",
     ]
     for candidate in candidates:
@@ -1001,6 +1044,81 @@ def next_subscription_boundary(subscription, request_date):
     if boundary_date < request_date:
         raise ValueError("Current subscription billing boundary is stale")
     return boundary_ts
+
+
+def approved_waived_service_boundary(
+    subscription,
+    request_date,
+    service_effective_date,
+):
+    """Return the next debit boundary funding an approved service week.
+
+    The signed service date must be a Monday and fall from the debit boundary
+    through the following six calendar days. This keeps the commercial service
+    boundary distinct from an earlier advance-payment timestamp.
+    """
+    if service_effective_date.weekday() != 0:
+        raise ValueError("Waived Strong service effective date must be a Monday")
+    boundary_ts = next_subscription_boundary(subscription, request_date)
+    boundary_date = datetime.fromtimestamp(boundary_ts, BRISBANE_TZ).date()
+    if not (
+        boundary_date <= service_effective_date
+        <= boundary_date + timedelta(days=6)
+    ):
+        raise ValueError(
+            "Waived Strong service date is not funded by the next normal "
+            "weekly billing boundary"
+        )
+    return boundary_ts
+
+
+def validate_notice_waiver_evidence(data, service_effective_date):
+    """Fail closed unless the signed request carries complete owner approval."""
+    status = str(data.get("notice_waiver_status") or "").strip()
+    approved_by = str(data.get("notice_waiver_approved_by") or "").strip()
+    approved_at_text = str(data.get("notice_waiver_approved_at") or "").strip()
+    reason = str(data.get("notice_waiver_reason") or "").strip()
+    final_prior_text = str(data.get("final_prior_service_date") or "").strip()
+    if status != "Approved":
+        raise ValueError("Notice waiver status must be Approved")
+    if approved_by != "Peter Brown":
+        raise ValueError("Notice waiver must be approved by Peter Brown")
+    if not approved_at_text:
+        raise ValueError("Notice waiver approval timestamp is required")
+    try:
+        approved_at = datetime.fromisoformat(
+            approved_at_text.replace("Z", "+00:00")
+        )
+    except ValueError as exc:
+        raise ValueError(
+            "Notice waiver approval timestamp must be ISO 8601"
+        ) from exc
+    if approved_at.tzinfo is None:
+        raise ValueError("Notice waiver approval timestamp requires a timezone")
+    if not reason:
+        raise ValueError("Notice waiver reason is required")
+    if not final_prior_text:
+        raise ValueError("Final prior service date is required")
+    final_prior_date = parse_date(final_prior_text)
+    if final_prior_date != service_effective_date - timedelta(days=1):
+        raise ValueError(
+            "Final prior service date must be the day before the Strong "
+            "service effective date"
+        )
+    return {
+        "notice_waiver_status": status,
+        "notice_waiver_approved_by": approved_by,
+        "notice_waiver_approved_at": approved_at.isoformat(),
+        "notice_waiver_reason": reason,
+        "final_prior_service_date": final_prior_date.isoformat(),
+    }
+
+
+def notice_waiver_requested(value):
+    """Interpret the governed GHL waiver status used by the reusable workflow."""
+    if value is True:
+        return True
+    return str(value or "").strip().lower() in {"true", "approved"}
 
 
 def add_calendar_months(value, months):
@@ -1411,6 +1529,7 @@ def schedule_service_change_billing(
     current_price_cents=0,
     target_service,
     supplied_effective_date="",
+    notice_waived=False,
     execute=True,
 ):
     """Idempotently schedule the approved Stripe transition."""
@@ -1430,6 +1549,18 @@ def schedule_service_change_billing(
         in {"active", "trialing", "past_due", "unpaid"}
     ]
     is_commitment = int(offer.get("term_months") or 0) > 0
+    signed_service_date = None
+    if notice_waived:
+        if not offer.get("allow_notice_waiver"):
+            raise ValueError(
+                "Target offer does not allow an owner-approved notice waiver"
+            )
+        if not supplied_effective_date:
+            raise ValueError(
+                "Owner-approved notice waiver requires a signed effective date"
+            )
+        signed_service_date = parse_date(supplied_effective_date)
+
     if is_commitment:
         original_price_id = str(offer.get("original_price_id") or "").strip()
         if not original_price_id:
@@ -1498,17 +1629,32 @@ def schedule_service_change_billing(
             current_subscription,
             request_date,
         )
+    elif notice_waived:
+        boundary_ts = approved_waived_service_boundary(
+            current_subscription,
+            request_date,
+            signed_service_date,
+        )
     else:
         boundary_ts = service_change_notice_boundary(
             current_subscription,
             request_date,
         )
-    effective_at = datetime.fromtimestamp(
+    billing_boundary_at = datetime.fromtimestamp(
         boundary_ts,
         BRISBANE_TZ,
     )
+    effective_at = (
+        datetime.combine(
+            signed_service_date,
+            time.min,
+            tzinfo=BRISBANE_TZ,
+        )
+        if notice_waived
+        else billing_boundary_at
+    )
     effective_date = effective_at.date()
-    if supplied_effective_date:
+    if supplied_effective_date and not notice_waived:
         supplied = parse_date(supplied_effective_date)
         if supplied != effective_date:
             if is_commitment:
@@ -1655,6 +1801,8 @@ def schedule_service_change_billing(
         "subscription_id": current_subscription["id"],
         "schedule_id": schedule["id"] if schedule else None,
         "boundary_ts": boundary_ts,
+        "billing_boundary_at": billing_boundary_at.isoformat(),
+        "billing_boundary_date": billing_boundary_at.date().isoformat(),
         "effective_at": effective_at.isoformat(),
         "effective_date": effective_date.isoformat(),
         "target_service": target_key,
@@ -1679,8 +1827,12 @@ def schedule_service_change_billing(
             or (created_schedule is None and existing_cancel_at == boundary_ts)
             else "scheduled"
         ),
+        "notice_waived": bool(notice_waived),
         "evidence": (
-            "current subscription end and approved future weekly schedule "
+            "current subscription end and approved A$99 schedule meet at the "
+            "normal advance-payment boundary funding the signed Strong week"
+            if notice_waived
+            else "current subscription end and approved future weekly schedule "
             "meet at the exact 30-day billing boundary"
         ),
     }
@@ -1801,6 +1953,11 @@ def default_service_change_hub_event(data, billing_preview):
     ).strip()
     if not source_form_id:
         raise ValueError("source_form_id is required for signed request evidence")
+    configured_form_id = str(offer.get("survey_id") or "").strip()
+    if configured_form_id and source_form_id != configured_form_id:
+        raise ValueError(
+            "Signed request source form does not match the approved target offer"
+        )
     signed_at = str(data.get("signed_at") or "").strip()
     if not signed_at:
         signed_at = f"{request_date}T00:00:00+10:00"
@@ -2148,6 +2305,7 @@ def service_change_billing():
     request_date_text = str(data.get("request_date") or "").strip()
     effective_date_text = str(data.get("effective_date") or "").strip()
     target_service = str(data.get("target_service") or "").strip()
+    notice_waived = notice_waiver_requested(data.get("notice_waived"))
     contact_name = str(data.get("contact_name") or "Unknown").strip()
     try:
         current_price_cents = int(data.get("current_price_cents"))
@@ -2193,6 +2351,16 @@ def service_change_billing():
         return jsonify({"status": "exception", "error": message}), 422
     try:
         request_date = parse_date(request_date_text)
+        waiver_evidence = None
+        if notice_waived:
+            if not effective_date_text:
+                raise ValueError(
+                    "Owner-approved notice waiver requires an effective date"
+                )
+            waiver_evidence = validate_notice_waiver_evidence(
+                data,
+                parse_date(effective_date_text),
+            )
         customers = stripe.Customer.list(email=email, limit=10).data
         exact_customers = [
             customer
@@ -2211,6 +2379,7 @@ def service_change_billing():
             current_price_cents=current_price_cents,
             target_service=target_service,
             supplied_effective_date=effective_date_text,
+            notice_waived=notice_waived,
             execute=False,
         )
         current_price_cents = preview["current_price_cents"]
@@ -2233,6 +2402,7 @@ def service_change_billing():
             current_price_cents=current_price_cents,
             target_service=target_service,
             supplied_effective_date=effective_date_text,
+            notice_waived=notice_waived,
             execute=True,
         )
         result_text = (
@@ -2248,7 +2418,15 @@ def service_change_billing():
             contact_id,
             {
                 "service_change_effective_date": evidence["effective_date"],
+                "service_change_billing_boundary_date": evidence.get(
+                    "billing_boundary_date"
+                ),
                 "service_change_change_status": "Pending Effective Date",
+                **(
+                    {"service_change_notice_waiver_status": "Used"}
+                    if waiver_evidence
+                    else {}
+                ),
                 **(
                     {
                         "service_change_commitment_start_date": evidence[
@@ -2328,13 +2506,15 @@ def pause_hold():
     # of the date-proration and Stripe customer-balance-credit path. Missing or
     # ambiguous evidence is expressed in the proposal itself so this branch
     # never creates a duplicate Billing OS exception task.
-    if normalized_hold_type in {"pt", "personal training"}:
+    if (
+        normalized_hold_type in {"pt", "personal training"}
+        and PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED
+    ):
         proposal = reconcile_pt_hold(data)
         log.info(
-            "PT HOLD PROPOSAL: %s | status=%s | conversation=%s | mutations=0",
-            contact_name,
+            "PT HOLD PROPOSAL: status=%s | proposal=%s | mutations=0",
             proposal["status"],
-            proposal["work_item"].get("conversation_id"),
+            proposal.get("proposal_id") or "review-required",
         )
         return jsonify(proposal), 200
 
@@ -2568,11 +2748,17 @@ def cancel_membership():
     data = request.get_json(silent=True) or {}
 
     # 1. Validate payload
-    email = data.get("email", "").strip()
+    email = str(ghl_payload_value(data, "email") or "").strip()
     contact_id = resolve_contact_id(data, email)
-    notice_end_str = data.get("notice_end_date", "").strip()
-    contact_name = data.get("contact_name", "Unknown")
-    cancellation_type = data.get("cancellation_type", "")
+    notice_end_str = str(
+        ghl_payload_value(data, "notice_end_date", "noticeEndDate") or ""
+    ).strip()
+    contact_name = str(
+        ghl_payload_value(data, "contact_name", "contactName") or "Unknown"
+    ).strip()
+    cancellation_type = str(
+        ghl_payload_value(data, "cancellation_type", "cancellationType") or ""
+    ).strip()
 
     if not contact_id or not email or not notice_end_str:
         message = "Missing required cancellation fields"
@@ -2766,13 +2952,24 @@ def cancel_membership():
 @app.route("/stripe/pt-hold/reconcile", methods=["POST"])
 def reconcile_pt_hold_endpoint():
     """Build a PT entitlement proposal without mutating any live system."""
+    if not PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED:
+        return jsonify({"error": "PT reconciliation is not enabled"}), 404
     proposal = reconcile_pt_hold(request.get_json(silent=True) or {})
     return jsonify(proposal), 200
 
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok"}), 200
+    return jsonify(
+        {
+            "status": "ok",
+            "pt_hold_entitlement_reconciliation": (
+                "enabled"
+                if PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED
+                else "disabled"
+            ),
+        }
+    ), 200
 
 
 if __name__ == "__main__":
