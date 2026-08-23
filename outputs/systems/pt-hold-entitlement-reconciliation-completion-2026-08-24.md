@@ -1,9 +1,9 @@
 # PT Hold Entitlement Reconciliation — Local Completion and Deployment Gate
 
-**Date:** 24 August 2026  
-**Owner:** Evolved workspace  
-**State:** Local candidate complete; production activation blocked  
-**Branch:** `codex/pt-hold-entitlement-reconciliation`  
+**Date:** 24 August 2026
+**Owner:** Evolved workspace
+**State:** Local candidate complete; production activation blocked
+**Branch:** `codex/pt-hold-entitlement-reconciliation`
 **Candidate commit:** `8b543cb`
 
 ## Outcome
@@ -58,4 +58,3 @@ Live PT activation also remains unauthorised and incomplete because:
 3. Pass the immutable Conversation promotion gate and separately approve the exact internal-note handoff.
 4. Add approval-time evidence re-read and proposal-ID idempotency; test rejection, staleness, retry and duplicate-credit controls.
 5. Enable the PT gate only for a controlled regular-cadence pilot. Keep member messaging and unattended billing/appointment mutation disabled.
-
