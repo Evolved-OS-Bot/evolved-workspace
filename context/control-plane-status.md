@@ -1,11 +1,12 @@
 # Evolved Control-Plane Status
 
-**As of:** 5 August 2026  
-**Freshness:** Current for the Peach Animation rig build, Website V2 governance recovery, Pregnancy route correction and Cloudflare rollback capture, Full Standards completion, governance rollout, Membership Service Change filing, Hold OS exception review and Return Journey hardening, GHL backend and Drive audit closure, GHL WARM/COLD pipeline reconciliation, cancellation contact-evidence hardening, the Strength Assessment feedback fallback repair, the guarded COLD-Won handoff, the first-week Retention Manager handoff and Conversation Triage deployment recovery
+**As of:** 24 August 2026
+**Freshness:** Current for PT Hold Entitlement Reconciliation local completion and its exact deployment/activation gates. Other status items below retain their recorded 5 August freshness and require their owning workstreams for newer state.
 **Owner:** Evolved workspace
 
 ## Active outcomes
 
+- PT Hold Entitlement Reconciliation is locally complete on the current guarded Billing OS candidate. Sixty-eight tests pass, including exact partial-boundary transfer, complete-evidence, duplicate-credit and protected-system cases. Production remains healthy and unchanged; the proposal route is not live and the default-off PT gate was not deployed or enabled. Dark deployment is blocked by the missing Railway source/credential, while activation remains blocked by the Hub evidence adapter and the protected existing-Conversation promotion/handoff authority. No billing, appointment, membership, workflow, Conversation or member communication changed. Evidence: `outputs/systems/pt-hold-entitlement-reconciliation-completion-2026-08-24.md`.
 - Peach Animation System has passed its layered-source and native-neutral-ingest gates. Peter approved exact-hash `PEACH-LAYER-three-quarter-layered-source-v10` as the editable source and animation identity base, fixed 30 fps as the canonical phase-one rate and enabled Accessibility control. The native Motion ingest contains all 29 approved stills in exact manifest order with the protected layers locked. Motion's supported Save Current Frame path produced byte-identical 1254 × 1254, 16-bit/color transparent RGBA sRGB exports from the layered stack and separate single-neutral reference, with zero RGB or alpha differences. The provisional anatomical-right upper-leg pivot at `(582, 680)` also passes neutral compensation exactly. The fixed source-derived root-cover mask and rotated stress grid remain pending; the disclosed leg-root stress gap must be closed before the later rig approval gate.
 - Reporting Architecture remains the sole owner of Evolved reporting migration and consumer cutover.
 - Website V2 is the already-built WordPress product awaiting governed promotion from `blog.theevolvedgym.com.au` to the root domain. GHL remains the operational CRM, communication, workflow, funnel, form and booking platform.
@@ -48,6 +49,7 @@
 
 ## Required closure evidence
 
+- PT Hold Entitlement Reconciliation: establish the exact Billing OS deployment source/credential, deploy dark with the PT gate read back as disabled, build and parity-test the Hub evidence adapter, then obtain immutable existing-Conversation handoff authority before any activation.
 - Conversation Triage still needs the exact protected current-person contract blocker resolved and two genuine scheduled parity cycles. The recovery run failed closed to legacy authority and does not count toward cutover.
 - Complete the separately approved isolated root-host rehearsal, additive `go.` connection, owned Pregnancy journey test, retained GHL route checks, exact redirects and timed rollback before requesting live cutover approval; take a fresh Cloudflare export immediately before any approved mutation.
 - Move Performance Warm-Up to row 1 through a supported Trainerize interaction.

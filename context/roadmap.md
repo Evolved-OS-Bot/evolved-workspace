@@ -1,6 +1,6 @@
 # Evolved OS — Master Roadmap
 
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-24 (PT hold reconciliation status; other workstreams retain their recorded dates)
 **Maintained by:** Claude — update whenever an item changes status, is completed, or a new idea surfaces.
 
 ---
@@ -15,6 +15,14 @@
 | Scoped | Fully specced, not started |
 | Draft | Loosely scoped, not fully planned |
 | Idea | Captured — not yet scoped |
+
+---
+
+## PT Hold Entitlement Reconciliation
+
+| Item | Status | Next Action |
+|---|---|---|
+| PT Hold Entitlement Reconciliation | Local candidate complete; deployment and activation gated | The obsolete duplicate was reconciled onto the current guarded Billing OS. Sixty-eight tests pass and live read-back confirms production is healthy and the proposal route is absent. Establish the exact Railway source/credential, deploy commit `8b543cb` dark with `PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED=false`, then build Hub evidence parity and pass the protected existing-Conversation promotion/handoff gate before activation. Do not create a task/tracker or mutate billing/appointments. Evidence: `outputs/systems/pt-hold-entitlement-reconciliation-completion-2026-08-24.md`. |
 
 ---
 

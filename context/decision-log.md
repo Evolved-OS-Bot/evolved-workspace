@@ -198,3 +198,12 @@ Detailed evidence may remain in dated plans and build records. This log provides
 - **Required cascade:** Mark both roadmap audit rows complete; remove stale audit-next-step wording; record the living-register maintenance boundary; preserve unresolved improvements in the governed build queue.
 - **Verification or review date:** Closure documents reconciled and locally validated 5 August 2026. No live GHL mutation was required for the closure pass.
 - **Detailed evidence:** `outputs/systems/ghl-backend-register.md`; `outputs/systems/drive-process-audit.md`; `plans/2026-07-17-ghl-workflow-governance-audit.md`.
+
+## 2026-08-24: Reconcile PT holds by session entitlement and hold activation at protected live gates
+
+- **Owner direction:** Peter approved implementation and directed the two duplicate local implementations to be reconciled into the current Evolved hold/billing architecture, with no unsupported billing or appointment change.
+- **Decision:** Retain the current guarded Billing OS as canonical. Carry forward only the pure PT entitlement engine, PT branch, tests and governed documentation from the obsolete handler implementation. Membership/SGPT remains date based; enabled PT processing branches before Stripe and proposes exact one-to-one session transfers for human approval in the existing GHL Conversation.
+- **Safety boundary:** The PT environment gate defaults off. The candidate creates no task/tracker, posts no Conversation note, performs no Stripe or appointment mutation, sends no member communication and fails closed on incomplete or policy-sensitive evidence. A carried session and Stripe credit cannot both be proposed for the same boundary.
+- **Deployment decision:** Production remains unchanged. Live health returned HTTP 200 and the PT proposal route returned HTTP 404. Dark deployment is blocked by the missing exact Railway source/credential; activation is additionally blocked by the missing Hub evidence adapter and `promotion_authorised=false` Conversation handoff.
+- **Verification:** Current Billing OS 50/50 tests; PT unit/integration 18/18 tests; compilation, instruction drift and diff checks passed.
+- **Evidence:** `plans/2026-08-22-pt-hold-entitlement-reconciliation.md`; `outputs/systems/pt-hold-entitlement-reconciliation-completion-2026-08-24.md`.

@@ -303,7 +303,7 @@ The local implementation is a guard and proposal generator, not an execution pat
 ### Verification Results
 
 - Current Billing OS regression suite — **50 passed**
-- PT unit and integration suite — **17 passed**
+- PT unit and integration suite — **18 passed**
 - `python3 -m py_compile ...` for the handler, engine, and tests — **passed**
 - `git diff --check` — **passed**
 - At this record point no live contact/workflow, billing, appointment, membership, entitlement or member communication mutation was performed.
