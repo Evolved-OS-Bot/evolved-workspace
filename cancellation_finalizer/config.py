@@ -23,8 +23,12 @@ class Settings:
     database_url: str
     webhook_signing_secret: str
     admin_secret: str
+    relay_enabled: bool
+    relay_membership_secret: str
+    relay_pt_secret: str
     signature_tolerance_seconds: int
     webhook_rate_limit_per_minute: int
+    relay_rate_limit_per_minute: int
     admin_rate_limit_per_minute: int
     write_enabled: bool
     ghl_api_key: str
@@ -41,20 +45,51 @@ class Settings:
     hub_api_key: str
     worker_enabled: bool
 
+    def relay_configuration_issues(self) -> list[str]:
+        if not self.relay_enabled:
+            return []
+        issues: list[str] = []
+        if len(self.relay_membership_secret) < 32:
+            issues.append("CANCELLATION_RELAY_MEMBERSHIP_SECRET")
+        if len(self.relay_pt_secret) < 32:
+            issues.append("CANCELLATION_RELAY_PT_SECRET")
+        if (
+            self.relay_membership_secret
+            and self.relay_membership_secret == self.relay_pt_secret
+        ):
+            issues.append("CANCELLATION_RELAY_SERVICE_SECRETS_DISTINCT")
+        protected = {self.webhook_signing_secret, self.admin_secret} - {""}
+        if (
+            self.relay_membership_secret in protected
+            or self.relay_pt_secret in protected
+        ):
+            issues.append("CANCELLATION_RELAY_SECRETS_SEPARATE")
+        return issues
+
     @classmethod
     def from_env(cls) -> "Settings":
         location = os.getenv("TRAINERIZE_LOCATION_ID", "").strip()
         return cls(
-            database_url=os.getenv("DATABASE_URL", "sqlite:///cancellation-finalizer.db"),
+            database_url=os.getenv(
+                "DATABASE_URL", "sqlite:///cancellation-finalizer.db"
+            ),
             webhook_signing_secret=os.getenv(
                 "CANCELLATION_WEBHOOK_SIGNING_SECRET", ""
             ).strip(),
             admin_secret=os.getenv("CANCELLATION_ADMIN_SECRET", "").strip(),
+            relay_enabled=_bool("CANCELLATION_RELAY_ENABLED"),
+            relay_membership_secret=os.getenv(
+                "CANCELLATION_RELAY_MEMBERSHIP_SECRET", ""
+            ).strip(),
+            relay_pt_secret=os.getenv("CANCELLATION_RELAY_PT_SECRET", "").strip(),
             signature_tolerance_seconds=_positive_int(
                 "CANCELLATION_SIGNATURE_TOLERANCE_SECONDS", 300
             ),
             webhook_rate_limit_per_minute=_positive_int(
                 "CANCELLATION_WEBHOOK_RATE_LIMIT_PER_MINUTE", 30
+            ),
+            relay_rate_limit_per_minute=_positive_int(
+                "CANCELLATION_RELAY_RATE_LIMIT_PER_MINUTE", 10
             ),
             admin_rate_limit_per_minute=_positive_int(
                 "CANCELLATION_ADMIN_RATE_LIMIT_PER_MINUTE", 60
@@ -68,7 +103,9 @@ class Settings:
                 or os.getenv("STRIPE_API_KEY", "").strip()
             ),
             google_spreadsheet_id=os.getenv("GOOGLE_SPREADSHEET_ID", "").strip(),
-            google_service_account_json=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip(),
+            google_service_account_json=os.getenv(
+                "GOOGLE_SERVICE_ACCOUNT_JSON", ""
+            ).strip(),
             trainerize_group_id=os.getenv("TRAINERIZE_GROUP_ID", "").strip(),
             trainerize_api_token=os.getenv("TRAINERIZE_API_TOKEN", "").strip(),
             trainerize_api_base_url=os.getenv(
@@ -96,4 +133,8 @@ class Settings:
             "OPERATING_DATA_HUB_URL": self.hub_base_url,
             "OPERATING_DATA_HUB_API_KEY": self.hub_api_key,
         }
-        return [name for name, value in required.items() if not value]
+        missing = [name for name, value in required.items() if not value]
+        missing.extend(
+            issue for issue in self.relay_configuration_issues() if issue not in missing
+        )
+        return missing

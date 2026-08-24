@@ -18,6 +18,29 @@ headers are valid:
 The signature may be no more than five minutes old. A nonce is claimed once in
 Postgres and a replay is rejected before any case is processed.
 
+### Governed GHL signing relay
+
+HighLevel does not receive the HMAC signing secret. When explicitly enabled,
+its two Draft recovery workflows may instead call one service-specific relay:
+
+- `POST /api/v1/relay/cancellations/membership`
+- `POST /api/v1/relay/cancellations/pt`
+
+Each route requires `Authorization: Bearer <service-specific relay secret>` and
+exact `application/json`. The relay accepts only the documented cancellation
+fields, rejects duplicate or unknown JSON keys, binds the cancellation type to
+the route, canonicalises the body, creates a fresh timestamp and nonce, signs
+the exact canonical bytes in memory, and passes the result through the same
+signature and durable nonce boundary as the direct endpoint. It does not expose
+the signing secret or provide a general-purpose forwarding URL.
+
+The relay is disabled by default. Its bearer secrets are independent,
+revocable credentials with a much narrower authority than the signing secret;
+all normal finalizer source read-backs, date checks, stable idempotency and the
+global write gate still apply. Each relay secret must contain at least 32
+characters, the Membership and PT values must differ, and neither may reuse the
+HMAC signing secret or admin secret. Invalid relay configuration fails closed.
+
 ```json
 {
   "contact_id": "GHL contact ID",
@@ -39,6 +62,9 @@ Active Online relationship continues.
 - `DATABASE_URL`
 - `CANCELLATION_WEBHOOK_SIGNING_SECRET`
 - `CANCELLATION_ADMIN_SECRET`
+- Relay (only when deliberately enabled): `CANCELLATION_RELAY_ENABLED=true`,
+  `CANCELLATION_RELAY_MEMBERSHIP_SECRET`, `CANCELLATION_RELAY_PT_SECRET`, and
+  optional `CANCELLATION_RELAY_RATE_LIMIT_PER_MINUTE` (default 10)
 - `CANCELLATION_FINALIZER_WRITE_ENABLED=true`
 - GHL: `GHL_API_KEY`, `GHL_LOCATION_ID`, `GHL_ADMIN_EVE_USER_ID`
 - Stripe: `STRIPE_RESTRICTED_KEY`

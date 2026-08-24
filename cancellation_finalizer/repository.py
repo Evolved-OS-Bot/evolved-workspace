@@ -79,7 +79,9 @@ class Repository:
         with self.sessions.begin() as db:
             case = db.get(FinalizationCase, key)
             if case:
-                if case.payload != payload:
+                existing = {k: v for k, v in case.payload.items() if k != "requested_at"}
+                supplied = {k: v for k, v in payload.items() if k != "requested_at"}
+                if existing != supplied:
                     raise ValueError("idempotency key already exists with a different payload")
                 return case
             case = FinalizationCase(
