@@ -72,6 +72,10 @@ Claude should not:
 ├── revenue_gap_control/   # Read-only active-client audit, exception register, and KPI cash bridge
 ├── retention_intelligence/ # Railway daily retention snapshots and explainable member-usage classifications
 ├── trainerize_performance/ # Railway read-only performance service plus Railway-only daily refresh worker
+├── stripe_handler/        # Railway service for Stripe billing and GHL hold controls
+│   ├── app.py             # Hold intake, billing pause/cancel, and PT appointment clearance endpoints
+│   ├── test_app.py        # Automated safety and regression tests
+│   └── railway.toml       # Railway deployment config
 ├── plans/                 # Implementation plans created by /create-plan
 ├── data/private/          # Git-ignored sensitive operational datasets and identity crosswalks; never upload directly
 ├── outputs/               # Work products and deliverables
@@ -181,7 +185,7 @@ Claude should not:
 | `reference/evolved-heroine/` | Source of truth for Heroine production, marketing use, and animation. Read its canonical README, marketing usage guide, animation-system specification, final generation prompt template, and active production register as applicable. Local files govern brand use, prompts, motion, and production history; Drive holds approved PNG masters; websites and campaigns use channel-specific deployment copies. |
 | `reference/sops/` | Operational SOPs — source of truth for all service delivery procedures. |
 | `scripts/` | Automation scripts. Includes KPI refresh, Trainerize data extraction, and read-only GHL–Stripe–Trainerize reporting and reconciliation; setup and usage live in `scripts/SETUP.md`. |
-| `stripe_handler/` | Railway Billing OS. Membership/SGPT holds retain their date-based path; PT hold reconciliation is session-based, proposal-only, and human-approved in the existing GHL Conversation. |
+| `stripe_handler/` | Railway Billing OS. Membership/SGPT holds retain their date-based path; PT hold entitlement reconciliation is session-based and proposal-only, while the separately gated appointment-clearance endpoint removes unpaid advance hold bookings and retains late cancellations for audit. |
 
 ---
 

@@ -11,6 +11,11 @@ os.environ.setdefault("STRIPE_API_KEY", "sk_test_unit")
 os.environ.setdefault("GHL_API_KEY", "ghl_test_unit")
 os.environ.setdefault("GHL_LOCATION_ID", "location_test")
 os.environ.setdefault("GHL_ADMIN_EVE_USER_ID", "admin_eve_test")
+os.environ.setdefault("GHL_AUTOMATION_USER_ID", "automation_user_test")
+os.environ.setdefault("PT_HOLD_CLEARANCE_SECRET", "clearance_secret_test")
+os.environ.setdefault(
+    "GHL_PT_CALENDAR_IDS", "calendar_piper,calendar_katrina"
+)
 
 if "app" in sys.modules:
     billing = importlib.reload(sys.modules["app"])
@@ -43,6 +48,27 @@ def subscription():
             ]
         },
     }
+
+
+def calendar_event(
+    event_id="event_1",
+    contact_id="contact_1",
+    calendar_id="calendar_piper",
+    start="2026-09-16T05:15:00+10:00",
+    status="confirmed",
+    **extra,
+):
+    event = {
+        "id": event_id,
+        "contactId": contact_id,
+        "calendarId": calendar_id,
+        "assignedUserId": "trainer_1",
+        "startTime": start,
+        "status": status,
+        "title": "PT appointment",
+    }
+    event.update(extra)
+    return event
 
 
 class BillingOSTest(unittest.TestCase):
@@ -1641,6 +1667,311 @@ class BillingOSTest(unittest.TestCase):
 
         self.assertTrue(created)
         request_post.assert_not_called()
+
+
+    def test_pt_hold_window_uses_actual_dates_and_excludes_return_day(self):
+        hold_start = date(2026, 9, 14)
+        hold_end = date(2026, 9, 21)
+        now = datetime(2026, 8, 24, tzinfo=timezone.utc)
+        in_hold = calendar_event(start="2026-09-20T23:59:00+10:00")
+        on_return_day = calendar_event(
+            event_id="event_return", start="2026-09-21T00:00:00+10:00"
+        )
+        self.assertEqual(
+            billing.classify_pt_hold_event(
+                in_hold, hold_start, hold_end, now=now
+            )[0],
+            "delete",
+        )
+        self.assertEqual(
+            billing.classify_pt_hold_event(
+                on_return_day, hold_start, hold_end, now=now
+            )[0],
+            "skip",
+        )
+
+    def test_pt_hold_event_exactly_24_hours_away_is_retained_cancelled(self):
+        now = datetime(2026, 9, 15, 19, 15, tzinfo=timezone.utc)
+        event = calendar_event(start="2026-09-17T05:15:00+10:00")
+        decision, reason = billing.classify_pt_hold_event(
+            event,
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            now=now,
+        )
+        self.assertEqual(decision, "cancel")
+        self.assertIn("24-hour", reason)
+
+    def test_pt_hold_recurring_event_fails_closed_for_review(self):
+        event = calendar_event(isRecurring=True, rrule="RRULE:FREQ=WEEKLY")
+        decision, _ = billing.classify_pt_hold_event(
+            event,
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            now=datetime(2026, 8, 24, tzinfo=timezone.utc),
+        )
+        self.assertEqual(decision, "manual_review")
+
+    def test_cancelled_status_alias_is_never_deleted(self):
+        event = calendar_event(status="cancelled")
+        decision, _ = billing.classify_pt_hold_event(
+            event,
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            now=datetime(2026, 8, 24, tzinfo=timezone.utc),
+        )
+        self.assertEqual(decision, "skip")
+
+    @patch.object(billing.requests, "get")
+    def test_calendar_query_filters_by_exact_contact_id(self, request_get):
+        request_get.side_effect = [
+            MagicMock(
+                ok=True,
+                json=lambda: {
+                    "events": [
+                        calendar_event(),
+                        calendar_event(
+                            event_id="wrong_contact",
+                            contact_id="contact_2",
+                        ),
+                    ]
+                },
+            ),
+            MagicMock(ok=True, json=lambda: {"events": []}),
+        ]
+        events = billing.get_pt_hold_calendar_events(
+            "contact_1", date(2026, 9, 14), date(2026, 9, 21)
+        )
+        self.assertEqual([event["id"] for event in events], ["event_1"])
+        for call in request_get.call_args_list:
+            self.assertIn(
+                call.kwargs["params"]["calendarId"],
+                billing.GHL_PT_CALENDAR_IDS,
+            )
+
+    @patch.object(billing, "write_pt_hold_audit_note")
+    @patch.object(billing, "cancel_late_pt_hold_event")
+    @patch.object(billing, "delete_pt_hold_event")
+    @patch.object(billing, "get_pt_hold_calendar_events")
+    def test_clearance_deletes_advance_and_retains_late_appointments(
+        self, get_events, delete_event, cancel_event, write_note
+    ):
+        now = datetime(2026, 9, 15, 20, tzinfo=timezone.utc)
+        advance = calendar_event(
+            event_id="advance", start="2026-09-18T05:15:00+10:00"
+        )
+        late = calendar_event(
+            event_id="late", start="2026-09-17T05:15:00+10:00"
+        )
+        get_events.return_value = [advance, late]
+        delete_event.return_value = "deleted"
+        cancel_event.return_value = "cancelled and retained"
+        result = billing.run_pt_hold_clearance(
+            "contact_1",
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            mode="apply",
+            now=now,
+        )
+        self.assertEqual(result["status"], "ok")
+        delete_event.assert_called_once_with("advance")
+        cancel_event.assert_called_once_with(late)
+        self.assertEqual(write_note.call_count, 2)
+
+    @patch.object(billing, "write_pt_hold_audit_note")
+    @patch.object(billing, "delete_pt_hold_event")
+    @patch.object(billing, "get_pt_hold_calendar_events")
+    def test_recurring_ambiguity_prevents_all_mutations(
+        self, get_events, delete_event, write_note
+    ):
+        get_events.return_value = [
+            calendar_event(event_id="safe"),
+            calendar_event(event_id="recurring", isRecurring=True),
+        ]
+        result = billing.run_pt_hold_clearance(
+            "contact_1",
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            mode="apply",
+            now=datetime(2026, 8, 24, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["status"], "needs_review")
+        delete_event.assert_not_called()
+        self.assertEqual(write_note.call_count, 2)
+
+    @patch.object(billing, "write_pt_hold_audit_note")
+    @patch.object(billing, "get_pt_hold_calendar_events")
+    def test_reconciliation_with_nothing_left_is_clean_and_idempotent(
+        self, get_events, write_note
+    ):
+        get_events.return_value = []
+        result = billing.run_pt_hold_clearance(
+            "contact_1",
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            mode="apply",
+            now=datetime(2026, 8, 24, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["status"], "ok")
+        write_note.assert_not_called()
+
+    @patch.object(billing, "write_pt_hold_audit_note")
+    @patch.object(billing, "delete_pt_hold_event")
+    @patch.object(billing, "get_pt_hold_calendar_events")
+    def test_partial_failure_stops_later_destructive_actions(
+        self, get_events, delete_event, write_note
+    ):
+        get_events.return_value = [
+            calendar_event(event_id="event_1"),
+            calendar_event(event_id="event_2"),
+        ]
+        delete_event.side_effect = billing.PTHoldClearanceError("API failed")
+        result = billing.run_pt_hold_clearance(
+            "contact_1",
+            date(2026, 9, 14),
+            date(2026, 9, 21),
+            mode="apply",
+            now=datetime(2026, 8, 24, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["status"], "partial_failure")
+        self.assertEqual(delete_event.call_count, 1)
+        self.assertIn("not processed", result["records"][1]["result"])
+
+    @patch.object(billing.requests, "post")
+    @patch.object(billing.requests, "get")
+    def test_clearance_audit_creates_durable_contact_note(
+        self, request_get, request_post
+    ):
+        request_get.return_value = MagicMock(
+            ok=True, json=lambda: {"notes": []}
+        )
+        request_post.return_value = MagicMock(
+            status_code=201, json=lambda: {"note": {"id": "note_1"}}
+        )
+        note_id = billing.write_pt_hold_audit_note(
+            "contact_1", "PT hold clearance: test", "event=event_1"
+        )
+        self.assertEqual(note_id, "note_1")
+        payload = request_post.call_args.kwargs["json"]
+        self.assertEqual(payload["userId"], "automation_user_test")
+        self.assertIn("event_1", payload["body"])
+
+    @patch.object(billing.requests, "put")
+    @patch.object(billing.requests, "get")
+    def test_clearance_audit_appends_to_existing_hold_note(
+        self, request_get, request_put
+    ):
+        request_get.return_value = MagicMock(
+            ok=True,
+            json=lambda: {
+                "notes": [
+                    {
+                        "id": "note_1",
+                        "title": "PT hold clearance: test",
+                        "body": "planned",
+                    }
+                ]
+            },
+        )
+        request_put.return_value = MagicMock(
+            status_code=200, json=lambda: {"note": {"id": "note_1"}}
+        )
+        billing.write_pt_hold_audit_note(
+            "contact_1", "PT hold clearance: test", "completed"
+        )
+        body = request_put.call_args.kwargs["json"]["body"]
+        self.assertEqual(body, "planned\n\ncompleted")
+
+    @patch.object(billing.requests, "delete")
+    def test_already_deleted_event_is_idempotent_success(self, request_delete):
+        request_delete.return_value = MagicMock(status_code=404)
+        self.assertEqual(billing.delete_pt_hold_event("event_1"), "already absent")
+
+    @patch.object(billing, "run_pt_hold_clearance")
+    @patch.object(billing, "get_ghl_contact_fields")
+    def test_apply_requires_confirmed_billing_pause(
+        self, get_fields, run_clearance
+    ):
+        get_fields.return_value = {
+            "hold_type": "PT",
+            "hold_lifecycle_status": "Pending Hold",
+            "hold_start": "2026-09-14",
+            "hold_end": "2026-09-21",
+            "hold_status": "Exception",
+        }
+        response = self.client.post(
+            "/ghl/pt-hold-clearance",
+            headers={"X-PT-Hold-Clearance-Secret": "clearance_secret_test"},
+            json={
+                "contact_id": "contact_1",
+                "hold_type": "PT",
+                "hold_start_date": "2026-09-14",
+                "hold_end_date": "2026-09-21",
+                "mode": "apply",
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("not confirmed", response.get_json()["error"])
+        run_clearance.assert_not_called()
+
+    @patch.object(billing, "run_pt_hold_clearance")
+    @patch.object(billing, "get_ghl_contact_fields")
+    def test_clearance_endpoint_applies_verified_pt_hold(
+        self, get_fields, run_clearance
+    ):
+        get_fields.return_value = {
+            "hold_type": "PT",
+            "hold_lifecycle_status": "On Hold",
+            "hold_start": "2026-09-14",
+            "hold_end": "2026-09-21",
+            "hold_status": "Succeeded",
+        }
+        run_clearance.return_value = {
+            "status": "ok",
+            "counts": {
+                "delete": 2,
+                "cancel": 0,
+                "manual_review": 0,
+                "skip": 0,
+                "failed": 0,
+            },
+            "records": [],
+        }
+        response = self.client.post(
+            "/ghl/pt-hold-clearance",
+            headers={"X-PT-Hold-Clearance-Secret": "clearance_secret_test"},
+            json={
+                "contact_id": "contact_1",
+                "hold_type": "Personal Training",
+                "hold_start_date": "2026-09-14",
+                "hold_end_date": "2026-09-21",
+                "mode": "apply",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["status"], "ok")
+        run_clearance.assert_called_once()
+
+    def test_clearance_endpoint_rejects_missing_secret(self):
+        response = self.client.post(
+            "/ghl/pt-hold-clearance",
+            json={
+                "contact_id": "contact_1",
+                "hold_type": "PT",
+                "hold_start_date": "2026-09-14",
+                "hold_end_date": "2026-09-21",
+                "mode": "preview",
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_health_reports_clearance_configuration_without_secrets(self):
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        clearance = response.get_json()["pt_hold_clearance"]
+        self.assertTrue(clearance["configured"])
+        self.assertEqual(clearance["approved_calendar_count"], 2)
+        self.assertNotIn("secret", clearance)
 
 
 if __name__ == "__main__":

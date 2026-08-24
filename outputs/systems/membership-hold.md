@@ -1,6 +1,6 @@
 # Membership Hold System Documentation
 **The Evolved All Female Personal Training & Gym**
-**Last Updated:** 2026-08-24 (PT entitlement reconciliation candidate integrated locally)
+**Last Updated:** 2026-08-24 (PT entitlement reconciliation and appointment-clearance candidates integrated locally)
 
 ---
 
@@ -217,6 +217,122 @@ The handler:
 When no active Stripe subscription exists, the handler writes an Exception and creates the Admin Eve task with the member, requested hold dates and exact error. `HS: Hold Activates` now sets the hold action to Processing, sends `contact_id`, email and the verified dates to Billing OS, and waits until `Billing OS: Hold Action Status = Succeeded` before sending the first pause confirmation. A failed or unresolved billing action therefore cannot produce a member message saying the hold has been arranged.
 
 The live temporary-contact test on 29 July 2026 confirmed that the task is assigned to Admin Eve, due on the same Brisbane calendar day, contains the requested action and error, and is not duplicated when the same failed webhook is retried. The temporary contact was deleted after verification.
+
+---
+
+## PT Hold Appointment Clearance Controller
+
+**Service:** Existing Railway `stripe_handler/app.py`
+**Endpoint:** `POST /ghl/pt-hold-clearance`
+**Implementation status:** Built and unit-tested locally on 2026-08-24; production deployment and workflow publication pending controlled validation.
+
+The controller keeps PT calendars clean after an approved hold without losing late-cancellation evidence. It uses the actual training interval, not the shifted billing dates:
+
+```text
+HS: Hold Start Date <= appointment start < HS: Hold End Date
+```
+
+`HS: Hold End Date` is the return date and is therefore excluded from clearance.
+
+### Decision Rules
+
+| Condition | Action |
+|---|---|
+| Approved PT hold, Billing OS Hold Action Status = Succeeded, appointment more than 24 hours away | Permanently delete event |
+| Same conditions, appointment at or inside 24 hours | Set status to Cancelled and retain as forfeiture evidence |
+| Billing pause not confirmed | Stop; change nothing |
+| Contact, dates or hold type do not exactly match live GHL fields | Stop; change nothing |
+| Calendar is not on the approved PT allowlist | Ignore / stop on inconsistent event data |
+| Recurring appointment or malformed event | Stop all mutations and return Needs Review |
+| Event already cancelled, completed, invalid, past or outside the hold | Skip |
+
+The controller matches by exact GHL `contactId`; it never matches by member name, appointment title, email or phone number.
+
+### Audit Trail
+
+Before destructive work, the controller creates or appends to one GHL contact note titled:
+
+```text
+PT hold clearance: YYYY-MM-DD to YYYY-MM-DD
+```
+
+The note records the run key, actual hold interval, timestamp, event ID, start time, calendar ID, trainer/user ID, prior status, decision, reason and result. A final section records successful deletion, retained cancellation, partial failure or manual-review status. Reconciliation runs with no remaining actionable events do not create additional notes.
+
+### Approved Active PT Calendars
+
+Live calendar lookup verified 2026-08-24. Only these IDs belong in `GHL_PT_CALENDAR_IDS`:
+
+| Calendar | ID |
+|---|---|
+| 30 Min 1:1 PT - Megan | `YT1U8WtmgGb5SO3BWE5n` |
+| 45 Minute 1:1 PT - Megan | `JFVV14qlUY1QeLO62SMc` |
+| 60 Minute 1:1 PT - Megan | `UIdP5AYIwUW00hC7e5mN` |
+| 30 Min 1:1 PT - Leisa | `pOia47f6u6bDNvVMGWPo` |
+| 45 Min 1:1 PT - Leisa | `xTF4OeRHi8vM8w7dcKuC` |
+| 60 Min 1:1 PT - Leisa | `HgRT8Vd7bsH2LZDeOzZz` |
+| 30 Min 1:1 PT - Katrina | `eoL2TrbLGb8D5BA98Z7I` |
+| 45 Min 1:1 PT - Katrina | `pLtfbopAKPgSGqDnwndF` |
+| 60 Min 1:1 PT - Katrina | `9QkeVcyoclQuWOmNlUup` |
+| 30 Min 1:1 - Piper | `oSrXQVZhtv1tyL0bMFHe` |
+| 45 Min 1:1 PT - Piper | `skZi4KFJdJdoG2QqANoS` |
+| 60 Min 1:1 PT - Piper | `EjHsuZD0s0vJUqPUXOMb` |
+| 30 Min 1:1 - Nora | `zB8vInq5Hs44IrRKHkmx` |
+| 45 Min 1:1 - Nora | `5lHjOoGaVFdJPNReVDeg` |
+| 60 Min 1:1 - Nora | `U1RSfH7BhPSSXdsBl61N` |
+
+Inactive Jo calendars are deliberately excluded. Calendar names without `PT` are included only where they are the live calendars used for that trainer's PT appointments.
+
+### Required Railway Variables
+
+```text
+GHL_PT_CALENDAR_IDS=YT1U8WtmgGb5SO3BWE5n,JFVV14qlUY1QeLO62SMc,UIdP5AYIwUW00hC7e5mN,pOia47f6u6bDNvVMGWPo,xTF4OeRHi8vM8w7dcKuC,HgRT8Vd7bsH2LZDeOzZz,eoL2TrbLGb8D5BA98Z7I,pLtfbopAKPgSGqDnwndF,9QkeVcyoclQuWOmNlUup,oSrXQVZhtv1tyL0bMFHe,skZi4KFJdJdoG2QqANoS,EjHsuZD0s0vJUqPUXOMb,zB8vInq5Hs44IrRKHkmx,5lHjOoGaVFdJPNReVDeg,U1RSfH7BhPSSXdsBl61N
+GHL_AUTOMATION_USER_ID=<GHL user that authors audit notes; falls back to GHL_ADMIN_EVE_USER_ID>
+PT_HOLD_CLEARANCE_SECRET=<new random secret shared only with the GHL webhook action>
+```
+
+The GHL token requires calendar-event read/write and contact-note read/write access.
+
+### Webhook Payload
+
+Header:
+
+```text
+X-PT-Hold-Clearance-Secret: <PT_HOLD_CLEARANCE_SECRET>
+```
+
+Body:
+
+```json
+{
+  "contact_id": "{{contact.id}}",
+  "hold_type": "{{contact.hold_type}}",
+  "hold_start_date": "{{contact.hf_hold_start_date}}",
+  "hold_end_date": "{{contact.hf_hold_end_date}}",
+  "mode": "apply"
+}
+```
+
+Use `mode: preview` after PT hold approval if staff need visibility before billing pauses. Use `mode: apply` only after the Stripe or manually reconciled PT Minder pause has set `Billing OS: Hold Action Status = Succeeded`.
+
+### Workflow Integration
+
+1. **PT hold approval:** Optional preview call; no appointment mutation.
+2. **HS: Hold Activates:** After the Stripe pause succeeds, call the controller in Apply mode before the seven-day wait.
+3. **PT Minder:** Admin completes the billing pause, sets Billing OS Hold Action Status to Succeeded, then runs Apply.
+4. **Hold start reconciliation:** Call Apply again; it is idempotent and catches appointments created after the first pass.
+5. **Active-hold reconciliation:** A scheduled Apply pass may run daily while Hold Type = PT and Hold Status = On Hold. Empty passes do not create new notes.
+
+HTTP `200` means preview or clearance completed. `409` means manual review with no mutation. `422` means validation or billing gate failure with no mutation. `502` means a partial API failure; the contact audit note identifies exactly what did and did not run.
+
+### Rollout and Rollback
+
+1. Deploy the Railway code without publishing any GHL workflow call.
+2. Configure the calendar allowlist, audit-note author and shared secret; confirm `/health` reports `configured: true` and `approved_calendar_count: 15`.
+3. Run Preview against a controlled test contact and verify only the intended event is classified.
+4. Confirm the test billing gate is Succeeded, run Apply, then verify the event is removed and the contact note contains both Planned and Completed sections.
+5. Publish the Hold Activates Apply call only after the controlled test passes; add reconciliation calls afterward.
+
+To stop the controller immediately, remove/rotate `PT_HOLD_CLEARANCE_SECRET` or disable the GHL webhook action. The endpoint then returns `401` and cannot mutate appointments. Roll back the Railway deployment to the previous version if code rollback is also required. Deleted advance appointments are intentionally not restored automatically; their GHL contact note is the reconstruction record.
 
 ---
 

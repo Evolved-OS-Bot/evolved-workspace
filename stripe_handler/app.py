@@ -9,6 +9,7 @@ Endpoints:
   POST /stripe/service-change — schedules an allowlisted continuing-service change
   POST /stripe/commitment-clawback/quote — calculates, records and returns a
     member-visible discount-recovery quote without creating a charge
+  POST /ghl/pt-hold-clearance — previews or clears unpaid PT hold appointments
 
 Hold logic:
   Membership/SGPT pauses remain date based. PT holds are session based and
@@ -24,6 +25,7 @@ import os
 import logging
 import hashlib
 import json
+import hmac
 import math
 import calendar
 from datetime import datetime, time, timedelta, timezone
@@ -48,6 +50,16 @@ PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED = (
     .lower()
     in {"1", "true", "yes"}
 )
+GHL_AUTOMATION_USER_ID = (
+    os.environ.get("GHL_AUTOMATION_USER_ID", "")
+    or GHL_ADMIN_EVE_USER_ID
+)
+PT_HOLD_CLEARANCE_SECRET = os.environ.get("PT_HOLD_CLEARANCE_SECRET", "")
+GHL_PT_CALENDAR_IDS = {
+    calendar_id.strip()
+    for calendar_id in os.environ.get("GHL_PT_CALENDAR_IDS", "").split(",")
+    if calendar_id.strip()
+}
 GHL_BASE_URL = "https://services.leadconnectorhq.com"
 GHL_FIELD_NAMES = {
     "hold_status": "Billing OS: Hold Action Status",
@@ -80,6 +92,7 @@ GHL_FIELD_NAMES = {
     "hold_start": "HS: Hold Start Date",
     "hold_end": "HS: Hold End Date",
     "pre_return": "HS: Pre-Return Date",
+    "hold_type": "HS: Hold Type",
     "hold_weeks": "HS: Hold Weeks",
     "extended_hold_weeks": "HS: Extended Hold - Weeks",
     "hold_reason": "HS: Hold Reason",
@@ -517,6 +530,293 @@ def parse_ghl_date(value):
     return parse_date(text)
 
 
+class PTHoldClearanceError(RuntimeError):
+    """Raised when PT appointment clearance cannot proceed safely."""
+
+
+def _ghl_v3_headers():
+    headers = _ghl_headers()
+    headers["Version"] = "v3"
+    return headers
+
+
+def parse_event_datetime(value):
+    """Return a calendar event timestamp as an aware UTC datetime."""
+    if isinstance(value, (int, float)):
+        timestamp = float(value)
+        if timestamp > 100_000_000_000:
+            timestamp /= 1000
+        return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
+    text = str(value or "").strip()
+    if not text:
+        raise ValueError("Calendar event has no start time")
+    if text.isdigit():
+        return parse_event_datetime(int(text))
+    parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=BRISBANE_TZ)
+    return parsed.astimezone(timezone.utc)
+
+
+def pt_hold_window(hold_start_date, hold_end_date):
+    """Return the Brisbane hold interval as UTC, with return day exclusive."""
+    start = datetime.combine(
+        hold_start_date,
+        time.min,
+        tzinfo=BRISBANE_TZ,
+    )
+    end = datetime.combine(
+        hold_end_date,
+        time.min,
+        tzinfo=BRISBANE_TZ,
+    )
+    return start.astimezone(timezone.utc), end.astimezone(timezone.utc)
+
+
+def event_is_recurring(event):
+    recurring_flag = str(event.get("isRecurring", "")).strip().lower()
+    return bool(
+        recurring_flag in {"true", "1", "yes"}
+        or event.get("rrule")
+        or event.get("masterEventId")
+        or event.get("recurringEventId")
+    )
+
+
+def get_pt_hold_calendar_events(contact_id, hold_start_date, hold_end_date):
+    """Fetch exact-contact events from every approved PT calendar."""
+    if not GHL_PT_CALENDAR_IDS:
+        raise PTHoldClearanceError("No approved PT calendars are configured")
+
+    start, end = pt_hold_window(hold_start_date, hold_end_date)
+    events_by_id = {}
+    for calendar_id in sorted(GHL_PT_CALENDAR_IDS):
+        response = requests.get(
+            f"{GHL_BASE_URL}/calendars/events",
+            headers=_ghl_v3_headers(),
+            params={
+                "locationId": GHL_LOCATION_ID,
+                "calendarId": calendar_id,
+                "startTime": int(start.timestamp() * 1000),
+                "endTime": int(end.timestamp() * 1000),
+            },
+            timeout=20,
+        )
+        if not response.ok:
+            raise PTHoldClearanceError(
+                "Unable to read PT calendar "
+                f"{calendar_id}: HTTP {response.status_code}"
+            )
+        for event in response.json().get("events", []):
+            if str(event.get("contactId", "")).strip() != contact_id:
+                continue
+            event_id = str(event.get("id", "")).strip()
+            if not event_id:
+                raise PTHoldClearanceError(
+                    f"PT calendar {calendar_id} returned an event without an ID"
+                )
+            actual_calendar_id = str(event.get("calendarId", "")).strip()
+            if actual_calendar_id and actual_calendar_id not in GHL_PT_CALENDAR_IDS:
+                raise PTHoldClearanceError(
+                    f"Event {event_id} is not on an approved PT calendar"
+                )
+            event["calendarId"] = actual_calendar_id or calendar_id
+            events_by_id[event_id] = event
+    return list(events_by_id.values())
+
+
+def classify_pt_hold_event(event, hold_start_date, hold_end_date, now=None):
+    """Classify one exact-contact PT event without mutating it."""
+    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    start_window, end_window = pt_hold_window(hold_start_date, hold_end_date)
+    event_id = str(event.get("id", "")).strip()
+    try:
+        start = parse_event_datetime(event.get("startTime"))
+    except (TypeError, ValueError) as exc:
+        return "manual_review", f"Invalid start time: {exc}"
+
+    status = str(
+        event.get("appointmentStatus") or event.get("status") or "new"
+    ).strip().lower()
+    if status not in {"new", "confirmed", "active"}:
+        return "skip", f"Status is {status or 'blank'}"
+    if not start_window <= start < end_window:
+        return "skip", "Outside actual hold interval"
+    if start <= now:
+        return "skip", "Appointment has already started"
+    if event_is_recurring(event):
+        return "manual_review", "Recurring appointment requires instance review"
+    if start - now <= timedelta(hours=24):
+        return "cancel", "Inside the 24-hour forfeiture window"
+    if not event_id:
+        return "manual_review", "Appointment has no event ID"
+    return "delete", "Approved PT hold; unpaid advance appointment"
+
+
+def pt_hold_clearance_run_key(contact_id, hold_start_date, hold_end_date):
+    raw = f"{contact_id}|{hold_start_date}|{hold_end_date}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:20]
+
+
+def pt_hold_audit_title(hold_start_date, hold_end_date):
+    return f"PT hold clearance: {hold_start_date} to {hold_end_date}"
+
+
+def format_pt_hold_audit_section(
+    run_key,
+    phase,
+    hold_start_date,
+    hold_end_date,
+    records,
+    now=None,
+):
+    checked_at = (now or datetime.now(timezone.utc)).astimezone(
+        BRISBANE_TZ
+    ).isoformat()
+    lines = [
+        f"PT HOLD CLEARANCE [{run_key}]",
+        f"Phase: {phase}",
+        f"Checked: {checked_at}",
+        f"Actual hold interval: {hold_start_date} to {hold_end_date} "
+        "(return date excluded)",
+    ]
+    if not records:
+        lines.append("Appointments: none")
+        return "\n".join(lines)
+
+    lines.append("Appointments:")
+    for record in records:
+        event = record["event"]
+        try:
+            start = parse_event_datetime(event.get("startTime")).astimezone(
+                BRISBANE_TZ
+            ).isoformat()
+        except (TypeError, ValueError):
+            start = str(event.get("startTime", "unknown"))
+        lines.append(
+            "- "
+            f"event={event.get('id', 'unknown')} | start={start} | "
+            f"calendar={event.get('calendarId', 'unknown')} | "
+            f"trainer={event.get('assignedUserId', 'unknown')} | "
+            "prior_status="
+            f"{event.get('appointmentStatus') or event.get('status') or 'unknown'} | "
+            f"decision={record.get('decision')} | "
+            f"result={record.get('result', 'planned')} | "
+            f"reason={record.get('reason', '')}"
+        )
+    return "\n".join(lines)
+
+
+def find_pt_hold_audit_note(contact_id, title):
+    response = requests.get(
+        f"{GHL_BASE_URL}/contacts/{contact_id}/notes",
+        headers=_ghl_v3_headers(),
+        params={"limit": 100},
+        timeout=20,
+    )
+    if not response.ok:
+        raise PTHoldClearanceError(
+            f"Unable to read PT clearance notes: HTTP {response.status_code}"
+        )
+    for note in response.json().get("notes", []):
+        if str(note.get("title", "")).strip() == title:
+            return note
+    return None
+
+
+def write_pt_hold_audit_note(contact_id, title, section):
+    """Create or append to the single audit note for this hold interval."""
+    if not GHL_AUTOMATION_USER_ID:
+        raise PTHoldClearanceError(
+            "GHL_AUTOMATION_USER_ID is required for clearance audit notes"
+        )
+    existing = find_pt_hold_audit_note(contact_id, title)
+    if existing:
+        note_id = str(existing.get("id", "")).strip()
+        existing_body = str(existing.get("body", "")).strip()
+        body = f"{existing_body}\n\n{section}" if existing_body else section
+        response = requests.put(
+            f"{GHL_BASE_URL}/contacts/{contact_id}/notes/{note_id}",
+            headers=_ghl_v3_headers(),
+            json={
+                "userId": GHL_AUTOMATION_USER_ID,
+                "title": title,
+                "body": body,
+                "pinned": False,
+            },
+            timeout=20,
+        )
+        expected_status = 200
+    else:
+        body = section
+        response = requests.post(
+            f"{GHL_BASE_URL}/contacts/{contact_id}/notes",
+            headers=_ghl_v3_headers(),
+            json={
+                "userId": GHL_AUTOMATION_USER_ID,
+                "title": title,
+                "body": body,
+                "pinned": False,
+            },
+            timeout=20,
+        )
+        expected_status = 201
+    if response.status_code != expected_status:
+        raise PTHoldClearanceError(
+            f"Unable to persist PT clearance audit: HTTP {response.status_code}"
+        )
+    note = response.json().get("note", {})
+    return str(note.get("id") or (existing or {}).get("id", ""))
+
+
+def delete_pt_hold_event(event_id):
+    response = requests.delete(
+        f"{GHL_BASE_URL}/calendars/events/{event_id}",
+        headers=_ghl_v3_headers(),
+        timeout=20,
+    )
+    if response.status_code not in {200, 201, 204, 404}:
+        raise PTHoldClearanceError(
+            f"Unable to delete appointment {event_id}: "
+            f"HTTP {response.status_code}"
+        )
+    return "already absent" if response.status_code == 404 else "deleted"
+
+
+def cancel_late_pt_hold_event(event):
+    event_id = str(event.get("id", "")).strip()
+    payload = {
+        "appointmentStatus": "cancelled",
+        "toNotify": False,
+    }
+    for key in (
+        "title",
+        "calendarId",
+        "startTime",
+        "endTime",
+        "assignedUserId",
+        "meetingLocationType",
+        "meetingLocationId",
+        "address",
+        "description",
+    ):
+        if event.get(key) not in (None, ""):
+            payload[key] = event[key]
+    response = requests.put(
+        f"{GHL_BASE_URL}/calendars/events/appointments/{event_id}",
+        headers=_ghl_v3_headers(),
+        json=payload,
+        timeout=20,
+    )
+    if not response.ok:
+        raise PTHoldClearanceError(
+            f"Unable to retain late-cancelled appointment {event_id}: "
+            f"HTTP {response.status_code}"
+        )
+    return "cancelled and retained"
+
+
 def validate_hold_request(fields, request_kind):
     required = ["hold_start", "hold_reason"]
     week_key = "hold_weeks" if request_kind == "standard" else "extended_hold_weeks"
@@ -824,6 +1124,269 @@ def hold_return_guard():
             contact_name=contact_name,
         )
         return jsonify({"status": "exception", "error": message}), 502
+def normalise_pt_hold_type(value):
+    return str(value or "").strip().lower() in {
+        "pt",
+        "personal training",
+    }
+
+
+def validate_live_pt_hold(
+    contact_id,
+    hold_start_date,
+    hold_end_date,
+    mode,
+):
+    fields = get_ghl_contact_fields(contact_id)
+    if not normalise_pt_hold_type(fields.get("hold_type")):
+        raise PTHoldClearanceError("Live hold type is not PT")
+
+    lifecycle_status = str(
+        fields.get("hold_lifecycle_status", "")
+    ).strip()
+    if lifecycle_status not in {"Pending Hold", "On Hold"}:
+        raise PTHoldClearanceError(
+            "Live PT hold is not approved and pending/active"
+        )
+
+    try:
+        live_start = parse_ghl_date(fields.get("hold_start"))
+        live_end = parse_ghl_date(fields.get("hold_end"))
+    except (TypeError, ValueError) as exc:
+        raise PTHoldClearanceError(
+            f"Live PT hold dates are invalid: {exc}"
+        ) from exc
+    if live_start != hold_start_date or live_end != hold_end_date:
+        raise PTHoldClearanceError(
+            "Requested clearance dates do not match the live PT hold"
+        )
+
+    billing_status = str(fields.get("hold_status", "")).strip()
+    if mode == "apply" and billing_status != "Succeeded":
+        raise PTHoldClearanceError(
+            "Billing pause is not confirmed Succeeded; no appointments changed"
+        )
+    return fields
+
+
+def run_pt_hold_clearance(
+    contact_id,
+    hold_start_date,
+    hold_end_date,
+    mode="preview",
+    now=None,
+):
+    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    events = get_pt_hold_calendar_events(
+        contact_id,
+        hold_start_date,
+        hold_end_date,
+    )
+    records = []
+    for event in sorted(
+        events,
+        key=lambda item: str(item.get("startTime", "")),
+    ):
+        decision, reason = classify_pt_hold_event(
+            event,
+            hold_start_date,
+            hold_end_date,
+            now=now,
+        )
+        records.append(
+            {
+                "event": event,
+                "decision": decision,
+                "reason": reason,
+                "result": "preview" if mode == "preview" else "planned",
+            }
+        )
+
+    counts = {
+        decision: sum(
+            1 for record in records if record["decision"] == decision
+        )
+        for decision in ("delete", "cancel", "manual_review", "skip")
+    }
+    if mode == "preview":
+        return {
+            "status": "preview",
+            "counts": counts,
+            "records": records,
+        }
+
+    if not any(
+        record["decision"] in {"delete", "cancel", "manual_review"}
+        for record in records
+    ):
+        counts["failed"] = 0
+        return {
+            "status": "ok",
+            "counts": counts,
+            "records": records,
+        }
+
+    run_key = pt_hold_clearance_run_key(
+        contact_id,
+        hold_start_date,
+        hold_end_date,
+    )
+    title = pt_hold_audit_title(hold_start_date, hold_end_date)
+    planned_section = format_pt_hold_audit_section(
+        run_key,
+        "PLANNED",
+        hold_start_date,
+        hold_end_date,
+        records,
+        now=now,
+    )
+    write_pt_hold_audit_note(contact_id, title, planned_section)
+
+    if counts["manual_review"]:
+        for record in records:
+            if record["decision"] in {"delete", "cancel"}:
+                record["result"] = "not processed; review required"
+            elif record["decision"] == "manual_review":
+                record["result"] = "needs review"
+            else:
+                record["result"] = "skipped"
+        review_section = format_pt_hold_audit_section(
+            run_key,
+            "NEEDS REVIEW — NO MUTATIONS",
+            hold_start_date,
+            hold_end_date,
+            records,
+        )
+        write_pt_hold_audit_note(contact_id, title, review_section)
+        return {
+            "status": "needs_review",
+            "counts": counts,
+            "records": records,
+        }
+
+    mutation_failed = False
+    for record in records:
+        decision = record["decision"]
+        if decision == "skip":
+            record["result"] = "skipped"
+            continue
+        if mutation_failed:
+            record["result"] = "not processed after earlier failure"
+            continue
+        event_id = str(record["event"].get("id", "")).strip()
+        try:
+            if decision == "delete":
+                record["result"] = delete_pt_hold_event(event_id)
+            elif decision == "cancel":
+                record["result"] = cancel_late_pt_hold_event(record["event"])
+        except PTHoldClearanceError as exc:
+            record["result"] = f"failed: {exc}"
+            mutation_failed = True
+
+    final_phase = "PARTIAL FAILURE" if mutation_failed else "COMPLETED"
+    final_section = format_pt_hold_audit_section(
+        run_key,
+        final_phase,
+        hold_start_date,
+        hold_end_date,
+        records,
+    )
+    write_pt_hold_audit_note(contact_id, title, final_section)
+    counts["failed"] = sum(
+        1 for record in records if record["result"].startswith("failed:")
+    )
+    return {
+        "status": "partial_failure" if mutation_failed else "ok",
+        "counts": counts,
+        "records": records,
+    }
+
+
+def clearance_response_payload(result):
+    return {
+        "status": result["status"],
+        "counts": result["counts"],
+        "appointments": [
+            {
+                "event_id": record["event"].get("id"),
+                "calendar_id": record["event"].get("calendarId"),
+                "start_time": record["event"].get("startTime"),
+                "decision": record["decision"],
+                "result": record["result"],
+                "reason": record["reason"],
+            }
+            for record in result["records"]
+        ],
+    }
+
+
+@app.route("/ghl/pt-hold-clearance", methods=["POST"])
+def pt_hold_clearance():
+    supplied_secret = request.headers.get(
+        "X-PT-Hold-Clearance-Secret", ""
+    )
+    if (
+        not PT_HOLD_CLEARANCE_SECRET
+        or not supplied_secret
+        or not hmac.compare_digest(
+            supplied_secret,
+            PT_HOLD_CLEARANCE_SECRET,
+        )
+    ):
+        return jsonify({"status": "exception", "error": "Unauthorized"}), 401
+
+    data = request.get_json(silent=True) or {}
+    contact_id = str(data.get("contact_id", "")).strip()
+    hold_start_str = str(data.get("hold_start_date", "")).strip()
+    hold_end_str = str(data.get("hold_end_date", "")).strip()
+    hold_type = data.get("hold_type", "")
+    mode = str(data.get("mode", "preview")).strip().lower()
+    if (
+        not contact_id
+        or not hold_start_str
+        or not hold_end_str
+        or not normalise_pt_hold_type(hold_type)
+        or mode not in {"preview", "apply"}
+    ):
+        return jsonify(
+            {"status": "exception", "error": "Invalid clearance payload"}
+        ), 400
+
+    try:
+        hold_start_date = parse_date(hold_start_str)
+        hold_end_date = parse_date(hold_end_str)
+        if hold_end_date <= hold_start_date:
+            raise PTHoldClearanceError(
+                "Hold End Date must be after Hold Start Date"
+            )
+        validate_live_pt_hold(
+            contact_id,
+            hold_start_date,
+            hold_end_date,
+            mode,
+        )
+        result = run_pt_hold_clearance(
+            contact_id,
+            hold_start_date,
+            hold_end_date,
+            mode=mode,
+        )
+        status_code = {
+            "preview": 200,
+            "ok": 200,
+            "needs_review": 409,
+            "partial_failure": 502,
+        }[result["status"]]
+        return jsonify(clearance_response_payload(result)), status_code
+    except (ValueError, PTHoldClearanceError, GHLStatusError) as exc:
+        log.error(
+            "PT HOLD CLEARANCE STOPPED: contact=%s | error=%s",
+            contact_id,
+            exc,
+        )
+        return jsonify(
+            {"status": "exception", "error": str(exc)}
+        ), 422
 
 
 def record_exception(
@@ -2968,6 +3531,14 @@ def health():
                 if PT_HOLD_ENTITLEMENT_RECONCILIATION_ENABLED
                 else "disabled"
             ),
+            "pt_hold_clearance": {
+                "configured": bool(
+                    GHL_PT_CALENDAR_IDS
+                    and GHL_AUTOMATION_USER_ID
+                    and PT_HOLD_CLEARANCE_SECRET
+                ),
+                "approved_calendar_count": len(GHL_PT_CALENDAR_IDS),
+            },
         }
     ), 200
 
