@@ -42,7 +42,7 @@ class AppTest(unittest.TestCase):
             trainerize_api_base_url="https://api.trainerize.com/v03",
             trainerize_location_id=None,
             hub_base_url="",
-            hub_api_key="",
+            hub_current_people_read_key="",
             worker_enabled=False,
         )
         repo = Repository(self.settings.database_url)

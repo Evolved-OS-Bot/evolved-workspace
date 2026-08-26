@@ -74,7 +74,7 @@ Active Online relationship continues.
 - Trainerize write: the same guarded ABC Trainerize API connection invokes
   `user/setStatus` with sign-in and messaging disabled, then proves the exact
   account moved from the active roster to the deactivated roster
-- Hub: `OPERATING_DATA_HUB_URL`, `OPERATING_DATA_HUB_API_KEY`
+- Hub: `OPERATING_DATA_HUB_URL`, `OPERATING_DATA_HUB_CURRENT_PEOPLE_READ_KEY`
 
 The public health endpoint returns only `{"status":"ok"}`. Authenticated
 readiness, case status and due-job controls live under `/api/v1/admin/` and use

@@ -390,11 +390,18 @@ class ProductionIntegrations:
         }
 
     def verify_reporting(self, context: dict[str, Any]) -> dict[str, Any]:
-        if not self.settings.hub_base_url or not self.settings.hub_api_key:
+        if (
+            not self.settings.hub_base_url
+            or not self.settings.hub_current_people_read_key
+        ):
             raise FinalizationError("Hub verification is not configured")
         response = self.session.get(
             f"{self.settings.hub_base_url}/api/v2/reporting/current-people",
-            headers={"X-Hub-Secret": self.settings.hub_api_key},
+            headers={
+                "X-Current-People-Read-Secret": (
+                    self.settings.hub_current_people_read_key
+                )
+            },
             params={"period": "week"},
             timeout=60,
         )

@@ -42,7 +42,7 @@ class Settings:
     trainerize_api_base_url: str
     trainerize_location_id: int | None
     hub_base_url: str
-    hub_api_key: str
+    hub_current_people_read_key: str
     worker_enabled: bool
 
     def relay_configuration_issues(self) -> list[str]:
@@ -113,7 +113,9 @@ class Settings:
             ).rstrip("/"),
             trainerize_location_id=int(location) if location.isdigit() else None,
             hub_base_url=os.getenv("OPERATING_DATA_HUB_URL", "").rstrip("/"),
-            hub_api_key=os.getenv("OPERATING_DATA_HUB_API_KEY", "").strip(),
+            hub_current_people_read_key=os.getenv(
+                "OPERATING_DATA_HUB_CURRENT_PEOPLE_READ_KEY", ""
+            ).strip(),
             worker_enabled=_bool("CANCELLATION_FINALIZER_WORKER_ENABLED", True),
         )
 
@@ -131,7 +133,9 @@ class Settings:
             "TRAINERIZE_API_TOKEN": self.trainerize_api_token,
             "TRAINERIZE_LOCATION_ID": self.trainerize_location_id,
             "OPERATING_DATA_HUB_URL": self.hub_base_url,
-            "OPERATING_DATA_HUB_API_KEY": self.hub_api_key,
+            "OPERATING_DATA_HUB_CURRENT_PEOPLE_READ_KEY": (
+                self.hub_current_people_read_key
+            ),
         }
         missing = [name for name, value in required.items() if not value]
         missing.extend(

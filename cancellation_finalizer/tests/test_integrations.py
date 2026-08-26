@@ -50,5 +50,52 @@ class TrainerizeIntegrationTest(unittest.TestCase):
         )
 
 
+class ReportingIntegrationTest(unittest.TestCase):
+    def test_current_people_uses_dedicated_read_only_header(self):
+        settings = SimpleNamespace(
+            stripe_api_key="",
+            hub_base_url="https://hub.example",
+            hub_current_people_read_key="read-only-secret",
+        )
+        response = Mock(ok=True)
+        response.json.return_value = {
+            "rows": [
+                {
+                    "person_id": "person-1",
+                    "source_identities": [
+                        {
+                            "source": "ghl",
+                            "source_record_id": "contact-1",
+                        }
+                    ],
+                    "lifecycle": {"status": "cancelled"},
+                    "service_relationships": [],
+                }
+            ],
+            "source_freshness": [],
+        }
+        session = Mock()
+        session.get.return_value = response
+        integration = ProductionIntegrations(settings, session=session)
+
+        receipt = integration.verify_reporting(
+            {
+                "contact_id": "contact-1",
+                "cancellation_type": "membership",
+                "scope": "ended_service_only",
+            }
+        )
+
+        self.assertTrue(receipt["verified"])
+        session.get.assert_called_once_with(
+            "https://hub.example/api/v2/reporting/current-people",
+            headers={
+                "X-Current-People-Read-Secret": "read-only-secret"
+            },
+            params={"period": "week"},
+            timeout=60,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
