@@ -129,3 +129,11 @@ durable finalizer queue; the service never creates Admin Eve tasks.
 The 29 September audit repaired nine completed exits without member messages
 or financial changes. See the workspace cancellation cleanup plan for private
 evidence locations and remaining production activation gates.
+
+The existing ten-minute Railway worker discovers Notice Active episodes with an
+explicit final-access date from the fresh governed current-people contract. It
+deduplicates these into the same durable queue used by signed handoffs. It never
+infers missing dates, never grants all-services scope, and direct source checks
+remain mandatory before writes. This closes the missing handoff gap without
+another scheduler or independent roster. Missing dates and ambiguous identities
+remain source-data exceptions for reconciliation.

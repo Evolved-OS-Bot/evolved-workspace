@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import logging
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from typing import Any, Protocol
@@ -189,6 +190,16 @@ class Finalizer:
         )
 
     def process_due(self, limit: int = 25) -> int:
+        discover = getattr(self.integrations, "discover_boundary_cases", None)
+        if discover:
+            try:
+                for payload in discover():
+                    normalized = normalize_payload(payload)
+                    # Existing signed handoffs retain their exact task and scope.
+                    if self.repository.get(normalized["idempotency_key"]) is None:
+                        self.repository.upsert(normalized, now=self.now())
+            except Exception:
+                logging.getLogger(__name__).warning("Governed boundary discovery unavailable; existing cases retain source checks")
         keys = self.repository.due(self.now(), limit=limit)
         for key in keys:
             self.process(key)

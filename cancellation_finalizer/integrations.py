@@ -13,13 +13,15 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 from .config import Settings
-from .engine import FinalizationError, RetryLater, normalize_email
+from .engine import BRISBANE, FinalizationError, RetryLater, normalize_email
 
 
 GHL_BASE = "https://services.leadconnectorhq.com"
 CANCELLATION_PIPELINE_ID = "Tl3wKQfNYnAlcgWpORMD"
 CANCELLED_MEMBER_STAGE_ID = "03e01d68-a44c-429f-8770-ce4f72fa33ca"
 FIELD_NAMES = {
+    "service_change_status": "SC: Change Status",
+    "service_components": "Member: Current Service Components",
     "submitted_date": "CS: Date Submitted",
     "cancellation_status": "CS: Cancellation Status",
     "cancellation_type": "CS: Cancellation Type",
@@ -36,6 +38,35 @@ class ProductionIntegrations:
         self.session = session or requests.Session()
         self._field_ids: dict[str, str] = {}
         stripe.api_key = settings.stripe_api_key
+
+    def discover_boundary_cases(self) -> list[dict[str, Any]]:
+        """Reuse the governed Hub; source checks still happen at the boundary."""
+        response = self.session.get(
+            f"{self.settings.hub_base_url}/api/v2/reporting/current-people",
+            headers={"X-Current-People-Read-Secret": self.settings.hub_current_people_read_key},
+            params={"period": "week"}, timeout=60,
+        )
+        if not response.ok:
+            raise RetryLater("Hub boundary discovery unavailable")
+        data = response.json()
+        if data.get("complete") is not True or data.get("blocked_reasons") or any(
+            source.get("freshness") != "fresh" for source in data.get("source_freshness") or []
+        ):
+            raise RetryLater("Hub boundary discovery requires complete fresh evidence")
+        cases = []
+        for row in data.get("rows") or []:
+            lifecycle = row.get("lifecycle") or {}
+            if lifecycle.get("cancellation_status") != "Notice Active" or not lifecycle.get("final_access_date"):
+                continue
+            contacts = {str(i.get("source_record_id")) for i in row.get("source_identities") or [] if i.get("source") == "ghl" and i.get("source_record_id")}
+            if len(contacts) != 1:
+                continue
+            cases.append({
+                "contact_id": next(iter(contacts)), "email": (row.get("display") or {}).get("email"),
+                "cancellation_type": lifecycle.get("cancellation_type"),
+                "final_access_date": lifecycle["final_access_date"], "scope": "service_only",
+            })
+        return cases
 
     def _require_writes(self) -> None:
         if not self.settings.write_enabled:
@@ -168,6 +199,9 @@ class ProductionIntegrations:
             raise FinalizationError("GHL contact email does not match the request")
         ids = self._fields()
         current = self._contact_field_values(contact)
+        service_change = str(current.get(ids["service_change_status"]) or "").strip().lower()
+        if service_change not in {"", "none", "completed", "cancelled"}:
+            raise FinalizationError("unresolved service change requires continuing-entitlement reconciliation")
         previous = payload.get("receipts", {}).get("preflight", {})
         submitted = str(current.get(ids["submitted_date"]) or "")
         if previous and previous.get("submitted_date") != submitted:
@@ -186,12 +220,21 @@ class ProductionIntegrations:
                 raise FinalizationError(f"GHL {FIELD_NAMES[key]} expected {value}; found {actual or 'blank'}")
 
         appointments = self._ghl("GET", f"/contacts/{payload['contact_id']}/appointments")
-        if any(
-            str(row.get("startTime") or "")[:10] > payload["final_access_date"]
-            and str(row.get("appointmentStatus") or "").lower() not in {"cancelled", "canceled", "invalid"}
-            for row in appointments.get("events") or []
-        ):
-            raise FinalizationError("future appointments require service-specific entitlement reconciliation before final closure")
+        for row in appointments.get("events") or []:
+            if str(row.get("appointmentStatus") or "").lower() in {"cancelled", "canceled", "invalid"}:
+                continue
+            try:
+                starts = datetime.fromisoformat(str(row.get("startTime") or "").replace("Z", "+00:00"))
+                if starts.tzinfo is None:
+                    raise ValueError("missing timezone")
+            except ValueError as exc:
+                raise FinalizationError("appointment boundary cannot be verified") from exc
+            if starts.astimezone(BRISBANE).date().isoformat() > payload["final_access_date"]:
+                raise FinalizationError("future appointments require service-specific entitlement reconciliation before final closure")
+        notes = self._ghl("GET", f"/contacts/{payload['contact_id']}/notes").get("notes") or []
+        protected_words = ("do not deactivate", "retained session", "remaining session", "unused session", "session credit", "make-up session", "makeup session")
+        if any(any(term in str(note.get("body") or "").lower() for term in protected_words) for note in notes):
+            raise FinalizationError("retained-session evidence requires manual entitlement reconciliation")
 
         roster = self._roster_state(payload["email"])
         duplicates = {tab: rows for tab, rows in roster.items() if len(rows) > 1}
@@ -252,6 +295,10 @@ class ProductionIntegrations:
         ).auto_paging_iter() if s.status not in {"canceled", "incomplete_expired"}]
         if active and not context["preflight"]["continuing_tabs"]:
             raise FinalizationError("Stripe still has an active subscription and no continuing service is recorded")
+        if not context["preflight"]["continuing_tabs"]:
+            schedules = list(stripe.SubscriptionSchedule.list(customer=customer_id, limit=100).auto_paging_iter())
+            if any(str(item.status) in {"not_started", "active"} for item in schedules):
+                raise FinalizationError("Stripe has a continuing or future subscription schedule")
         return {
             "verified": True,
             "subscription_id": subscription_id,
@@ -385,6 +432,7 @@ class ProductionIntegrations:
         payload: dict[str, Any] = {"customFields": custom_fields}
         if not continuing:
             payload["type"] = "lead"
+            custom_fields.append({"id": ids["service_components"], "fieldValue": ""})
         self._ghl("PUT", f"/contacts/{contact_id}", json=payload)
 
         cancellation_type = context["cancellation_type"]
@@ -407,6 +455,8 @@ class ProductionIntegrations:
         tags = {str(tag).lower() for tag in contact.get("tags") or []}
         if str(values.get(ids["cancellation_status"]) or "").lower() != "cancelled":
             raise FinalizationError("GHL cancellation status failed read-back")
+        if not continuing and values.get(ids["service_components"]):
+            raise FinalizationError("GHL current-service components failed clearance read-back")
         if any(tag in tags for tag in remove):
             raise FinalizationError("GHL active-service tags failed removal read-back")
         if not set(add).issubset(tags):

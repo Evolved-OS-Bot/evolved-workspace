@@ -5,6 +5,21 @@ from cancellation_finalizer.integrations import ProductionIntegrations, FIELD_NA
 from cancellation_finalizer.engine import FinalizationError
 
 class ExitCleanupTest(unittest.TestCase):
+    def test_discovery_uses_exact_ghl_identity_and_final_access(self):
+        obj=self.integration();obj.settings.hub_base_url='https://hub.example';obj.settings.hub_current_people_read_key='key'
+        row={'display':{'email':'a@example.com'},'source_identities':[{'source':'ghl','source_record_id':'c'}],'lifecycle':{'cancellation_status':'Notice Active','cancellation_type':'Membership','final_access_date':'2026-09-29'}}
+        response=Mock(ok=True);response.json.return_value={'complete':True,'rows':[row,dict(row,lifecycle={'cancellation_status':'Cancelled'})],'source_freshness':[{'freshness':'fresh'}]}
+        obj.session=Mock();obj.session.get.return_value=response
+        self.assertEqual(len(obj.discover_boundary_cases()),1)
+        self.assertEqual(obj.discover_boundary_cases()[0]['contact_id'],'c')
+
+    def test_discovery_rejects_stale_hub(self):
+        from cancellation_finalizer.engine import RetryLater
+        obj=self.integration();obj.settings.hub_base_url='https://hub.example';obj.settings.hub_current_people_read_key='key'
+        response=Mock(ok=True);response.json.return_value={'complete':True,'source_freshness':[{'freshness':'stale'}]}
+        obj.session=Mock();obj.session.get.return_value=response
+        with self.assertRaises(RetryLater):obj.discover_boundary_cases()
+
     def integration(self):
         obj=ProductionIntegrations(SimpleNamespace(stripe_api_key='',google_spreadsheet_id='sheet',ghl_location_id='location'))
         obj._require_writes=Mock()
@@ -57,3 +72,39 @@ class ExitCleanupTest(unittest.TestCase):
         obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value={'email':'a@example.com'}
         subscriptions.return_value.auto_paging_iter.return_value=iter([SimpleNamespace(status='past_due')])
         with self.assertRaises(FinalizationError):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
+
+    def preflight_fixture(self, extra=None):
+        obj=self.integration();obj._fields=Mock(return_value={k:k for k in FIELD_NAMES})
+        fields={'cancellation_status':'Notice Active','cancellation_type':'Membership','final_access_date':'2026-09-29','billing_status':'Succeeded','submitted_date':'2026-08-27',**(extra or {})}
+        obj._contact=Mock(return_value={'email':'a@example.com','customFields':[{'id':k,'value':v} for k,v in fields.items()]})
+        obj._roster_state=Mock(return_value={t:[] for t in ACTIVE_TABS});obj._ghl=Mock(return_value={'events':[],'notes':[]})
+        return obj,{'contact_id':'c','email':'a@example.com','cancellation_type':'membership','final_access_date':'2026-09-29','scope':'service_only'}
+
+    def test_pending_service_change_preserves_access(self):
+        obj,payload=self.preflight_fixture({'service_change_status':'Pending Effective Date'})
+        with self.assertRaisesRegex(FinalizationError,'unresolved service change'):obj.preflight(payload)
+        obj._roster_state.assert_not_called()
+
+    def test_appointment_boundary_is_brisbane_date(self):
+        obj,payload=self.preflight_fixture()
+        obj._ghl.return_value={'events':[{'startTime':'2026-09-29T20:00:00Z','appointmentStatus':'confirmed'}]}
+        with self.assertRaisesRegex(FinalizationError,'future appointments'):obj.preflight(payload)
+
+    def test_retained_sessions_preserve_access(self):
+        obj,payload=self.preflight_fixture()
+        obj._ghl.side_effect=[{'events':[]},{'notes':[{'body':'Retained sessions remain available. Do not deactivate.'}]}]
+        with self.assertRaisesRegex(FinalizationError,'retained-session'):obj.preflight(payload)
+
+    def test_changed_cancellation_episode_blocks_retry(self):
+        obj,payload=self.preflight_fixture();payload['receipts']={'preflight':{'submitted_date':'2026-07-01'}}
+        with self.assertRaisesRegex(FinalizationError,'episode changed'):obj.preflight(payload)
+
+    @patch('cancellation_finalizer.integrations.stripe.SubscriptionSchedule.list')
+    @patch('cancellation_finalizer.integrations.stripe.Subscription.list')
+    @patch('cancellation_finalizer.integrations.stripe.Customer.retrieve')
+    @patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve')
+    def test_future_schedule_preserves_access(self,sub,customer,subscriptions,schedules):
+        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value={'email':'a@example.com'}
+        subscriptions.return_value.auto_paging_iter.return_value=iter([])
+        schedules.return_value.auto_paging_iter.return_value=iter([SimpleNamespace(status='not_started')])
+        with self.assertRaisesRegex(FinalizationError,'future subscription schedule'):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
