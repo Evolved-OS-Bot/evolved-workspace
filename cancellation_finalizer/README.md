@@ -110,3 +110,22 @@ deduplicated Admin Eve exception and does not falsely complete the final task.
 ```bash
 .venv/bin/python -m unittest discover -s cancellation_finalizer/tests -t . -v
 ```
+
+
+## Exit cleanup repair — 29 September 2026
+
+Retries refresh lifecycle and billing evidence, reject a changed cancellation
+episode, serialize per contact with a PostgreSQL advisory lock, and recover a
+crashed processing attempt after its 15-minute lease. Roster removal resolves
+the current exact-email row and clears only A:K. An already-removed ending row
+and one already-terminal cancellation opportunity are valid idempotent states.
+A new continuing relationship, ambiguous identity, nonterminal Stripe contract
+(including past due), or future appointment stops automatic closure.
+
+PT cancellation reporting permits a continuing membership lifecycle while
+requiring the ended PT relationship to disappear. Exceptions remain in the
+durable finalizer queue; the service never creates Admin Eve tasks.
+
+The 29 September audit repaired nine completed exits without member messages
+or financial changes. See the workspace cancellation cleanup plan for private
+evidence locations and remaining production activation gates.

@@ -20,6 +20,7 @@ GHL_BASE = "https://services.leadconnectorhq.com"
 CANCELLATION_PIPELINE_ID = "Tl3wKQfNYnAlcgWpORMD"
 CANCELLED_MEMBER_STAGE_ID = "03e01d68-a44c-429f-8770-ce4f72fa33ca"
 FIELD_NAMES = {
+    "submitted_date": "CS: Date Submitted",
     "cancellation_status": "CS: Cancellation Status",
     "cancellation_type": "CS: Cancellation Type",
     "final_access_date": "CS: Final Access Date",
@@ -167,8 +168,12 @@ class ProductionIntegrations:
             raise FinalizationError("GHL contact email does not match the request")
         ids = self._fields()
         current = self._contact_field_values(contact)
+        previous = payload.get("receipts", {}).get("preflight", {})
+        submitted = str(current.get(ids["submitted_date"]) or "")
+        if previous and previous.get("submitted_date") != submitted:
+            raise FinalizationError("cancellation episode changed since the first attempt")
         expected = {
-            "cancellation_status": "Notice Active",
+            "cancellation_status": "Cancelled" if previous and current.get(ids["cancellation_status"]) == "Cancelled" else "Notice Active",
             "cancellation_type": payload["cancellation_type"].upper()
             if payload["cancellation_type"] == "pt"
             else "Membership",
@@ -179,6 +184,14 @@ class ProductionIntegrations:
             actual = str(current.get(ids[key]) or "").strip()
             if actual.lower() != str(value).lower():
                 raise FinalizationError(f"GHL {FIELD_NAMES[key]} expected {value}; found {actual or 'blank'}")
+
+        appointments = self._ghl("GET", f"/contacts/{payload['contact_id']}/appointments")
+        if any(
+            str(row.get("startTime") or "")[:10] > payload["final_access_date"]
+            and str(row.get("appointmentStatus") or "").lower() not in {"cancelled", "canceled", "invalid"}
+            for row in appointments.get("events") or []
+        ):
+            raise FinalizationError("future appointments require service-specific entitlement reconciliation before final closure")
 
         roster = self._roster_state(payload["email"])
         duplicates = {tab: rows for tab, rows in roster.items() if len(rows) > 1}
@@ -200,12 +213,16 @@ class ProductionIntegrations:
                 raise FinalizationError(
                     "Membership service-only cancellation has continuing service; explicit all_services or governed service change is required"
                 )
-        if not any(roster[tab] for tab in ending_tabs):
-            raise FinalizationError("no exact active-roster row proves the service to be ended")
+        if previous and set(previous.get("continuing_tabs", [])) != set(continuing_tabs):
+            raise FinalizationError("continuing service changed between finalizer attempts")
+        # Accepted PT cancellations leave the commercial roster immediately;
+        # a missing ending row is also a normal retry after a partial closure.
+        # The exact lifecycle and billing evidence above still remain mandatory.
 
         return {
             "verified": True,
             "field_ids": ids,
+            "submitted_date": submitted,
             "billing_result": str(current.get(ids["billing_result"]) or ""),
             "roster_before": roster,
             "ending_tabs": ending_tabs,
@@ -227,7 +244,12 @@ class ProductionIntegrations:
                 f"Stripe subscription {subscription_id} is {subscription.status}, not cancelled"
             )
         customer_id = str(subscription.customer)
-        active = stripe.Subscription.list(customer=customer_id, status="active", limit=100).data
+        customer = stripe.Customer.retrieve(customer_id)
+        if normalize_email(customer.get("email")) != context["email"]:
+            raise FinalizationError("Stripe subscription owner does not match the exact cancellation identity")
+        active = [s for s in stripe.Subscription.list(
+            customer=customer_id, status="all", limit=100
+        ).auto_paging_iter() if s.status not in {"canceled", "incomplete_expired"}]
         if active and not context["preflight"]["continuing_tabs"]:
             raise FinalizationError("Stripe still has an active subscription and no continuing service is recorded")
         return {
@@ -290,10 +312,18 @@ class ProductionIntegrations:
         self._require_writes()
         service = self._sheets()
         before = context["preflight"]["roster_before"]
+        # Never clear saved row offsets: another edit can move a different
+        # member into that row between attempts.
+        fresh = {tab: self._sheet_matches(service, tab, context["email"]) for tab in ACTIVE_TABS}
+        if any(len(rows) > 1 for rows in fresh.values()):
+            raise FinalizationError("duplicate exact-email roster rows before removal")
+        for tab in ACTIVE_TABS:
+            if tab not in context["preflight"]["ending_tabs"] and bool(fresh[tab]) != bool(before[tab]):
+                raise FinalizationError("continuing service changed since preflight")
         ranges = [
-            f"'{tab}'!A{row}:Z{row}"
+            f"'{tab}'!A{row}:K{row}"
             for tab in context["preflight"]["ending_tabs"]
-            for row in before[tab]
+            for row in fresh[tab]
         ]
         if ranges:
             (
@@ -309,7 +339,7 @@ class ProductionIntegrations:
         if any(after[tab] for tab in context["preflight"]["ending_tabs"]):
             raise FinalizationError("active roster removal failed read-back")
         for tab in context["preflight"]["continuing_tabs"]:
-            if after[tab] != before[tab]:
+            if len(after[tab]) != len(before[tab]):
                 raise FinalizationError("continuing active roster relationship changed")
         return {"verified": True, "cleared_ranges": ranges, "roster_after": after}
 
@@ -336,7 +366,9 @@ class ProductionIntegrations:
             if str(row.get("contactId")) == contact_id
             and str(row.get("pipelineId")) == CANCELLATION_PIPELINE_ID
         ]
-        current = [row for row in rows if str(row.get("status") or "").lower() != "lost"]
+        current = [row for row in rows if str(row.get("status") or "").lower() == "open"]
+        if not current and len(rows) == 1 and rows[0].get("status") == "lost" and rows[0].get("pipelineStageId") == CANCELLED_MEMBER_STAGE_ID:
+            return rows[0]
         if len(current) != 1:
             raise FinalizationError("current Cancellation OS opportunity is missing or ambiguous")
         return current[0]
@@ -346,6 +378,9 @@ class ProductionIntegrations:
         contact_id = context["contact_id"]
         ids = context["preflight"]["field_ids"]
         continuing = bool(context["preflight"]["continuing_tabs"])
+        # Resolve before any contact mutation, including retries after an
+        # opportunity write succeeded but its response was lost.
+        opportunity = self._cancellation_opportunity(contact_id)
         custom_fields = [{"id": ids["cancellation_status"], "fieldValue": "Cancelled"}]
         payload: dict[str, Any] = {"customFields": custom_fields}
         if not continuing:
@@ -360,7 +395,6 @@ class ProductionIntegrations:
             remove = sorted(set(remove + ["member", "personal training", "pt only"]))
         self._set_tags(contact_id, add=add, remove=remove)
 
-        opportunity = self._cancellation_opportunity(contact_id)
         opportunity_id = str(opportunity["id"])
         self._ghl(
             "PUT",
@@ -408,6 +442,10 @@ class ProductionIntegrations:
         if not response.ok:
             raise RetryLater(f"Hub current-people read returned HTTP {response.status_code}")
         payload = response.json()
+        if payload.get("complete") is False or payload.get("blocked_reasons"):
+            raise RetryLater("Hub current-people projection is incomplete")
+        if any(item.get("freshness") not in {"fresh", None} for item in payload.get("source_freshness") or []):
+            raise RetryLater("Hub source evidence is not fresh")
         rows = [
             row
             for row in payload.get("rows") or []
@@ -421,7 +459,8 @@ class ProductionIntegrations:
             raise RetryLater("Hub has not resolved one exact GHL identity yet")
         row = rows[0]
         lifecycle = row.get("lifecycle") or {}
-        if str(lifecycle.get("status") or "").lower() not in {"cancelled", "inactive"}:
+        continuing = bool(context.get("preflight", {}).get("continuing_tabs"))
+        if not continuing and str(lifecycle.get("status") or "").lower() not in {"cancelled", "inactive"}:
             raise RetryLater("Hub has not projected the terminal lifecycle yet")
         ended_types = {"personal_training"} if context["cancellation_type"] == "pt" else {"sgpt", "fast_track"}
         if context["scope"] == "all_services":
@@ -464,34 +503,6 @@ class ProductionIntegrations:
         return {"verified": True, "task_id": task_id, "completed": True}
 
     def create_exception(self, context: dict[str, Any], error: str) -> dict[str, Any]:
-        contact_id = context["contact_id"]
-        marker = "Cancellation finalizer exception key: " + hashlib.sha256(
-            context["idempotency_key"].encode()
-        ).hexdigest()[:16]
-        tasks = self._ghl("GET", f"/contacts/{contact_id}/tasks").get("tasks") or []
-        for task in tasks:
-            if marker in str(task.get("body") or "") and not task.get("completed"):
-                return {"verified": True, "deduplicated": True, "task_id": task.get("id")}
-        if not self.settings.write_enabled:
-            return {"verified": True, "held": True, "reason": "writes_disabled"}
-        due = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-        created = self._ghl(
-            "POST",
-            f"/contacts/{contact_id}/tasks",
-            json={
-                "title": "CANCELLATION FINALIZER EXCEPTION: Review required",
-                "body": (
-                    "Automatic final-access closure stopped safely.\n\n"
-                    f"Failed step: {context.get('current_step') or 'see finalizer record'}\n"
-                    f"Error: {error}\n\n"
-                    "Reconcile the exact failed surface. Do not infer that access or billing is terminal. "
-                    "The normal final task remains open.\n\n"
-                    + marker
-                ),
-                "dueDate": due,
-                "completed": False,
-                "assignedTo": self.settings.ghl_admin_eve_user_id,
-            },
-        )
-        task = created.get("task") or created
-        return {"verified": True, "deduplicated": False, "task_id": task.get("id")}
+        # The durable case owns the exception. Owner policy requires explicit
+        # case-specific approval before assigning any new Admin Eve task.
+        return {"verified": True, "held": True, "reason": "recorded_in_finalizer_exception_queue"}

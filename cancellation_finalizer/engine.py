@@ -95,6 +95,15 @@ class Finalizer:
         case = self.repository.get(key)
         if case is None:
             raise KeyError(key)
+        with self.repository.contact_lock(case.contact_id) as acquired:
+            if not acquired:
+                return self.repository.get(key)
+            return self._process_locked(key)
+
+    def _process_locked(self, key: str) -> FinalizationCase:
+        case = self.repository.get(key)
+        if case is None:
+            raise KeyError(key)
         if case.status == "completed":
             return case
 
@@ -120,12 +129,12 @@ class Finalizer:
             key,
             status="processing",
             attempts=case.attempts + 1,
-            next_attempt_at=None,
+            next_attempt_at=current + timedelta(minutes=15),
             updated_at=current,
         )
         try:
             for step in STEPS:
-                if step in receipts:
+                if step in receipts and step not in {"preflight", "billing"}:
                     context[step] = receipts[step]
                     continue
                 self.repository.update(key, current_step=step, updated_at=self.now())

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import hashlib
+import threading
+from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text, create_engine, delete, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, create_engine, delete, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
@@ -63,6 +65,23 @@ class WebhookNonce(Base):
 
 
 class Repository:
+    _local_lock = threading.RLock()
+
+    @contextmanager
+    def contact_lock(self, contact_id: str):
+        """Serialize every episode for one contact across HTTP and worker runs."""
+        if self.engine.dialect.name != "postgresql":
+            with self._local_lock:
+                yield True
+            return
+        lock_id = int.from_bytes(hashlib.sha256(contact_id.encode()).digest()[:8], "big", signed=True)
+        with self.engine.connect() as connection:
+            acquired = connection.scalar(text("SELECT pg_try_advisory_lock(:key)"), {"key": lock_id})
+            try:
+                yield bool(acquired)
+            finally:
+                if acquired:
+                    connection.execute(text("SELECT pg_advisory_unlock(:key)"), {"key": lock_id})
     def __init__(self, database_url: str):
         if database_url.startswith("postgres://"):
             database_url = "postgresql+psycopg://" + database_url[len("postgres://") :]
@@ -138,7 +157,7 @@ class Repository:
             return list(
                 db.scalars(
                     select(FinalizationCase.idempotency_key)
-                    .where(FinalizationCase.status.in_(("queued", "retry_scheduled")))
+                    .where(FinalizationCase.status.in_(("queued", "retry_scheduled", "processing")))
                     .where(
                         (FinalizationCase.next_attempt_at.is_(None))
                         | (FinalizationCase.next_attempt_at <= now)
