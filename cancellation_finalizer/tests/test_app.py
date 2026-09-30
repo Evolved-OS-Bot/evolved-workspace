@@ -159,6 +159,13 @@ class AppTest(unittest.TestCase):
         self.assertEqual(response.get_json()["current_step"], "boundary_wait")
         self.assertNotIn("contact_id", response.get_json())
 
+    def test_live_readiness_rejects_ephemeral_sqlite(self):
+        from cancellation_finalizer.config import Settings
+        from dataclasses import replace
+        settings=Settings.from_env()
+        self.assertIn("DATABASE_URL_POSTGRES_REQUIRED", replace(settings,database_url="sqlite:///ephemeral.db").missing_live_configuration())
+        self.assertNotIn("DATABASE_URL_POSTGRES_REQUIRED", replace(settings,database_url="postgresql://user:password@host/db").missing_live_configuration())
+
     def test_health_is_minimal_and_sets_security_headers(self):
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
