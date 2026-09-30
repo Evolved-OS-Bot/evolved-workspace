@@ -298,7 +298,7 @@ class ProductionIntegrations:
             )
         customer_id = str(subscription.customer)
         customer = stripe.Customer.retrieve(customer_id)
-        if normalize_email(customer.get("email")) != context["email"]:
+        if normalize_email(getattr(customer, "email", None)) != context["email"]:
             raise FinalizationError("Stripe subscription owner does not match the exact cancellation identity")
         active = [s for s in stripe.Subscription.list(
             customer=customer_id, status="all", limit=100
