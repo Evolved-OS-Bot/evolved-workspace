@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 import time
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 import requests
@@ -226,7 +226,17 @@ class ProductionIntegrations:
             try:
                 starts = datetime.fromisoformat(str(row.get("startTime") or "").replace("Z", "+00:00"))
                 if starts.tzinfo is None:
-                    raise ValueError("missing timezone")
+                    # Dates more than a full day before the boundary are past
+                    # under every civil timezone; no timezone guess is needed.
+                    if starts.date() < date.fromisoformat(payload["final_access_date"]) - timedelta(days=1):
+                        continue
+                    # Contact appointment lists omit offsets; the exact calendar
+                    # event supplies an authoritative timestamp.
+                    event = self._ghl("GET", f"/calendars/events/appointments/{row['id']}")
+                    event = event.get("appointment") or event.get("event") or event
+                    starts = datetime.fromisoformat(str(event.get("startTime") or "").replace("Z", "+00:00"))
+                    if starts.tzinfo is None:
+                        raise ValueError("missing timezone")
             except ValueError as exc:
                 raise FinalizationError("appointment boundary cannot be verified") from exc
             if starts.astimezone(BRISBANE).date().isoformat() > payload["final_access_date"]:

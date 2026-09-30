@@ -117,3 +117,15 @@ class ExitCleanupTest(unittest.TestCase):
         with self.assertRaisesRegex(FinalizationError,'unused non-class'):obj.reconcile_trainerize({'email':'a@example.com','preflight':{'deactivate_trainerize':True}})
         self.assertEqual(obj.session.post.call_count,1)
         self.assertTrue(obj.session.post.call_args.args[0].endswith('/getCreditList'))
+
+    def test_naive_contact_list_uses_exact_calendar_event(self):
+        obj,payload=self.preflight_fixture()
+        obj._ghl.side_effect=[{'events':[{'id':'event-1','startTime':'2026-09-29 20:00:00','appointmentStatus':'confirmed'}]},{'appointment':{'startTime':'2026-09-29T20:00:00Z'}}]
+        with self.assertRaisesRegex(FinalizationError,'future appointments'):obj.preflight(payload)
+        self.assertEqual(obj._ghl.call_args.args[1],'/calendars/events/appointments/event-1')
+
+    def test_unambiguously_old_naive_appointment_needs_no_timezone_guess(self):
+        obj,payload=self.preflight_fixture()
+        obj._ghl.side_effect=[{'events':[{'id':'event-1','startTime':'2026-06-03 08:30:00','appointmentStatus':'confirmed'}]},{'notes':[]}]
+        self.assertTrue(obj.preflight(payload)['verified'])
+        self.assertEqual(obj._ghl.call_count,2)
