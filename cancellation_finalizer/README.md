@@ -102,11 +102,40 @@ Postgres nonce claims remain authoritative across restarts.
 8. optional exact final task completion
 
 The worker retries delayed Hub projection hourly. An ambiguous identity,
-duplicate row, continuing-service conflict or failed write creates one
-deduplicated Admin Eve exception and does not falsely complete the final task.
+duplicate row, continuing-service conflict or failed write remains in the
+durable exception queue and does not falsely complete the final task. No staff
+task is created. Unresolved service changes, retained-session notes and unused
+non-class Trainerize credits block full account deactivation.
 
 ## Local verification
 
 ```bash
 .venv/bin/python -m unittest discover -s cancellation_finalizer/tests -t . -v
 ```
+
+
+## Exit cleanup repair — 29 September 2026
+
+Retries refresh lifecycle and billing evidence, reject a changed cancellation
+episode, serialize per contact with a PostgreSQL advisory lock, and recover a
+crashed processing attempt after its 15-minute lease. Roster removal resolves
+the current exact-email row and clears only A:K. An already-removed ending row
+and one already-terminal cancellation opportunity are valid idempotent states.
+A new continuing relationship, ambiguous identity, nonterminal Stripe contract
+(including past due), or future appointment stops automatic closure.
+
+PT cancellation reporting permits a continuing membership lifecycle while
+requiring the ended PT relationship to disappear. Exceptions remain in the
+durable finalizer queue; the service never creates Admin Eve tasks.
+
+The 29 September audit repaired nine completed exits without member messages
+or financial changes. See the workspace cancellation cleanup plan for private
+evidence locations and remaining production activation gates.
+
+The existing ten-minute Railway worker discovers Notice Active episodes with an
+explicit final-access date from the fresh governed current-people contract. It
+deduplicates these into the same durable queue used by signed handoffs. It never
+infers missing dates, never grants all-services scope, and direct source checks
+remain mandatory before writes. This closes the missing handoff gap without
+another scheduler or independent roster. Missing dates and ambiguous identities
+remain source-data exceptions for reconciliation.

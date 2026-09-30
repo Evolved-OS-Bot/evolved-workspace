@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import logging
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from typing import Any, Protocol
@@ -95,6 +96,15 @@ class Finalizer:
         case = self.repository.get(key)
         if case is None:
             raise KeyError(key)
+        with self.repository.contact_lock(case.contact_id) as acquired:
+            if not acquired:
+                return self.repository.get(key)
+            return self._process_locked(key)
+
+    def _process_locked(self, key: str) -> FinalizationCase:
+        case = self.repository.get(key)
+        if case is None:
+            raise KeyError(key)
         if case.status == "completed":
             return case
 
@@ -120,12 +130,12 @@ class Finalizer:
             key,
             status="processing",
             attempts=case.attempts + 1,
-            next_attempt_at=None,
+            next_attempt_at=current + timedelta(minutes=15),
             updated_at=current,
         )
         try:
             for step in STEPS:
-                if step in receipts:
+                if step in receipts and step not in {"preflight", "billing"}:
                     context[step] = receipts[step]
                     continue
                 self.repository.update(key, current_step=step, updated_at=self.now())
@@ -180,6 +190,16 @@ class Finalizer:
         )
 
     def process_due(self, limit: int = 25) -> int:
+        discover = getattr(self.integrations, "discover_boundary_cases", None)
+        if discover:
+            try:
+                for payload in discover():
+                    normalized = normalize_payload(payload)
+                    # Existing signed handoffs retain their exact task and scope.
+                    if self.repository.get(normalized["idempotency_key"]) is None:
+                        self.repository.upsert(normalized, now=self.now())
+            except Exception:
+                logging.getLogger(__name__).warning("Governed boundary discovery unavailable; existing cases retain source checks")
         keys = self.repository.due(self.now(), limit=limit)
         for key in keys:
             self.process(key)

@@ -16,6 +16,7 @@ class TrainerizeIntegrationTest(unittest.TestCase):
             trainerize_api_token="token",
         )
         session = Mock()
+        session.post.return_value.json.return_value = {"sessionCredits": []}
         integration = ProductionIntegrations(settings, session=session)
         integration._require_writes = Mock()
         integration._trainerize_rows = Mock(
@@ -36,7 +37,7 @@ class TrainerizeIntegrationTest(unittest.TestCase):
         )
 
         self.assertEqual(receipt["action"], "deactivated")
-        session.post.assert_called_once_with(
+        session.post.assert_called_with(
             "https://api.trainerize.com/v03/user/setStatus",
             auth=("group", "token"),
             headers={"Accept": "application/json", "Content-Type": "application/json"},
