@@ -138,6 +138,8 @@ class Settings:
             ),
         }
         missing = [name for name, value in required.items() if not value]
+        if not self.database_url.startswith(("postgres://", "postgresql://", "postgresql+psycopg://")):
+            missing.append("DATABASE_URL_POSTGRES_REQUIRED")
         missing.extend(
             issue for issue in self.relay_configuration_issues() if issue not in missing
         )
