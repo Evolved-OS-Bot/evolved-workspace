@@ -62,14 +62,14 @@ class ExitCleanupTest(unittest.TestCase):
     @patch('cancellation_finalizer.integrations.stripe.Customer.retrieve')
     @patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve')
     def test_wrong_subscription_owner_rejected(self,sub,customer):
-        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value={'email':'different@example.com'}
+        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value=SimpleNamespace(email='different@example.com')
         with self.assertRaises(FinalizationError):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
 
     @patch('cancellation_finalizer.integrations.stripe.Subscription.list')
     @patch('cancellation_finalizer.integrations.stripe.Customer.retrieve')
     @patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve')
     def test_past_due_continuing_contract_blocks_full_exit(self,sub,customer,subscriptions):
-        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value={'email':'a@example.com'}
+        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value=SimpleNamespace(email='a@example.com')
         subscriptions.return_value.auto_paging_iter.return_value=iter([SimpleNamespace(status='past_due')])
         with self.assertRaises(FinalizationError):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
 
@@ -104,7 +104,7 @@ class ExitCleanupTest(unittest.TestCase):
     @patch('cancellation_finalizer.integrations.stripe.Customer.retrieve')
     @patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve')
     def test_future_schedule_preserves_access(self,sub,customer,subscriptions,schedules):
-        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value={'email':'a@example.com'}
+        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x');customer.return_value=SimpleNamespace(email='a@example.com')
         subscriptions.return_value.auto_paging_iter.return_value=iter([])
         schedules.return_value.auto_paging_iter.return_value=iter([SimpleNamespace(status='not_started')])
         with self.assertRaisesRegex(FinalizationError,'future subscription schedule'):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
@@ -129,3 +129,15 @@ class ExitCleanupTest(unittest.TestCase):
         obj._ghl.side_effect=[{'events':[{'id':'event-1','startTime':'2026-06-03 08:30:00','appointmentStatus':'confirmed'}]},{'notes':[]}]
         self.assertTrue(obj.preflight(payload)['verified'])
         self.assertEqual(obj._ghl.call_count,2)
+
+    @patch('cancellation_finalizer.integrations.stripe.SubscriptionSchedule.list')
+    @patch('cancellation_finalizer.integrations.stripe.Subscription.list')
+    @patch('cancellation_finalizer.integrations.stripe.Customer.retrieve')
+    @patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve')
+    def test_stripe_sdk_customer_object_is_read_by_attribute(self,sub,customer,subscriptions,schedules):
+        import stripe
+        obj=self.integration();sub.return_value=SimpleNamespace(status='canceled',customer='cus_x')
+        customer.return_value=stripe.Customer.construct_from({'id':'cus_x','email':'a@example.com'},'sk_test_unit')
+        subscriptions.return_value.auto_paging_iter.return_value=iter([])
+        schedules.return_value.auto_paging_iter.return_value=iter([])
+        self.assertTrue(obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})['verified'])
