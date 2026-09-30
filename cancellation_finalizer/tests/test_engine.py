@@ -130,6 +130,18 @@ class FinalizerTest(unittest.TestCase):
         self.assertNotIn("task", self.integrations.calls)
         self.assertIn("ghl", result.receipts)
 
+    def test_source_receipt_time_survives_reporting_retry(self):
+        first = datetime(2026, 8, 20, 2, tzinfo=UTC)
+        second = datetime(2026, 8, 20, 3, tzinfo=UTC)
+        case = self.repository.upsert(self.payload(), now=first)
+        self.integrations.retry_reporting = True
+        runner = Finalizer(self.repository, self.integrations, now=lambda: first)
+        runner.process(case.idempotency_key)
+        runner.now = lambda: second
+        result = runner.process(case.idempotency_key)
+        self.assertEqual(result.receipts["ghl"]["verified_at"], first.isoformat())
+        self.assertEqual(result.receipts["billing"]["verified_at"], second.isoformat())
+
     def test_failure_creates_one_exception_and_preserves_prior_receipts(self):
         self.integrations.fail_step = "roster"
         payload = self.payload()
