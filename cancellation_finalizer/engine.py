@@ -151,6 +151,7 @@ class Finalizer:
                 receipt = handler(context)
                 if receipt.get("verified") is not True:
                     raise FinalizationError(f"{step} did not return verified read-back")
+                receipt.setdefault("verified_at", self.now().isoformat())
                 receipts[step] = receipt
                 context[step] = receipt
                 self.repository.update(key, receipts=receipts, updated_at=self.now())
