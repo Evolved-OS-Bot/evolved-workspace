@@ -329,8 +329,21 @@ class ProductionIntegrations:
             }
         if len(active) != 1:
             raise FinalizationError("full closure requires one exact active Trainerize account")
-        self._require_writes()
         user_id = int(active[0]["id"])
+        credits_response = self.session.post(
+            f"{self.settings.trainerize_api_base_url}/sessionCredit/getCreditList",
+            auth=(self.settings.trainerize_group_id, self.settings.trainerize_api_token),
+            json={"userID": user_id}, timeout=30,
+        )
+        if not credits_response.ok:
+            raise FinalizationError("Trainerize retained-credit read failed")
+        credits = credits_response.json().get("sessionCredits")
+        if not isinstance(credits, list):
+            raise FinalizationError("Trainerize retained-credit response is incomplete")
+        if any(not credit.get("isExpired") and float(credit.get("amount") or 0) > 0
+               and credit.get("eventCategory") != "class" for credit in credits):
+            raise FinalizationError("Trainerize has unused non-class session credits; preserve access for entitlement reconciliation")
+        self._require_writes()
         try:
             self.session.post(
                 f"{self.settings.trainerize_api_base_url}/user/setStatus",

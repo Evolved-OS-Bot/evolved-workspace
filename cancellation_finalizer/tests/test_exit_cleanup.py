@@ -108,3 +108,12 @@ class ExitCleanupTest(unittest.TestCase):
         subscriptions.return_value.auto_paging_iter.return_value=iter([])
         schedules.return_value.auto_paging_iter.return_value=iter([SimpleNamespace(status='not_started')])
         with self.assertRaisesRegex(FinalizationError,'future subscription schedule'):obj.verify_billing({'email':'a@example.com','preflight':{'billing_result':'sub_abc','continuing_tabs':[]}})
+
+    def test_unused_pt_credit_blocks_deactivation(self):
+        obj=self.integration();obj.settings.trainerize_api_base_url='https://api.example';obj.settings.trainerize_group_id='g';obj.settings.trainerize_api_token='t'
+        obj._trainerize_rows=Mock(side_effect=[[{'id':42,'email':'a@example.com'}],[]])
+        obj.session=Mock();obj.session.post.return_value.ok=True
+        obj.session.post.return_value.json.return_value={'sessionCredits':[{'amount':2,'isExpired':False,'eventCategory':'appointment'}]}
+        with self.assertRaisesRegex(FinalizationError,'unused non-class'):obj.reconcile_trainerize({'email':'a@example.com','preflight':{'deactivate_trainerize':True}})
+        self.assertEqual(obj.session.post.call_count,1)
+        self.assertTrue(obj.session.post.call_args.args[0].endswith('/getCreditList'))

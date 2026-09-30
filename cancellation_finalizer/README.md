@@ -102,8 +102,10 @@ Postgres nonce claims remain authoritative across restarts.
 8. optional exact final task completion
 
 The worker retries delayed Hub projection hourly. An ambiguous identity,
-duplicate row, continuing-service conflict or failed write creates one
-deduplicated Admin Eve exception and does not falsely complete the final task.
+duplicate row, continuing-service conflict or failed write remains in the
+durable exception queue and does not falsely complete the final task. No staff
+task is created. Unresolved service changes, retained-session notes and unused
+non-class Trainerize credits block full account deactivation.
 
 ## Local verification
 
