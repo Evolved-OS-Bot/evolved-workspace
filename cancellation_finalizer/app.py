@@ -209,7 +209,7 @@ def create_app(
         return jsonify(
             {
                 "status": "ok",
-                "handoffVersion": "2026-10-08-cancellation-handoff-v1",
+                "handoffVersion": "2026-10-08-cancellation-reporting-v2",
                 "intakeIssueCount": len(repo.intake_issues()),
                 "writeEnabled": configured.write_enabled,
                 "workerEnabled": configured.worker_enabled,

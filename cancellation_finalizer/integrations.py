@@ -57,9 +57,11 @@ class ProductionIntegrations:
         cases = []
         for row in data.get("rows") or []:
             lifecycle = row.get("lifecycle") or {}
-            if lifecycle.get("cancellation_status") != "Notice Active":
-                continue
             contacts = {str(i.get("source_record_id")) for i in row.get("source_identities") or [] if i.get("source") == "ghl" and i.get("source_record_id")}
+            if lifecycle.get("cancellation_status") != "Notice Active":
+                if len(contacts) == 1 and lifecycle.get("cancellation_status") == "Cancelled":
+                    self.discovery_issues["contact:" + next(iter(contacts))] = ""
+                continue
             issue_key = "identity:" + str(row.get("person_id") or hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest()[:24])
             if len(contacts) != 1:
                 self.discovery_issues[issue_key] = "Cancellation has no unique GHL identity"
@@ -548,10 +550,6 @@ class ProductionIntegrations:
         if not response.ok:
             raise RetryLater(f"Hub current-people read returned HTTP {response.status_code}")
         payload = response.json()
-        if payload.get("complete") is False or payload.get("blocked_reasons"):
-            raise RetryLater("Hub current-people projection is incomplete")
-        if any(item.get("freshness") not in {"fresh", None} for item in payload.get("source_freshness") or []):
-            raise RetryLater("Hub source evidence is not fresh")
         rows = [
             row
             for row in payload.get("rows") or []
@@ -564,6 +562,12 @@ class ProductionIntegrations:
         if len(rows) != 1:
             raise RetryLater("Hub has not resolved one exact GHL identity yet")
         row = rows[0]
+        scoped_freshness = self._stripe_only_reporting_evidence(payload, row, context)
+        if not scoped_freshness:
+            if payload.get("complete") is False or payload.get("blocked_reasons"):
+                raise RetryLater("Hub current-people projection is incomplete")
+            if any(item.get("freshness") not in {"fresh", None} for item in payload.get("source_freshness") or []):
+                raise RetryLater("Hub source evidence is not fresh")
         lifecycle = row.get("lifecycle") or {}
         continuing = bool(context.get("preflight", {}).get("continuing_tabs"))
         if not continuing and str(lifecycle.get("status") or "").lower() not in {"cancelled", "inactive"}:
@@ -583,8 +587,54 @@ class ProductionIntegrations:
             "person_id": row.get("person_id"),
             "lifecycle_status": lifecycle.get("status"),
             "remaining_service_types": sorted(remaining),
+            "unrelated_stale_source": "pt_minder" if scoped_freshness else None,
             "source_freshness": payload.get("source_freshness") or [],
         }
+
+    @staticmethod
+    def _stripe_only_reporting_evidence(payload, row, context) -> bool:
+        """An unrelated stale legacy feed cannot hold an evidenced Stripe-only exit."""
+        if payload.get("blocked_reasons") != ["stale required sources: pt_minder"]:
+            return False
+        sources = payload.get("source_freshness") or []
+        by_source = {item.get("source"): item for item in sources}
+        required = {"membership_reconciliation", "active_client_cohort", "commercial_evidence_stripe", "pt_minder"}
+        if set(by_source) != required or len(sources) != len(required):
+            return False
+        if by_source["pt_minder"].get("freshness") != "stale":
+            return False
+        if any(by_source[name].get("freshness") != "fresh" for name in required - {"pt_minder"}):
+            return False
+        if row.get("service_relationships") or context.get("preflight", {}).get("continuing_tabs"):
+            return False
+        if any(item.get("source") not in {"ghl", "stripe", "trainerize"} for item in row.get("source_identities") or []):
+            return False
+        accounts = row.get("payment_accounts") or []
+        if not accounts or any(a.get("source") != "stripe" or a.get("status") != "cancelled" for a in accounts):
+            return False
+        if any(a.get("source_snapshot_id") != by_source["commercial_evidence_stripe"].get("source_snapshot_id") for a in accounts):
+            return False
+        lifecycle = row.get("lifecycle") or {}
+        if lifecycle.get("source") != "membership_reconciliation" or lifecycle.get("source_snapshot_id") != by_source["membership_reconciliation"].get("source_snapshot_id"):
+            return False
+        if lifecycle.get("confidence") != "verified" or lifecycle.get("final_access_date") != context.get("final_access_date"):
+            return False
+        if str(lifecycle.get("status") or "").lower() not in {"cancelled", "inactive"}:
+            return False
+        receipts = context.get("receipts") or {}
+        for step in ("billing", "trainerize", "roster", "ghl"):
+            if not receipts.get(step, {}).get("verified"):
+                return False
+        if receipts["billing"].get("subscription_status") != "canceled":
+            return False
+        try:
+            closed_at = max(datetime.fromisoformat(receipts[step]["verified_at"].replace("Z", "+00:00")) for step in ("trainerize", "roster", "ghl"))
+            observed_at = datetime.fromisoformat(by_source["membership_reconciliation"]["observed_at"].replace("Z", "+00:00"))
+            if observed_at < closed_at:
+                return False
+        except (KeyError, ValueError, TypeError):
+            return False
+        return True
 
     def complete_task(self, context: dict[str, Any]) -> dict[str, Any]:
         self._require_writes()
