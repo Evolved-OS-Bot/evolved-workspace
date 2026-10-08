@@ -246,7 +246,7 @@ def create_app(
             with repo.contact_lock(payload["contact_id"]) as acquired:
                 if not acquired:
                     return jsonify({"error": "contact busy"}), 409
-                external.verify_queue_boundary(payload)
+                admission = external.verify_queue_boundary(payload)
                 existing = repo.get(payload["idempotency_key"])
                 if existing:
                     # Discovery or an earlier signed request may own a final task.
@@ -256,6 +256,14 @@ def create_app(
                     case = existing
                 else:
                     case = repo.upsert(payload, now=datetime.now(UTC))
+                receipts = dict(case.receipts or {})
+                prior = receipts.get("intake")
+                if prior and any(prior.get(k) != admission.get(k) for k in ("submitted_date", "subscription_id")):
+                    raise ValueError("queue admission conflicts with existing episode")
+                if not prior:
+                    receipts["intake"] = admission
+                    case = repo.update(case.idempotency_key, receipts=receipts)
+
             return jsonify({**_webhook_case(case), "durable": True, "final_access_date": case.final_access_date}), 200
         except Exception:
             audit("queue_request", "rejected", reason="boundary_verification_failed")

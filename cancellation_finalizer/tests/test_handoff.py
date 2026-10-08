@@ -16,6 +16,7 @@ class HandoffTest(unittest.TestCase):
     def setUp(self):
         self.repo = Repository('sqlite:///:memory:'); self.repo.create_schema()
         self.external = Mock()
+        self.external.verify_queue_boundary.return_value = {"verified": True, "submitted_date": "2099-09-01", "subscription_id": "sub_test"}
         self.settings = replace(Settings.from_env(), database_url='sqlite:///:memory:', webhook_signing_secret='a'*40, admin_secret='b'*40, worker_enabled=False)
         self.app = create_app(self.settings, repository=self.repo, integrations=self.external).test_client()
         self.payload = dict(contact_id='contact',email='member@example.com',cancellation_type='pt',final_access_date='2099-10-11',scope='service_only')
@@ -56,3 +57,27 @@ class HandoffTest(unittest.TestCase):
         row={'person_id':'p','display':{'email':'member@example.com'},'source_identities':[{'source':'ghl','source_record_id':'contact'}],'lifecycle':{'cancellation_status':'Notice Active','cancellation_type':'PT','final_access_date':'2099-10-11'}}
         obj.session.get.return_value.json.return_value={'complete':False,'blocked_reasons':['legacy stale'],'source_freshness':[{'source':'membership_reconciliation','freshness':'fresh'},{'source':'pt_minder','freshness':'stale'}],'rows':[row,dict(row,person_id='missing',source_identities=[{'source':'ghl','source_record_id':'missing'}],lifecycle={'cancellation_status':'Notice Active'})]}
         self.assertEqual(len(obj.discover_boundary_cases()),1);self.assertIn('contact:missing',obj.discovery_issues)
+
+class AdmissionTest(unittest.TestCase):
+    def integration(self):
+        from cancellation_finalizer.integrations import FIELD_NAMES, ACTIVE_TABS
+        obj=ProductionIntegrations(SimpleNamespace(stripe_api_key=''))
+        obj._fields=Mock(return_value={k:k for k in FIELD_NAMES})
+        obj._ghl=Mock(return_value={'events':[],'notes':[]})
+        obj._roster_state=Mock(return_value={t:[] for t in ACTIVE_TABS})
+        obj._contact=Mock(return_value={'email':'member@example.com','customFields':[{'id':k,'value':v} for k,v in {'cancellation_status':'Cancelled','cancellation_type':'PT','final_access_date':'2099-10-11','billing_status':'Succeeded','submitted_date':'2099-09-01','billing_result':'overwritten by unrelated action'}.items()]})
+        return obj
+    def payload(self):
+        return dict(contact_id='contact',email='member@example.com',cancellation_type='pt',final_access_date='2099-10-11',scope='service_only',receipts={'intake':{'verified':True,'submitted_date':'2099-09-01','subscription_id':'sub_test'}})
+    def test_terminal_crm_does_not_hide_valid_admitted_exit(self):
+        self.assertTrue(self.integration().preflight(self.payload())['verified'])
+    def test_changed_episode_still_blocks(self):
+        from cancellation_finalizer.engine import FinalizationError
+        p=self.payload();p['receipts']['intake']['submitted_date']='2099-08-01'
+        with self.assertRaises(FinalizationError):self.integration().preflight(p)
+    def test_admitted_subscription_survives_unrelated_note(self):
+        from unittest.mock import patch
+        p=self.payload();p['preflight']={'billing_result':'another operation succeeded','continuing_tabs':[]}
+        with patch('cancellation_finalizer.integrations.stripe.Subscription.retrieve',return_value=SimpleNamespace(status='canceled',customer='cus')) as retrieve, patch('cancellation_finalizer.integrations.stripe.Customer.retrieve',return_value=SimpleNamespace(email='member@example.com')), patch('cancellation_finalizer.integrations.stripe.Subscription.list') as subs, patch('cancellation_finalizer.integrations.stripe.SubscriptionSchedule.list') as schedules:
+            subs.return_value.auto_paging_iter.return_value=[];schedules.return_value.auto_paging_iter.return_value=[]
+            self.assertTrue(self.integration().verify_billing(p)['verified']);retrieve.assert_called_once_with('sub_test')

@@ -76,7 +76,7 @@ class ProductionIntegrations:
             })
         return cases
 
-    def verify_queue_boundary(self, payload: dict[str, Any]) -> None:
+    def verify_queue_boundary(self, payload: dict[str, Any]) -> dict[str, Any]:
         contact = self._contact(payload["contact_id"])
         if normalize_email(contact.get("email")) != payload["email"]:
             raise FinalizationError("queue contact identity mismatch")
@@ -87,6 +87,13 @@ class ProductionIntegrations:
                 raise FinalizationError("queue boundary does not match current GHL")
         if current.get(ids["cancellation_status"]) != "Notice Active":
             raise FinalizationError("queue requires an active cancellation notice")
+        submitted = str(current.get(ids["submitted_date"]) or "")
+        refs = set(re.findall(r"\bsub_[A-Za-z0-9]+\b", str(current.get(ids["billing_result"]) or "")))
+        if not submitted or len(refs) != 1:
+            raise FinalizationError("queue requires a current episode and exact subscription reference")
+        return {"verified": True, "submitted_date": submitted,
+                "subscription_id": next(iter(refs)), "verified_at": datetime.now(UTC).isoformat()}
+
 
     def _require_writes(self) -> None:
         if not self.settings.write_enabled:
@@ -223,11 +230,14 @@ class ProductionIntegrations:
         if service_change not in {"", "none", "completed", "cancelled"}:
             raise FinalizationError("unresolved service change requires continuing-entitlement reconciliation")
         previous = payload.get("receipts", {}).get("preflight", {})
+        intake = payload.get("receipts", {}).get("intake", {})
         submitted = str(current.get(ids["submitted_date"]) or "")
+        if intake and intake.get("submitted_date") != submitted:
+            raise FinalizationError("cancellation episode changed since queue admission")
         if previous and previous.get("submitted_date") != submitted:
             raise FinalizationError("cancellation episode changed since the first attempt")
         expected = {
-            "cancellation_status": "Cancelled" if previous and current.get(ids["cancellation_status"]) == "Cancelled" else "Notice Active",
+            "cancellation_status": "Cancelled" if (previous or intake.get("verified") is True) and current.get(ids["cancellation_status"]) == "Cancelled" else "Notice Active",
             "cancellation_type": payload["cancellation_type"].upper()
             if payload["cancellation_type"] == "pt"
             else "Membership",
@@ -308,9 +318,12 @@ class ProductionIntegrations:
     def verify_billing(self, context: dict[str, Any]) -> dict[str, Any]:
         result = context["preflight"]["billing_result"]
         match = re.search(r"\b(sub_[A-Za-z0-9]+)\b", result)
-        if not match:
+        admitted = context.get("receipts", {}).get("intake", {}).get("subscription_id")
+        if admitted and match and admitted != match.group(1):
+            raise FinalizationError("Billing reference changed since queue admission")
+        if not match and not admitted:
             raise FinalizationError("Billing OS result does not contain the exact Stripe subscription ID")
-        subscription_id = match.group(1)
+        subscription_id = admitted or match.group(1)
         subscription = stripe.Subscription.retrieve(subscription_id)
         if str(subscription.status).lower() not in {"canceled", "cancelled"}:
             raise FinalizationError(
