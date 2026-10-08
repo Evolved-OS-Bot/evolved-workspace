@@ -64,6 +64,14 @@ class WebhookNonce(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
+class IntakeIssue(Base):
+    __tablename__ = "cancellation_intake_issues"
+    key: Mapped[str] = mapped_column(String(160), primary_key=True)
+    detail: Mapped[str] = mapped_column(Text)
+    active: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class Repository:
     _local_lock = threading.RLock()
 
@@ -122,6 +130,21 @@ class Repository:
     def get(self, key: str) -> FinalizationCase | None:
         with self.sessions() as db:
             return db.get(FinalizationCase, key)
+
+    def record_intake_issue(self, key: str, detail: str, *, active: bool = True) -> None:
+        with self.sessions.begin() as db:
+            issue = db.get(IntakeIssue, key)
+            if issue is None:
+                issue = IntakeIssue(key=key)
+                db.add(issue)
+            issue.detail = detail[:2000]
+            issue.active = int(active)
+            issue.updated_at = datetime.now(UTC)
+
+    def intake_issues(self) -> list[dict[str, Any]]:
+        with self.sessions() as db:
+            return [{"key": r.key, "detail": r.detail, "updated_at": r.updated_at.isoformat()}
+                    for r in db.scalars(select(IntakeIssue).where(IntakeIssue.active == 1)).all()]
 
     def claim_webhook_nonce(
         self,

@@ -49,24 +49,51 @@ class ProductionIntegrations:
         if not response.ok:
             raise RetryLater("Hub boundary discovery unavailable")
         data = response.json()
-        if data.get("complete") is not True or data.get("blocked_reasons") or any(
-            source.get("freshness") != "fresh" for source in data.get("source_freshness") or []
-        ):
-            raise RetryLater("Hub boundary discovery requires complete fresh evidence")
+        sources = data.get("source_freshness") or []
+        lifecycle_fresh = any(source.get("source") == "membership_reconciliation" and source.get("freshness") == "fresh" for source in sources)
+        if not lifecycle_fresh and (data.get("complete") is not True or data.get("blocked_reasons") or any(source.get("freshness") != "fresh" for source in sources)):
+            raise RetryLater("Hub boundary discovery requires fresh lifecycle evidence")
+        self.discovery_issues = {}
         cases = []
         for row in data.get("rows") or []:
             lifecycle = row.get("lifecycle") or {}
-            if lifecycle.get("cancellation_status") != "Notice Active" or not lifecycle.get("final_access_date"):
+            if lifecycle.get("cancellation_status") != "Notice Active":
                 continue
             contacts = {str(i.get("source_record_id")) for i in row.get("source_identities") or [] if i.get("source") == "ghl" and i.get("source_record_id")}
+            issue_key = "identity:" + str(row.get("person_id") or hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest()[:24])
             if len(contacts) != 1:
+                self.discovery_issues[issue_key] = "Cancellation has no unique GHL identity"
                 continue
+            issue_key = "contact:" + next(iter(contacts))
+            if not lifecycle.get("final_access_date"):
+                self.discovery_issues[issue_key] = "Accepted cancellation has no final-access date; no closure is authorised"
+                continue
+            self.discovery_issues[issue_key] = ""
             cases.append({
                 "contact_id": next(iter(contacts)), "email": (row.get("display") or {}).get("email"),
                 "cancellation_type": lifecycle.get("cancellation_type"),
                 "final_access_date": lifecycle["final_access_date"], "scope": "service_only",
             })
         return cases
+
+    def verify_queue_boundary(self, payload: dict[str, Any]) -> dict[str, Any]:
+        contact = self._contact(payload["contact_id"])
+        if normalize_email(contact.get("email")) != payload["email"]:
+            raise FinalizationError("queue contact identity mismatch")
+        ids = self._fields()
+        current = self._contact_field_values(contact)
+        for key in ("cancellation_type", "final_access_date"):
+            if str(current.get(ids[key]) or "").strip().lower() != payload[key].lower():
+                raise FinalizationError("queue boundary does not match current GHL")
+        if current.get(ids["cancellation_status"]) != "Notice Active":
+            raise FinalizationError("queue requires an active cancellation notice")
+        submitted = str(current.get(ids["submitted_date"]) or "")
+        refs = set(re.findall(r"\bsub_[A-Za-z0-9]+\b", str(current.get(ids["billing_result"]) or "")))
+        if not submitted or len(refs) != 1:
+            raise FinalizationError("queue requires a current episode and exact subscription reference")
+        return {"verified": True, "submitted_date": submitted,
+                "subscription_id": next(iter(refs)), "verified_at": datetime.now(UTC).isoformat()}
+
 
     def _require_writes(self) -> None:
         if not self.settings.write_enabled:
@@ -203,11 +230,14 @@ class ProductionIntegrations:
         if service_change not in {"", "none", "completed", "cancelled"}:
             raise FinalizationError("unresolved service change requires continuing-entitlement reconciliation")
         previous = payload.get("receipts", {}).get("preflight", {})
+        intake = payload.get("receipts", {}).get("intake", {})
         submitted = str(current.get(ids["submitted_date"]) or "")
+        if intake and intake.get("submitted_date") != submitted:
+            raise FinalizationError("cancellation episode changed since queue admission")
         if previous and previous.get("submitted_date") != submitted:
             raise FinalizationError("cancellation episode changed since the first attempt")
         expected = {
-            "cancellation_status": "Cancelled" if previous and current.get(ids["cancellation_status"]) == "Cancelled" else "Notice Active",
+            "cancellation_status": "Cancelled" if (previous or intake.get("verified") is True) and current.get(ids["cancellation_status"]) == "Cancelled" else "Notice Active",
             "cancellation_type": payload["cancellation_type"].upper()
             if payload["cancellation_type"] == "pt"
             else "Membership",
@@ -288,9 +318,12 @@ class ProductionIntegrations:
     def verify_billing(self, context: dict[str, Any]) -> dict[str, Any]:
         result = context["preflight"]["billing_result"]
         match = re.search(r"\b(sub_[A-Za-z0-9]+)\b", result)
-        if not match:
+        admitted = context.get("receipts", {}).get("intake", {}).get("subscription_id")
+        if admitted and match and admitted != match.group(1):
+            raise FinalizationError("Billing reference changed since queue admission")
+        if not match and not admitted:
             raise FinalizationError("Billing OS result does not contain the exact Stripe subscription ID")
-        subscription_id = match.group(1)
+        subscription_id = admitted or match.group(1)
         subscription = stripe.Subscription.retrieve(subscription_id)
         if str(subscription.status).lower() not in {"canceled", "cancelled"}:
             raise FinalizationError(
