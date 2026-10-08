@@ -194,12 +194,21 @@ class Finalizer:
         discover = getattr(self.integrations, "discover_boundary_cases", None)
         if discover:
             try:
-                for payload in discover():
-                    normalized = normalize_payload(payload)
-                    # Existing signed handoffs retain their exact task and scope.
-                    if self.repository.get(normalized["idempotency_key"]) is None:
-                        self.repository.upsert(normalized, now=self.now())
+                payloads = discover()
+                for key, detail in getattr(self.integrations, "discovery_issues", {}).items():
+                    self.repository.record_intake_issue(key, detail, active=bool(detail))
+                for payload in payloads:
+                    key = "contact:" + str(payload.get("contact_id") or "unknown")
+                    try:
+                        normalized = normalize_payload(payload)
+                        # Existing signed handoffs retain their exact task and scope.
+                        if self.repository.get(normalized["idempotency_key"]) is None:
+                            self.repository.upsert(normalized, now=self.now())
+                    except Exception:
+                        self.repository.record_intake_issue(key, "Cancellation boundary could not be queued; check identity, type and date")
+                self.repository.record_intake_issue("discovery", "", active=False)
             except Exception:
+                self.repository.record_intake_issue("discovery", "Governed cancellation discovery unavailable; existing cases retain source checks")
                 logging.getLogger(__name__).warning("Governed boundary discovery unavailable; existing cases retain source checks")
         keys = self.repository.due(self.now(), limit=limit)
         for key in keys:

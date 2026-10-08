@@ -209,6 +209,8 @@ def create_app(
         return jsonify(
             {
                 "status": "ok",
+                "handoffVersion": "2026-10-08-cancellation-handoff-v1",
+                "intakeIssueCount": len(repo.intake_issues()),
                 "writeEnabled": configured.write_enabled,
                 "workerEnabled": configured.worker_enabled,
                 "relayEnabled": configured.relay_enabled,
@@ -232,6 +234,39 @@ def create_app(
         return process_payload(
             request.get_json(silent=True) or {}, audit_event="webhook_request"
         )
+
+    @app.post("/api/v1/cancellations/queue")
+    def queue_cancellation():
+        """Durable handoff only. No closure action executes on this route."""
+        accepted, reason = webhook_authorised(request.get_data(cache=True, as_text=False))
+        if not accepted:
+            return jsonify({"error": "request rejected"}), (409 if reason == "replayed_nonce" else 429 if reason == "rate_limited" else 401)
+        try:
+            payload = normalize_payload(request.get_json(silent=True) or {})
+            with repo.contact_lock(payload["contact_id"]) as acquired:
+                if not acquired:
+                    return jsonify({"error": "contact busy"}), 409
+                external.verify_queue_boundary(payload)
+                existing = repo.get(payload["idempotency_key"])
+                if existing:
+                    # Discovery or an earlier signed request may own a final task.
+                    for field in ("contact_id", "email", "cancellation_type", "final_access_date", "scope"):
+                        if existing.payload.get(field) != payload[field]:
+                            raise ValueError("existing queue identity conflict")
+                    case = existing
+                else:
+                    case = repo.upsert(payload, now=datetime.now(UTC))
+            return jsonify({**_webhook_case(case), "durable": True, "final_access_date": case.final_access_date}), 200
+        except Exception:
+            audit("queue_request", "rejected", reason="boundary_verification_failed")
+            return jsonify({"error": "boundary verification failed"}), 422
+
+    @app.get("/api/v1/admin/intake-issues")
+    def intake_issues():
+        denied = require_admin()
+        if denied is not None:
+            return denied
+        return jsonify({"issues": repo.intake_issues()})
 
     @app.post("/api/v1/relay/cancellations/<service>")
     def relay_finalize(service: str):
